@@ -7,3 +7,28 @@
 
 
 Yet Another Toolbox to analyze spatio-temporal data using [YAXArrays.jl](https://github.com/JuliaDataCubes/YAXArrays.jl)
+
+
+## MWE!!
+
+1. Time resampling by dates
+
+
+2. space4time simple
+
+3. filling time using another cube time axis
+
+4. General masking
+
+## How to contribute !!!
+
+## Roadmap !! 
+
+
+
+## Acknowledgements
+
+This project was funded by the [NFDI4Earth](https://www.nfdi4earth.de/) and [OEMC](https://earthmonitor.org/) projects.
+
+<a href="https://www.nfdi4earth.de/"><img src="https://www.nfdi4earth.de/templates/nfdi4earth/images/NFDI4Earth_logo.png"  width="40%" height="10%"> <a href="https://earthmonitor.org/"><img src="https://earthmonitor.org/wp-content/uploads/2022/04/OEM_Logo_Horizontal_Dark_Transparent_Background_205x38.png"  width="40%" height="10%">
+
