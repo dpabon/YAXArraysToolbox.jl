@@ -1,0 +1,13 @@
+name = "YAXArraysToolbox"
+uuid = "fe326ce2-c736-437b-b94b-0bdf007dd2e5"
+authors = ["Pabon-Moreno", "Daniel E.; Duveiller", "Gregory; Gans", "Fabian; Winkler", "Alexander"]
+version = "1.0.0-DEV"
+
+[compat]
+julia = "1.8.5"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
