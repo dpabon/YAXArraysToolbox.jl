@@ -28,7 +28,7 @@ Yet Another Toolbox to analyze spatio-temporal data using [YAXArrays.jl](https:/
 
 ## Acknowledgements
 
-This project was funded by the [NFDI4Earth](https://www.nfdi4earth.de/) and [OEMC](https://earthmonitor.org/) projects.
+This project was funded by the [NFDI4Earth](https://www.nfdi4earth.de/)project.
 
-<a href="https://www.nfdi4earth.de/"><img src="https://www.nfdi4earth.de/templates/nfdi4earth/images/NFDI4Earth_logo.png"  width="40%" height="10%"> <a href="https://earthmonitor.org/"><img src="https://earthmonitor.org/wp-content/uploads/2022/04/OEM_Logo_Horizontal_Dark_Transparent_Background_205x38.png"  width="40%" height="10%">
+<a href="https://www.nfdi4earth.de/"><img src="https://www.nfdi4earth.de/templates/nfdi4earth/images/NFDI4Earth_logo.png"  width="40%" height="10%">
 
