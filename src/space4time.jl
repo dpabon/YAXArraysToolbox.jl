@@ -188,7 +188,7 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
        pfts_cube_in_2 = pfts_cube_in_1[it,:,:,:]
        #println(all(isnan, pfts_cube_in_2))
 
-       println(size(pfts_cube_in_2))
+       #println(size(pfts_cube_in_2))
        
        pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
        
