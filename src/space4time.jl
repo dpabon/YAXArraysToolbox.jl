@@ -523,6 +523,8 @@ end
     # assuming the first dimmension is time.
     if !isnothing(time_axis_name)
         time_n = length(getAxis(time_axis_name,cube_con).values)
+    else
+        time_n = 1
     end
     # assuming that pfts presence change in time. last dimmension refer to the number of pfts.
     # pfts_cube = rand(Float32, (5,5, length(classes_vec)))
