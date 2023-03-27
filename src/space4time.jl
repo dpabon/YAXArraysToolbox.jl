@@ -161,6 +161,12 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
    #println(local_pft2)
    pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.)
 
+   if time_n == 1
+
+        pfts_cube_in_1 = reshape(pfts_cube_in_1, (1, winsize^2, size(pfts_cube_in)[3]))
+
+   end
+
    
    for it in 1:time_n
        # co-ocurrence estimation
