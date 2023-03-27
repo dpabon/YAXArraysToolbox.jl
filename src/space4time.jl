@@ -484,13 +484,12 @@ end
 - ```minpxl``` : Minimum number of pixels in the moving window. By default minpxl = 25.
  
 - ```minDiffPxlspercentage```: Percentage of minimum number pixels in the moving window that must have different compositions. Must be any value in the interval 30-100. By default minDiffPxlspercentage = 40
- coocurence_threshold: Co-occurence threshold to mask out pixels. Must be a value in the interal 0-1. By default coocurence_threshold = NaN
  
-- ```classes_vec```: A string vector with the names of the classes on cube_classes to be used. e.g. from MPI-BGC internal structure classes_vec = ["Evergreen_Needleleaf_Forests", "Evergreen_Broadleaf_Forests", "Deciduous_Needleleaf_Forests", "Deciduous_Broadleaf_Forests", "Mixed_Forests", "Closed_Shrublands", "Open_Shrublands", "Woody_Savannas", "Savannas", "Grasslands", "Permanent_Wetlands", "Croplands", "Urban_and_Built-up_Lands", "Cropland/Natural_Vegetation_Mosaics", "Permanent_Snow_and_Ice", "Barren", "Water_Bodies"]
+- ```classes_vec```: A string vector with the names of the classes on cube_classes to be used. e.g. from MPI-BGC internal structure ```classes_vec = ["Evergreen_Needleleaf_Forests", "Evergreen_Broadleaf_Forests", "Deciduous_Needleleaf_Forests", "Deciduous_Broadleaf_Forests", "Mixed_Forests", "Closed_Shrublands", "Open_Shrublands", "Woody_Savannas", "Savannas", "Grasslands", "Permanent_Wetlands", "Croplands", "Urban_and_Built-up_Lands", "Cropland/Natural_Vegetation_Mosaics", "Permanent_Snow_and_Ice", "Barren", "Water_Bodies"]```
 
 - ```max_value```: Indicates if the scale of the presence of the discrete classes if from 0 to 1 or 0 to 100 if ```max_value = 100``` then the data is re-scaled from 0 to 1. By default ```max_value = 1```
 
-- ```minpxl```: Minimum number of pixels in the moving window with information. Change accordindly to your ```winsize`` parameter.
+- ```minpxl```: Minimum number of pixels in the moving window with information. Change accordindly to your ```winsize``` parameter.
 
 - ```showprog```: Show progress bar. By default ```showprog = true```
 
@@ -498,18 +497,18 @@ end
 
  ## Output:
 
- The space4time_proc produces a YAXARRAY.Dataset with three cubes:
-    - SummaryStats cube have one axis "summary_stat", and three variables:
-        - "rsquared":  
-        - "cumulative_variance":
-        - "predicted":
-    - metrics_for_classes have one axis "Values of Z for pure classes", and two variables:
-        - "estimated":
-        - "estimated_error":
-    - metrics_for_transitions have two axis "transitions" (all the transitions by pairs between the different classes), and "Differences" with three variables:
-     - "delta":
-     - "delta_error":
-     - "coocurence":
+ The ```space4time_proc``` produces a YAXARRAY.Dataset with three cubes:
+    - SummaryStats cube has one axis ```summary_stat```, and three variables:
+        - ```rsquared```:  
+        - ```cumulative_variance```:
+        - ```predicted```:
+    - ```metrics_for_classes``` cube has one axis ```Values of Z for pure classes```, and two variables:
+        - ```estimated```:
+        - ```estimated_error```:
+    - metrics_for_transitions has two axis ```transitions``` (all the transitions by pairs between the different classes), and ```Differences``` with three variables:
+     - ```delta```:
+     - ```delta_error```:
+     - ```coocurence```:
  """ 
  function space4time_proc(cube_con, cube_classes; time_axis_name = "time", lon_axis_name = "lon", lat_axis_name = "lat", classes_var_name = "classes", winsize = 5, minDiffPxlspercentage = 40, classes_vec = NaN, max_value = NaN, minpxl = 25, showprog = true, max_cache=1e8)
     
