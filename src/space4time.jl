@@ -104,7 +104,7 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
    time_n::Int,
    max_value::Int, p1_static, p2_static, sigma1_glob, prederr_glob, predres_glob, minDiffPxls, tran_check, half, localcomp_fix_glob, pftsvarmat_f_glob, winsize = 5, transitions_n, pftstrans_comb_names, nc, out_pmindist_global, denom, minpxl)
     #println(size(clim_var_cube_in))
-    println(size(pfts_cube_in))
+    #println(size(pfts_cube_in))
    #println(size(out_3))
    sigma1 = sigma1_glob[Threads.threadid()]
    prederr = prederr_glob[Threads.threadid()]
@@ -189,7 +189,7 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
        replace!(pfts_cube_in_2, NaN => 0.)
        #println(all(isnan, pfts_cube_in_2))
 
-       # println(size(pfts_cube_in_2))
+       println(size(pfts_cube_in_2))
        
        pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
        
