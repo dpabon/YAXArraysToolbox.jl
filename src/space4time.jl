@@ -471,7 +471,7 @@ end
  
 - ```cube_classes```: YAXARRAY with the discrete classes to be used in the space4time.
  
-- ```time_axis_name``` : String. Name of the time axis on the input cubes. By default ```time_axis_name = "time"```.
+- ```time_axis_name``` : String or Nothing. Name of the time axis on the input cubes. By default ```time_axis_name = "time"```. if ```time_axis_name = Nothing```, not time dimension considered.
  
 - ```lon_axis_name``` : String. Name of the longitude axis on the input cubes. By default ```lon_axis_name = "lon"```
  
@@ -494,14 +494,24 @@ end
 
 - ```showprog```: Show progress bar. By default ```showprog = true```
 
+- ```max_cache```: Size of the cache to allocate temporarily sections of the cubes. By default ```max_cache = 1e8```
+
  ## Output:
 
  The space4time_proc produces a YAXARRAY.Dataset with three cubes:
-    - SummaryStats cube have XXX to improve "summary_stat", ["rsquared", "cumulative_variance", "predicted"]
-    - metrics_for_classes have XXX to be done.
-    - metrics_for_transitions XXX to be done.
+    - SummaryStats cube have one axis "summary_stat", and three variables:
+        - "rsquared":  
+        - "cumulative_variance":
+        - "predicted":
+    - metrics_for_classes have one axis "Values of Z for pure classes", and two variables:
+        - "estimated":
+        - "estimated_error":
+    - metrics_for_transitions have two axis "transitions" (all the transitions by pairs between the different classes), and "Differences" with three variables:
+     - "delta":
+     - "delta_error":
+     - "coocurence":
  """ 
- function space4time_proc(cube_con, cube_classes; time_axis_name = "time", lon_axis_name = "lon", lat_axis_name = "lat", classes_var_name = "classes", winsize = 5, minDiffPxlspercentage = 40, classes_vec = NaN, max_value = NaN, minpxl = 25, showprog = true)
+ function space4time_proc(cube_con, cube_classes; time_axis_name = "time", lon_axis_name = "lon", lat_axis_name = "lat", classes_var_name = "classes", winsize = 5, minDiffPxlspercentage = 40, classes_vec = NaN, max_value = NaN, minpxl = 25, showprog = true, max_cache=1e8)
     
     # Checking that winsize is odd
     
@@ -570,23 +580,43 @@ end
     
     
     # 
-    indims = InDims(time_axis_name, MovingWindow(lon_axis_name, pre_step,after_step),
-    MovingWindow(lat_axis_name, pre_step, after_step),  window_oob_value=NaN)
-    
-    indims_classes = InDims(time_axis_name, MovingWindow(lon_axis_name, pre_step,after_step),
-    MovingWindow(lat_axis_name, pre_step, after_step), 
-    classes_var_name, 
-    window_oob_value=NaN)
-    
-    
-    
-    out_1_dims = OutDims(time_axis_name, CategoricalAxis("summary_stat", ["rsquared", "cumulative_variance", "predicted"]))
-    
-    # Values of clim_var (z) for pure PFTs
-    out_2_dims = OutDims(time_axis_name,CategoricalAxis("classes", classes_vec), CategoricalAxis("Values_of_Z_for_pure_classes", ["estimated", "estimated_error"]))
-    #println([join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)])
-    # delta of clim_var produced by the transitions between PFTs
-    out_3_dims = OutDims(time_axis_name, CategoricalAxis("transitions", [join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)]), CategoricalAxis("Differences", ["delta", "delta_error", "coocurence"]))
+    if !isnothing(time_axis_name)
+
+        
+        indims = InDims(time_axis_name, MovingWindow(lon_axis_name, pre_step,after_step),
+        MovingWindow(lat_axis_name, pre_step, after_step),  window_oob_value=NaN)
+        
+        indims_classes = InDims(time_axis_name, MovingWindow(lon_axis_name, pre_step,after_step),
+        MovingWindow(lat_axis_name, pre_step, after_step), 
+        classes_var_name, 
+        window_oob_value=NaN)
+        
+        out_1_dims = OutDims(time_axis_name, CategoricalAxis("summary_stat", ["rsquared", "cumulative_variance", "predicted"]))
+        
+        # Values of clim_var (z) for pure PFTs
+        out_2_dims = OutDims(time_axis_name,CategoricalAxis("classes", classes_vec), CategoricalAxis("Values_of_Z_for_pure_classes", ["estimated", "estimated_error"]))
+        #println([join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)])
+        # delta of clim_var produced by the transitions between PFTs
+        out_3_dims = OutDims(time_axis_name, CategoricalAxis("transitions", [join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)]), CategoricalAxis("Differences", ["delta", "delta_error", "coocurence"]))
+        
+    else
+        indims = InDims(MovingWindow(lon_axis_name, pre_step,after_step),
+        MovingWindow(lat_axis_name, pre_step, after_step),  window_oob_value=NaN)
+        
+        indims_classes = InDims(MovingWindow(lon_axis_name, pre_step,after_step),
+        MovingWindow(lat_axis_name, pre_step, after_step), 
+        classes_var_name, 
+        window_oob_value=NaN)
+        
+        out_1_dims = OutDims(CategoricalAxis("summary_stat", ["rsquared", "cumulative_variance", "predicted"]))
+        
+        # Values of clim_var (z) for pure PFTs
+        out_2_dims = OutDims(CategoricalAxis("classes", classes_vec), CategoricalAxis("Values_of_Z_for_pure_classes", ["estimated", "estimated_error"]))
+        #println([join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)])
+        # delta of clim_var produced by the transitions between PFTs
+        out_3_dims = OutDims(CategoricalAxis("transitions", [join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)]), CategoricalAxis("Differences", ["delta", "delta_error", "coocurence"]))
+        
+    end
     
     
     outdims = (out_1_dims, out_2_dims, out_3_dims)
@@ -594,7 +624,7 @@ end
     
     out_1, out_2, out_3 = mapCube(s4time, (cube_con, cube_classes), 
     indims = (indims, indims_classes), 
-    outdims = outdims, max_cache=1e8,  showprog = showprog, include_loopvars=true; empty_models, pft_list = classes_vec, time_n = time_n, max_value = max_value, p1_static, p2_static, sigma1_glob, prederr_glob, predres_glob, minDiffPxls,tran_check, half, localcomp_fix_glob, pftsvarmat_f_glob, winsize = winsize, transitions_n = transitions_n, pftstrans_comb_names = pftstrans_comb_names, nc = nc, out_pmindist_global = out_pmindist_global, denom = denom, minpxl = minpxl)
+    outdims = outdims, max_cache=max_cache,  showprog = showprog, include_loopvars=true; empty_models, pft_list = classes_vec, time_n = time_n, max_value = max_value, p1_static, p2_static, sigma1_glob, prederr_glob, predres_glob, minDiffPxls,tran_check, half, localcomp_fix_glob, pftsvarmat_f_glob, winsize = winsize, transitions_n = transitions_n, pftstrans_comb_names = pftstrans_comb_names, nc = nc, out_pmindist_global = out_pmindist_global, denom = denom, minpxl = minpxl)
 
     return Dataset(;SummaryStats=out_1, metrics_for_classes=out_2, metrics_for_transitions=out_3)
     
