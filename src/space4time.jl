@@ -163,8 +163,8 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
 
    if time_n == 1
 
-        pfts_cube_in_1 = reshape(pfts_cube_in_1, (1, winsize, winsize, nc))
-
+        pfts_cube_in_1 = permutedims(reshape(pfts_cube_in_1, (winsize, winsize, nc, 1)), (4,1,2,3))
+        
    end
 
    
