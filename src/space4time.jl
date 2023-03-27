@@ -613,13 +613,13 @@ end
         classes_var_name, 
         window_oob_value=NaN)
         
-        out_1_dims = OutDims(CategoricalAxis("summary_stat", ["rsquared", "cumulative_variance", "predicted"]))
+        out_1_dims = OutDims(RangeAxis("time", [1]),CategoricalAxis("summary_stat", ["rsquared", "cumulative_variance", "predicted"]))
         
         # Values of clim_var (z) for pure PFTs
-        out_2_dims = OutDims(CategoricalAxis("classes", classes_vec), CategoricalAxis("Values_of_Z_for_pure_classes", ["estimated", "estimated_error"]))
+        out_2_dims = OutDims(RangeAxis("time", [1]), CategoricalAxis("classes", classes_vec), CategoricalAxis("Values_of_Z_for_pure_classes", ["estimated", "estimated_error"]))
         #println([join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)])
         # delta of clim_var produced by the transitions between PFTs
-        out_3_dims = OutDims(CategoricalAxis("transitions", [join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)]), CategoricalAxis("Differences", ["delta", "delta_error", "coocurence"]))
+        out_3_dims = OutDims(RangeAxis("time", [1]), CategoricalAxis("transitions", [join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)]), CategoricalAxis("Differences", ["delta", "delta_error", "coocurence"]))
         
     end
     
