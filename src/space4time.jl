@@ -471,7 +471,7 @@ end
  
 - ```cube_classes```: YAXARRAY with the discrete classes to be used in the space4time.
  
-- ```time_axis_name``` : String or Nothing. Name of the time axis on the input cubes. By default ```time_axis_name = "time"```. if ```time_axis_name = Nothing```, not time dimension considered.
+- ```time_axis_name``` : String or nothing. Name of the time axis on the input cubes. By default ```time_axis_name = "time"```. if ```time_axis_name = nothing```, not time dimension considered.
  
 - ```lon_axis_name``` : String. Name of the longitude axis on the input cubes. By default ```lon_axis_name = "lon"```
  
@@ -481,15 +481,13 @@ end
  
 - ```winsize```: Edge size of the moving window on pixels. By default winsize = 5. E.g. ```winsize = 5``` will produce a moving window with 5^2 pixels.
  
-- ```minpxl``` : Minimum number of pixels in the moving window. By default minpxl = 25.
+- ```minpxl``` : Minimum number of pixels in the moving window. By default minpxl = 25. Change accordindly to your ```winsize``` parameter.
  
 - ```minDiffPxlspercentage```: Percentage of minimum number pixels in the moving window that must have different compositions. Must be any value in the interval 30-100. By default minDiffPxlspercentage = 40
  
 - ```classes_vec```: A string vector with the names of the classes on ```cube_classes``` to be used. e.g. from MPI-BGC internal structure ```classes_vec = ["Evergreen_Needleleaf_Forests", "Evergreen_Broadleaf_Forests", "Deciduous_Needleleaf_Forests", "Deciduous_Broadleaf_Forests", "Mixed_Forests", "Closed_Shrublands", "Open_Shrublands", "Woody_Savannas", "Savannas", "Grasslands", "Permanent_Wetlands", "Croplands", "Urban_and_Built-up_Lands", "Cropland/Natural_Vegetation_Mosaics", "Permanent_Snow_and_Ice", "Barren", "Water_Bodies"]```
 
 - ```max_value```: Indicates if the scale of the presence of the discrete classes if from 0 to 1 or 0 to 100 if ```max_value = 100``` then the data is re-scaled from 0 to 1. By default ```max_value = 1```
-
-- ```minpxl```: Minimum number of pixels in the moving window with information. Change accordindly to your ```winsize``` parameter.
 
 - ```showprog```: Show progress bar. By default ```showprog = true```
 
@@ -523,8 +521,9 @@ end
     #println(size(cube_con))
     #println(size(cube_classes))
     # assuming the first dimmension is time.
-    
-    time_n = length(getAxis(time_axis_name,cube_con).values)
+    if !isnothing(time_axis_name)
+        time_n = length(getAxis(time_axis_name,cube_con).values)
+    end
     # assuming that pfts presence change in time. last dimmension refer to the number of pfts.
     # pfts_cube = rand(Float32, (5,5, length(classes_vec)))
     
