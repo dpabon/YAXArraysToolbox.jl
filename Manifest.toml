@@ -2,7 +2,7 @@
 
 julia_version = "1.8.5"
 manifest_format = "2.0"
-project_hash = "70416f417da3e97616cdd6fe0de191dfd2f3550f"
+project_hash = "3513d74cc1b9a9ba50211b9820d086fa0da31bab"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -756,6 +756,12 @@ git-tree-sha1 = "3d09a9f60edf77f8a4d99f9e015e8fbf9989605d"
 uuid = "905a6f67-0a94-5f89-b386-d35d92009cd1"
 version = "3.1.7+0"
 
+[[deps.IndexFunArrays]]
+deps = ["ChainRulesCore", "LinearAlgebra"]
+git-tree-sha1 = "c7e4b47fa1cd2761794b96b3e6ac1d7a0c2133aa"
+uuid = "613c443e-d742-454e-bfc6-1d7f8dd76566"
+version = "0.2.5"
+
 [[deps.IndirectArrays]]
 git-tree-sha1 = "012e604e1c7458645cb8b436f8fba789a51b257f"
 uuid = "9b13fd28-a010-5f03-acff-a1bbcff69959"
@@ -1178,6 +1184,12 @@ deps = ["CFTime", "DataStructures", "Dates", "NetCDF_jll", "NetworkOptions", "Pr
 git-tree-sha1 = "fe130b7201b7fd908d950076dbfc0671270894c5"
 uuid = "85f8d34a-cbdd-5861-8df4-14fed0d494ab"
 version = "0.12.13"
+
+[[deps.NDTools]]
+deps = ["LinearAlgebra", "OffsetArrays", "PaddedViews", "Random", "Statistics"]
+git-tree-sha1 = "10e35b25261dfd361045e16afa9db5b14a4c1184"
+uuid = "98581153-e998-4eef-8d0d-5ec2c052313d"
+version = "0.5.2"
 
 [[deps.NLSolversBase]]
 deps = ["DiffResults", "Distributed", "FiniteDiff", "ForwardDiff"]
@@ -1863,6 +1875,12 @@ deps = ["ColorTypes", "DataStructures", "DocStringExtensions", "FileIO", "FixedP
 git-tree-sha1 = "7e6b0e3e571be0b4dd4d2a9a3a83b65c04351ccc"
 uuid = "731e570b-9d59-4bfa-96dc-6df516fadf69"
 version = "0.6.3"
+
+[[deps.TiledViews]]
+deps = ["IndexFunArrays", "NDTools", "Random", "Test"]
+git-tree-sha1 = "1e11d4c2bb20c32e12251c88f4d388ab346aa28d"
+uuid = "ab21d65a-3167-428d-8ea2-d01236aa30f2"
+version = "0.2.3"
 
 [[deps.Tokenize]]
 git-tree-sha1 = "90538bf898832b6ebd900fa40f223e695970e3a5"
