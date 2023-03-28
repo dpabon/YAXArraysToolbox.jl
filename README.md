@@ -13,7 +13,7 @@ Yet Another Toolbox to analyze spatio-temporal data using [YAXArrays.jl](https:/
 
 ```julia
 julia> ]
-pkg> add https://github.com/JuliaDataCubes/YAXArrays.jl#main
+pkg> add https://github.com/dpabon/YAXArraysToolbox.jl#main
 ```
 or
 
