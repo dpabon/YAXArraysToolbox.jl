@@ -9,26 +9,51 @@
 Yet Another Toolbox to analyze spatio-temporal data using [YAXArrays.jl](https://github.com/JuliaDataCubes/YAXArrays.jl)
 
 
-## MWE!!
+## Installation
 
-1. Time resampling by dates
+```julia
+julia> ]
+pkg> add https://github.com/JuliaDataCubes/YAXArrays.jl#main
+```
+or
 
+```julia
+using Pkg
 
-2. space4time simple
+Pkg.add(url = "https://github.com/dpabon/YAXArraysToolbox.jl", dev = "main")
 
-3. filling time using another cube time axis
+```
+Start using the package:
 
-4. General masking
+```julia
+using YAXArraysToolbox
 
-## How to contribute !!!
+```
 
-## Roadmap !! 
+## Documentation
 
+https://dpabon.github.io/YAXArraysToolbox.jl/stable/
+
+## Notebook examples
+
+https://github.com/dpabon/YAXArraysToolboxNotebooks
+
+## Problems/Questions?
+
+Please check the [issues](https://github.com/dpabon/YAXArraysToolbox.jl/issues) page to see if your question has already been solved, or  open a new issue describing your problem/question.
+
+## How to Contribute?
+
+We're more than happy to receive contributions! Feel free to open pull requests.
+
+## License
+
+[MIT License](https://github.com/dpabon/YAXArraysToolbox.jl/blob/main/LICENSE)
 
 
 ## Acknowledgements
 
-This project was funded by the [NFDI4Earth](https://www.nfdi4earth.de/)project.
+This project was funded by the [NFDI4Earth](https://www.nfdi4earth.de/) project.
 
 <a href="https://www.nfdi4earth.de/"><img src="https://www.nfdi4earth.de/templates/nfdi4earth/images/NFDI4Earth_logo.png"  width="40%" height="10%">
 
