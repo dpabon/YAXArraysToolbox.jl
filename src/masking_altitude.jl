@@ -112,7 +112,7 @@ end
 
 - ```variable_name``` : String. Name of the Variable containing the variables "mean", and "sd".
 
-- ```time_axis_name``` : String or NaN. If the cube to be masked contains a time dimension is highly recomended to pass this parameter otherwise NaN.
+- ```time_axis_name``` : String or NaN. It is strongly recommended to pass this parameter if the cube to be masked contains a time dimension, otherwise ```nothing```.
 
 - ```winsize```: Edge size of the moving window on pixels. By default ```winsize = 5```. E.g. ```winsize = 5``` will produce a moving window with 5^2 pixels.
 
@@ -149,7 +149,7 @@ High values of ``v_{1}`` indicate hilly terrain over the considered scale, which
 
 
 """
-function altitude_masking_proc(cube_in_to_mask, cube_in_altitude; lon_axis_name = "lon", lat_axis_name = "lat", variable_name = "Variable", time_axis_name = NaN, winsize = 5, v1_thr = 50, v2_thr = 100, v3_thr = 100, showprog = true)
+function altitude_masking_proc(cube_in_to_mask, cube_in_altitude; lon_axis_name = "lon", lat_axis_name = "lat", variable_name = "Variable", time_axis_name = nothing, winsize = 5, v1_thr = 50, v2_thr = 100, v3_thr = 100, showprog = true)
 
     # Checking that winsize is odd
     
@@ -174,7 +174,7 @@ function altitude_masking_proc(cube_in_to_mask, cube_in_altitude; lon_axis_name 
     indims_altitude_results = InDims("Indicators")
 
 
-    if isnan(time_axis_name)
+    if isnothing(time_axis_name)
         indims_to_mask = InDims()
         outdims_to_mask = OutDims()
 
