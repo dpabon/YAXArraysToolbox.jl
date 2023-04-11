@@ -20,7 +20,7 @@ or
 ```julia
 using Pkg
 
-Pkg.add(url = "https://github.com/dpabon/YAXArraysToolbox.jl", dev = "main")
+Pkg.add(url = "https://github.com/dpabon/YAXArraysToolbox.jl#main")
 
 ```
 Start using the package:
