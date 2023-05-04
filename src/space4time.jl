@@ -512,7 +512,7 @@ end
     - ```delta_error```:
     - ```coocurence```:
  """ 
- function space4time_proc(cube_con, cube_classes; time_axis_name = "time", lon_axis_name = "lon", lat_axis_name = "lat", classes_var_name = "classes", winsize = 5, minDiffPxlspercentage = 40, classes_vec = NaN, max_value = NaN, minpxl = 25, showprog = true, max_cache=1e8)
+ function space4time_proc(cube_con, cube_classes; time_axis_name = "time", lon_axis_name = "lon", lat_axis_name = "lat", classes_var_name = "classes", winsize = 5, minDiffPxlspercentage = 40, classes_vec = NaN, max_value = 1, minpxl = 25, showprog = true, max_cache=1e8)
     
     # Checking that winsize is odd
     
