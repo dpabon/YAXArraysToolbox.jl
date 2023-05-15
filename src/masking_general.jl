@@ -4,37 +4,34 @@ using YAXArrays, StatsBase
 
 
 function masking_stats(cube_out, cube_in_to_mask, cube_summary_stats; rsquared_thr)
-    
-    cube_out .= cube_in_to_mask
-    
-    if any(!isnan, cube_in_to_mask)
+    cube_out .= NaN
+    for i in eachindex(cube_in_to_mask)
         
-        for i in eachindex(cube_in_to_mask)
+        if cube_summary_stats[i] < rsquared_thr 
             
-            if cube_summary_stats[i] < rsquared_thr 
-                
-                cube_out[i] = NaN
-            end
-            
+            cube_out[i] = NaN
+
+        else
+            cube_out[i] = cube_in_to_mask[i]
+
         end
         
     end
-    
 end
 
 function masking_co_occurrence(cube_out, cube_in_to_mask, cube_co_occurence; co_occurence_thr)
     
-    cube_out .= cube_in_to_mask
+    cube_out .= NaN
     
-    if any(!isnan, cube_in_to_mask)
+    for i in eachindex(cube_in_to_mask)
         
-        for i in eachindex(cube_in_to_mask)
+        if cube_co_occurence[i] < co_occurence_thr
             
-            if cube_co_occurence[i] < co_occurence_thr
-                
-                cube_out[i] = NaN
-                
-            end
+            cube_out[i] = NaN
+            
+        else
+            
+            cube_out[i] .= cube_in_to_mask[i]
             
         end
         
