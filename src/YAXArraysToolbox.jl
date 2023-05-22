@@ -2,10 +2,8 @@ module YAXArraysToolbox
 
 import Dates
 import StatsBase, Distributions, Test, LinearAlgebra, GLM, NamedArrays, Combinatorics, YAXArrays, YAXArrayBase
-# Statistics by index
-
-include("statistics_by_index.jl") # to add max, min, mean, and sd.
-include("dates_builder.jl")
+# aggregate time
+include("aggregate_time.jl")
 
 export median_by_index
 export dates_builder
