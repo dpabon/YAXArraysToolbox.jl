@@ -24,20 +24,20 @@ function median_by_index(xout, xin; index_list=time_to_index, skipMissing=skipMi
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin)
+    if !all(isnan, xin) !all(ismissing, xin)
         for i in eachindex(index_list)
             if !all(isnan, xin[index_list[i]])
-                if skipMissing == true
+                if skipMissing == true && skipnan == false
                     xout[i] = median(skipmissing(xin[index_list[i]]))
 
-                else
-                    xout[i] = median(xin[index_list[i]])
-                end
-                if skipnan == true
-                    xout[i] = median(filter(!isnan, xin[index_list[i]]))
-                else
-                    xout[i] = median(xin[index_list[i]])
+                elseif skipMissing == true && skipnan == true
+                    xout[i] = median(skipmissing(filter(!isnan, xin[index_list[i]])))
 
+                elseif skipMissing == false && skipnan == true
+                    xout[i] = median(filter(!isnan, xin[index_list[i]]))
+
+                elseif skipMissing == false && skipnan == false
+                    xout[i] = median(xin[index_list[i]])
                 end
             end
         end
@@ -51,14 +51,16 @@ function mean_by_index(xout, xin; index_list=time_to_index, skipMissing=skipMiss
     if !all(isnan, xin) || !all(ismissing, xin)
         for i in eachindex(index_list)
             if !all(isnan, xin[index_list[i]])
-                if skipMissing == true
+                if skipMissing == true && skipnan == false
                     xout[i] = mean(skipmissing(xin[index_list[i]]))
-                else
-                    xout[i] = mean(xin[index_list[i]])
-                end
-                if skipnan == true
+
+                elseif skipMissing == true && skipnan == true
+                    xout[i] = mean(skipmissing(filter(!isnan, xin[index_list[i]])))
+
+                elseif skipMissing == false && skipnan == true
                     xout[i] = mean(filter(!isnan, xin[index_list[i]]))
-                else
+
+                elseif skipMissing == false && skipnan == false
                     xout[i] = mean(xin[index_list[i]])
                 end
             end
@@ -73,15 +75,16 @@ function std_by_index(xout, xin; index_list=time_to_index, skipMissing=skipMissi
     if !all(isnan, xin) || !all(ismissing, xin)
         for i in eachindex(index_list)
             if !all(isnan, xin[index_list[i]])
-                if skipMissing == true
+                if skipMissing == true && skipnan == false
                     xout[i] = std(skipmissing(xin[index_list[i]]))
 
-                else
-                    xout[i] = std(xin[index_list[i]])
-                end
-                if skipnan == true
+                elseif skipMissing == true && skipnan == true
+                    xout[i] = std(skipmissing(filter(!isnan, xin[index_list[i]])))
+
+                elseif skipMissing == false && skipnan == true
                     xout[i] = std(filter(!isnan, xin[index_list[i]]))
-                else
+
+                elseif skipMissing == false && skipnan == false
                     xout[i] = std(xin[index_list[i]])
                 end
             end
@@ -96,15 +99,16 @@ function var_by_index(xout, xin; index_list=time_to_index, skipMissing=skipMissi
     if !all(isnan, xin) || !all(ismissing, xin)
         for i in eachindex(index_list)
             if !all(isnan, xin[index_list[i]])
-                if skipMissing == true
+                if skipMissing == true && skipnan == false
                     xout[i] = var(skipmissing(xin[index_list[i]]))
 
-                else
-                    xout[i] = var(xin[index_list[i]])
-                end
-                if skipnan == true
+                elseif skipMissing == true && skipnan == true
+                    xout[i] = var(skipmissing(filter(!isnan, xin[index_list[i]])))
+
+                elseif skipMissing == false && skipnan == true
                     xout[i] = var(filter(!isnan, xin[index_list[i]]))
-                else
+
+                elseif skipMissing == false && skipnan == false
                     xout[i] = var(xin[index_list[i]])
                 end
             end
@@ -119,15 +123,16 @@ function sum_by_index(xout, xin; index_list=time_to_index, skipMissing=skipMissi
     if !all(isnan, xin) || !all(ismissing, xin)
         for i in eachindex(index_list)
             if !all(isnan, xin[index_list[i]])
-                if skipMissing == true
+                if skipMissing == true && skipnan == false
                     xout[i] = sum(skipmissing(xin[index_list[i]]))
 
-                else
-                    xout[i] = sum(xin[index_list[i]])
-                end
-                if skipnan == true
+                elseif skipMissing == true && skipnan == true
+                    xout[i] = sum(skipmissing(filter(!isnan, xin[index_list[i]])))
+
+                elseif skipMissing == false && skipnan == true
                     xout[i] = sum(filter(!isnan, xin[index_list[i]]))
-                else
+
+                elseif skipMissing == false && skipnan == false
                     xout[i] = sum(xin[index_list[i]])
                 end
             end
@@ -143,16 +148,19 @@ function quant_by_index(xout, xin; index_list=time_to_index, p=p, skipMissing=sk
     if !all(isnan, xin) || !all(ismissing, xin)
         for i in eachindex(index_list)
             if !all(isnan, xin[index_list[i]])
-                if skipMissing == true
-                    xout[i] = quantile(skipmissing(xin[index_list[i]]), p=p)
-
-                else
-                    xout[i] = quantile(xin[index_list[i]], p=p)
-                end
-                if skipnan == true
-                    xout[i] = quantile(filter(!isnan, xin[index_list[i]]), p=p)
-                else
-                    xout[i] = quantile(xin[index_list[i]], p=p)
+                if !all(isnan, xin[index_list[i]])
+                    if skipMissing == true && skipnan == false
+                        xout[i] = quantile(skipmissing(xin[index_list[i]]), p = p)
+    
+                    elseif skipMissing == true && skipnan == true
+                        xout[i] = quantile(skipmissing(filter(!isnan, xin[index_list[i]])), p = p)
+    
+                    elseif skipMissing == false && skipnan == true
+                        xout[i] = quantile(filter(!isnan, xin[index_list[i]]), p = p)
+    
+                    elseif skipMissing == false && skipnan == false
+                        xout[i] = quantile(var(xin[index_list[i]]), p = p)
+                    end
                 end
             end
         end
