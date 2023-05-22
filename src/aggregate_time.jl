@@ -1,33 +1,5 @@
 using Dates, YAXArrays, Zarr, Statistics
 
-#=
-# The idea is to write a serie of functions to aggregate data at different temporal resolutions
-
-# It will cover
-
-
-- [ ] daily agreggation (based on hourly data) 
-
-- [ ] X daily agreggation (where X is a positive integer)
-
-- [ ] Weekly
-
-- [ ] X weekly aggregation (where X is a positive integer)
-
-- [ ] Montlhy
-
-- [ ] X Monthly aggregation (where X is a positive integer)
-
-- [ ] Yearly aggregation
-
-- [ ] X Yearly (where X is a positive integer)
-
-- For each one of the functions the user will be able to define the function to be used. e.g. mean, median, sd, own...
-
-It should include skip missing and skip NaN
-
-=#
-
 function dates_builder_month(x)
     out = DateTime[]
     for i in eachindex(x)
