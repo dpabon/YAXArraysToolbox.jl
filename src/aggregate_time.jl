@@ -180,7 +180,7 @@ end
 ## Examples
 
 """
-function aggregate_time_proc(cube_in; time_axis="time", new_resolution="month", new_time_step=1, fun="median", p=Nothing, skipMissing=true, skipnan=true, showprog=true, max_cache="100MB")
+function aggregate_time(cube_in; time_axis="time", new_resolution="month", new_time_step=1, fun="median", p=Nothing, skipMissing=true, skipnan=true, showprog=true, max_cache="100MB")
 
     if last(max_cache, 2) == "MB"
         max_cache = parse(Float64, max_cache[begin:end-2]) / (10^-6)
