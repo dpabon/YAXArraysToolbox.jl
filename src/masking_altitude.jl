@@ -6,17 +6,17 @@ function altitude_mask_results(cube_out, cube_in; center_coord)
 
     cube_out .= NaN
 
-    if(any(!isnan, cube_in))
+    if (any(!isnan, cube_in))
 
         # v1
-        cube_out[1] = mean(filter(!isnan, vec(cube_in[2,:,:])))
+        cube_out[1] = mean(filter(!isnan, vec(cube_in[2, :, :])))
 
         # v2
-        cube_out[2] = abs(cube_in[1,center_coord, center_coord] -  mean(filter(!isnan, vec(cube_in[1,:,:]))))
+        cube_out[2] = abs(cube_in[1, center_coord, center_coord] - mean(filter(!isnan, vec(cube_in[1, :, :]))))
 
         # v3
-        cube_out[3] = abs(cube_in[2,center_coord, center_coord] - mean(filter(!isnan, vec(cube_in[2,:,:]))))
-    end    
+        cube_out[3] = abs(cube_in[2, center_coord, center_coord] - mean(filter(!isnan, vec(cube_in[2, :, :]))))
+    end
 end
 
 
@@ -54,31 +54,31 @@ High values of ``v_{1}`` indicate hilly terrain over the considered scale, which
 ## Bibliography:
 - Duveiller, G., Hooker, J., & Cescatti, A. (2018). A dataset mapping the potential biophysical effects of vegetation cover change. Scientific Data, 5(1), Article 1. [https://doi.org/10.1038/sdata.2018.14](https://doi.org/10.1038/sdata.2018.14)
 
-""" 
-function altitude_mask_results_proc(cube_in_altitude; lon_axis_name = "lon", lat_axis_name = "lat", variable_name = "Variable", winsize = 5, showprog = true)
+"""
+function altitude_mask_results_proc(cube_in_altitude; lon_axis_name="lon", lat_axis_name="lat", variable_name="Variable", winsize=5, showprog=true)
 
-     # Checking that winsize is odd
-    
-     if isodd(winsize)
+    # Checking that winsize is odd
+
+    if isodd(winsize)
         pre_step = after_step = floor(winsize / 2)
     else
-        pre_step = after_step = floor(winsize / 2) -1
-        
+        pre_step = after_step = floor(winsize / 2) - 1
+
         @warn "Window size is not odd. Going on however... windowsize = $(winsize - 1)"
     end
 
-    center_coord = Int(pre_step+1)
+    center_coord = Int(pre_step + 1)
 
-    indims_altitude = InDims(variable_name, MovingWindow(lon_axis_name, pre_step,after_step),
-    MovingWindow(lat_axis_name, pre_step, after_step),
-    window_oob_value=NaN)
+    indims_altitude = InDims(variable_name, MovingWindow(lon_axis_name, pre_step, after_step),
+        MovingWindow(lat_axis_name, pre_step, after_step),
+        window_oob_value=NaN)
 
     outdims_altitude = OutDims(CategoricalAxis("Indicators", ["v1", "v2", "v3"]))
 
-    result_cube = mapCube(altitude_mask_results, cube_in_altitude, indims = indims_altitude, outdims = outdims_altitude, showprog = showprog; center_coord = center_coord)
+    result_cube = mapCube(altitude_mask_results, cube_in_altitude, indims=indims_altitude, outdims=outdims_altitude, showprog=showprog; center_coord=center_coord)
 
-    return(result_cube)
-    
+    return (result_cube)
+
 end
 
 
@@ -90,7 +90,7 @@ function altitude_masking(cube_out, cube_altitude, cube_to_mask; v1_thr, v2_thr,
     if any(!isnan, cube_altitude)
         if cube_altitude[1] >= v1_thr && cube_altitude[2] >= v2_thr && cube_altitude[3] >= v3_thr
             if length(cube_to_mask) == 1
-                cube_out[ ] = NaN
+                cube_out[] = NaN
             else
                 cube_out .= NaN
             end
@@ -149,27 +149,27 @@ High values of ``v_{1}`` indicate hilly terrain over the considered scale, which
 
 
 """
-function altitude_masking_proc(cube_in_to_mask, cube_in_altitude; lon_axis_name = "lon", lat_axis_name = "lat", variable_name = "Variable", time_axis_name = nothing, winsize = 5, v1_thr = 50, v2_thr = 100, v3_thr = 100, showprog = true)
+function altitude_masking_proc(cube_in_to_mask, cube_in_altitude; lon_axis_name="lon", lat_axis_name="lat", variable_name="Variable", time_axis_name=nothing, winsize=5, v1_thr=50, v2_thr=100, v3_thr=100, showprog=true)
 
     # Checking that winsize is odd
-    
+
     if isodd(winsize)
         pre_step = after_step = floor(winsize / 2)
     else
-        pre_step = after_step = floor(winsize / 2) -1
-        
+        pre_step = after_step = floor(winsize / 2) - 1
+
         @warn "Window size is not odd. Going on however... windowsize = $(winsize - 1)"
     end
 
-    center_coord = Int(pre_step+1)
+    center_coord = Int(pre_step + 1)
 
-    indims_altitude = InDims(variable_name, MovingWindow(lon_axis_name, pre_step,after_step),
-    MovingWindow(lat_axis_name, pre_step, after_step),
-    window_oob_value=NaN)
+    indims_altitude = InDims(variable_name, MovingWindow(lon_axis_name, pre_step, after_step),
+        MovingWindow(lat_axis_name, pre_step, after_step),
+        window_oob_value=NaN)
 
     outdims_altitude = OutDims(CategoricalAxis("Indicators", ["v1", "v2", "v3"]))
 
-    result_cube = mapCube(altitude_mask_results, cube_in_altitude, indims = indims_altitude, outdims = outdims_altitude, showprog = showprog; center_coord = center_coord)
+    result_cube = mapCube(altitude_mask_results, cube_in_altitude, indims=indims_altitude, outdims=outdims_altitude, showprog=showprog; center_coord=center_coord)
 
     indims_altitude_results = InDims("Indicators")
 
@@ -178,14 +178,14 @@ function altitude_masking_proc(cube_in_to_mask, cube_in_altitude; lon_axis_name 
         indims_to_mask = InDims()
         outdims_to_mask = OutDims()
 
-        result = mapCube(altitude_masking, (result_cube, cube_in_to_mask), indims = (indims_altitude_results, indims_to_mask), outdims = outdims_to_mask, showprog = showprog; v1_thr = v1_thr, v2_thr = v2_thr, v3_thr = v3_thr)
+        result = mapCube(altitude_masking, (result_cube, cube_in_to_mask), indims=(indims_altitude_results, indims_to_mask), outdims=outdims_to_mask, showprog=showprog; v1_thr=v1_thr, v2_thr=v2_thr, v3_thr=v3_thr)
 
 
     else
         indims_to_mask = InDims(time_axis_name)
         outdims_to_mask = OutDims(time_axis_name)
 
-        result = mapCube(altitude_masking, (result_cube, cube_in_to_mask), indims = (indims_altitude_results, indims_to_mask), outdims = outdims_to_mask, showprog = showprog; v1_thr = v1_thr, v2_thr = v2_thr, v3_thr = v3_thr)
+        result = mapCube(altitude_masking, (result_cube, cube_in_to_mask), indims=(indims_altitude_results, indims_to_mask), outdims=outdims_to_mask, showprog=showprog; v1_thr=v1_thr, v2_thr=v2_thr, v3_thr=v3_thr)
 
     end
 
@@ -197,14 +197,14 @@ function altitude_masking_proc(cube_in_to_mask, cube_in_altitude; lon_axis_name 
         cube_out .= false
         if any(!isnan, cube_in)
             if cube_in[1] >= v1_thr && cube_in[2] >= v2_thr && cube_in[3] >= v3_thr
-                cube_out[ ] = true
+                cube_out[] = true
             end
         end
     end
 
-    result2 = mapCube(local_fun, result_cube, indims = indims_altitude_results, outdims = masked_pixels_outdims, showprog = showprog; v1_thr = v1_thr, v2_thr = v2_thr, v3_thr = v3_thr)
+    result2 = mapCube(local_fun, result_cube, indims=indims_altitude_results, outdims=masked_pixels_outdims, showprog=showprog; v1_thr=v1_thr, v2_thr=v2_thr, v3_thr=v3_thr)
 
-    return Dataset(; cube_masked = result, masked_pixels = result2)
+    return Dataset(; cube_masked=result, masked_pixels=result2)
 
 end
 
