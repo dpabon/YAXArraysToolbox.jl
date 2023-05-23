@@ -6,7 +6,7 @@
 [![Coverage](https://codecov.io/gh/dpabon/YAXArraysToolbox.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/dpabon/YAXArraysToolbox.jl)
 
 
-Yet Another Toolbox to analyze spatio-temporal data using [YAXArrays.jl](https://github.com/JuliaDataCubes/YAXArrays.jl)
+Yet Another Toolbox to analyze spatio-temporal data using [YAXArrays.jl](https://github.com/JuliaDataCubes/YAXArrays.jl). Because laziness is not only good when reading big data.
 
 
 ## Installation
