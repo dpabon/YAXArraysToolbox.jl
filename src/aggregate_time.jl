@@ -370,7 +370,7 @@ end
 - ```skipMissing```: Boolean. Skip missing values when aggregating the data. If all values are missing, NaN is returned
 - ```skipnan```: Boolean. Skip NaN values when aggregating the data. If all values are NaN, NaN is returned.
 - ```showprog```: Boolean. Progress Bar.
-- ```max_cache```: String. Maximum cache to read the data. It needs to be expressed in MB e.g. "100MB" or in GB "10GB"
+- ```max_cache```: String. Maximum cache to read the data. It must be in MB e.g. "100MB" or in GB "10GB"
 
 ## Examples
 
