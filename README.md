@@ -48,7 +48,7 @@ We're more than happy to receive contributions! Feel free to open pull requests.
 
 ## License
 
-[MIT License](https://github.com/dpabon/YAXArraysToolbox.jl/blob/main/LICENSE)
+[GPL-3](https://github.com/dpabon/YAXArraysToolbox.jl/blob/main/LICENSE)
 
 
 ## Acknowledgements
