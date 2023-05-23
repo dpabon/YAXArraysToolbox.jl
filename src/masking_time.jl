@@ -29,7 +29,12 @@ function masking_time_rela_1(cube_out, cube_in, cube_mask; val=val)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(>=(val), cube_mask)) > 0
-        cube_out[findall(>=(val), cube_mask)] .= NaN
+        if length(findall(>=(val), cube_mask)) > 1
+            cube_out[findall(>=(val), cube_mask)] .= NaN
+        else
+            cube_out[findall(>=(val), cube_mask)] = NaN
+        end
+        
     end
 end
 
@@ -40,7 +45,13 @@ function masking_time_rela_2(cube_out, cube_in, cube_mask; val=val)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(>(val), cube_mask)) > 0
-        cube_out[findall(>(val), cube_mask)] .= NaN
+        if length(findall(>(val), cube_mask)) > 1
+            cube_out[findall(>(val), cube_mask)] .= NaN
+        else
+            cube_out[findall(>(val), cube_mask)] = NaN
+        end
+
+        
     end
 end
 
@@ -51,28 +62,57 @@ function masking_time_rela_3(cube_out, cube_in, cube_mask; val=val)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(<=(val), cube_mask)) > 0
-        cube_out[findall(<=(val), cube_mask)] .= NaN
+        if length(findall(<=(val), cube_mask)) > 1
+            cube_out[findall(<=(val), cube_mask)] .= NaN
+        else
+            cube_out[findall(<=(val), cube_mask)] = NaN
+        end
+        
     end
 end
 
-function masking_time_rela_3(cube_out, cube_in, cube_mask; val=val)
+function masking_time_rela_4(cube_out, cube_in, cube_mask; val=val)
     cube_out .= cube_in
     if any(ismissing, cube_out)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(<(val), cube_mask)) > 0
-        cube_out[findall(<(val), cube_mask)] .= NaN
+        if length(findall(<(val), cube_mask)) > 1
+            cube_out[findall(<(val), cube_mask)] .= NaN
+        else
+            cube_out[findall(<(val), cube_mask)] = NaN
+        end
     end
 end
 
 
-function masking_time_rela_3(cube_out, cube_in, cube_mask; val=val)
+function masking_time_rela_5(cube_out, cube_in, cube_mask; val=val)
     cube_out .= cube_in
     if any(ismissing, cube_out)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(>=(val), cube_mask)) > 0
-        cube_out[findall(>=(val), cube_mask)] .= NaN
+        if length(findall(>=(val), cube_mask)) > 1
+            cube_out[findall(>=(val), cube_mask)] .= NaN
+        else
+            cube_out[findall(>=(val), cube_mask)] = NaN
+        end
+    end
+end
+
+function masking_time_rela_1_quant(cube_out, cube_in; p = p)
+    cube_out .= cube_in
+    if any(ismissing, cube_out)
+        replace!(cube_out, missing => NaN)
+    end
+    if !all(isnan, cube_out)
+        if length(findall(>=(quantile(filter(!isnan,cube_out), p)), cube_out)) > 0
+            if length(findall(>=(quantile(filter(!isnan,cube_out), p)), cube_out)) > 1
+
+                cube_out[findall(>=(quantile(filter(!isnan,cube_out), p)), cube_out)] .= NaN
+            else
+                cube_out[findall(>=(quantile(filter(!isnan,cube_out), p)), cube_out)] = NaN
+        end
     end
 end
 
@@ -105,7 +145,7 @@ function masking_time(cube_in; time_axis="time", var_axis="Variable", var_mask="
         error("only MB or GB values are accepted for max_cache")
     end
 
-    if typeof(var_mask) != Nothing && typeof(p) != Nothing
+    if typeof(var_mask) == String && typeof(p) == Nothing && typeof(val) != Nothing
 
         # In this case one variable is used to mask the others. e.g. Mask the values of all the variables presented in the cube where radiation is lower than X.
 
@@ -113,22 +153,41 @@ function masking_time(cube_in; time_axis="time", var_axis="Variable", var_mask="
 
         cube_mask = getindex(cube_in; kwarg...)
 
-        return mapCube()
-        [">=", ">", "<=", "<", "=="]
+        indims = (InDims(time_axis), InDims(time_axis))
+
+        outdims = OutDims()
 
         if rela == ">="
+            return mapCube(masking_time_rela_1, (cube_in, cube_mask), indims=indims, outdims=outdims; val=val, showprog=showprog, max_cache=max_cache)
 
         elseif rela == ">"
+            return mapCube(masking_time_rela_2, (cube_in, cube_mask), indims=indims, outdims=outdims; val=val, showprog=showprog, max_cache=max_cache)
 
         elseif rela == "<="
+            return mapCube(masking_time_rela_3, (cube_in, cube_mask), indims=indims, outdims=outdims; val=val, showprog=showprog, max_cache=max_cache)
 
         elseif rela == "<"
+            return mapCube(masking_time_rela_4, (cube_in, cube_mask), indims=indims, outdims=outdims; val=val, showprog=showprog, max_cache=max_cache)
 
         elseif rela == "=="
+            return mapCube(masking_time_rela_5, (cube_in, cube_mask), indims=indims, outdims=outdims; val=val, showprog=showprog, max_cache=max_cache)
 
         else
             error("incorrect 'rela' value. 'rela' can be '>=', '>', '<=', '<', '=='")
         end
+
+    elseif typeof(var_mask) == Nothing && typeof(p) != Nothing && typeof(val) == Nothing
+
+        # in this case the mask is applied based on the quantile value (p) of the time series for each one of the variables in the cube.
+
+        indims = InDims(time_axis)
+
+        outdims = OutDims()
+
+
+
+
+
 
     end
 
