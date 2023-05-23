@@ -19,154 +19,341 @@ function dates_builder_day(x)
 end
 
 
+### median ###
 
-function median_by_index(xout, xin; index_list=time_to_index, skipMissing=skipMissing, skipnan=skipnan)
+function median_by_index_1(xout, xin; index_list=time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) !all(ismissing, xin)
+    if !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, xin[index_list[i]])
-                if skipMissing == true && skipnan == false
-                    xout[i] = median(skipmissing(xin[index_list[i]]))
-
-                elseif skipMissing == true && skipnan == true
-                    xout[i] = median(skipmissing(filter(!isnan, xin[index_list[i]])))
-
-                elseif skipMissing == false && skipnan == true
-                    xout[i] = median(filter(!isnan, xin[index_list[i]]))
-
-                elseif skipMissing == false && skipnan == false
-                    xout[i] = median(xin[index_list[i]])
-                end
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = median(skipmissing(view(xin, index_list[i])))
             end
         end
     end
 end
 
-function mean_by_index(xout, xin; index_list=time_to_index, skipMissing=skipMissing, skipnan=skipnan)
+function median_by_index_2(xout, xin; index_list=time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
     if !all(isnan, xin) || !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, xin[index_list[i]])
-                if skipMissing == true && skipnan == false
-                    xout[i] = mean(skipmissing(xin[index_list[i]]))
-
-                elseif skipMissing == true && skipnan == true
-                    xout[i] = mean(skipmissing(filter(!isnan, xin[index_list[i]])))
-
-                elseif skipMissing == false && skipnan == true
-                    xout[i] = mean(filter(!isnan, xin[index_list[i]]))
-
-                elseif skipMissing == false && skipnan == false
-                    xout[i] = mean(xin[index_list[i]])
-                end
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = median(skipmissing(filter(!isnan, view(xin, index_list[i]))))
             end
         end
     end
 end
 
-function std_by_index(xout, xin; index_list=time_to_index, skipMissing=skipMissing, skipnan=skipnan)
+function median_by_index_3(xout, xin; index_list=time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
     if !all(isnan, xin) || !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, xin[index_list[i]])
-                if skipMissing == true && skipnan == false
-                    xout[i] = std(skipmissing(xin[index_list[i]]))
-
-                elseif skipMissing == true && skipnan == true
-                    xout[i] = std(skipmissing(filter(!isnan, xin[index_list[i]])))
-
-                elseif skipMissing == false && skipnan == true
-                    xout[i] = std(filter(!isnan, xin[index_list[i]]))
-
-                elseif skipMissing == false && skipnan == false
-                    xout[i] = std(xin[index_list[i]])
-                end
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = median(filter(!isnan, view(xin, index_list[i])))
             end
         end
     end
 end
 
-function var_by_index(xout, xin; index_list=time_to_index, skipMissing=skipMissing, skipnan=skipnan)
+function median_by_index_4(xout, xin; index_list=time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
     if !all(isnan, xin) || !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, xin[index_list[i]])
-                if skipMissing == true && skipnan == false
-                    xout[i] = var(skipmissing(xin[index_list[i]]))
-
-                elseif skipMissing == true && skipnan == true
-                    xout[i] = var(skipmissing(filter(!isnan, xin[index_list[i]])))
-
-                elseif skipMissing == false && skipnan == true
-                    xout[i] = var(filter(!isnan, xin[index_list[i]]))
-
-                elseif skipMissing == false && skipnan == false
-                    xout[i] = var(xin[index_list[i]])
-                end
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = median(view(xin, index_list[i]))
             end
         end
     end
 end
 
-function sum_by_index(xout, xin; index_list=time_to_index, skipMissing=skipMissing, skipnan=skipnan)
+###################################################################
+
+#### mean ####
+
+function mean_by_index_1(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = mean(skipmissing(view(xin, index_list[i])))
+            end
+        end
+    end
+end
+
+function mean_by_index_2(xout, xin; index_list=time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
     if !all(isnan, xin) || !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, xin[index_list[i]])
-                if skipMissing == true && skipnan == false
-                    xout[i] = sum(skipmissing(xin[index_list[i]]))
-
-                elseif skipMissing == true && skipnan == true
-                    xout[i] = sum(skipmissing(filter(!isnan, xin[index_list[i]])))
-
-                elseif skipMissing == false && skipnan == true
-                    xout[i] = sum(filter(!isnan, xin[index_list[i]]))
-
-                elseif skipMissing == false && skipnan == false
-                    xout[i] = sum(xin[index_list[i]])
-                end
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = mean(skipmissing(filter(!isnan, view(xin, index_list[i]))))
             end
         end
     end
 end
 
-
-function quant_by_index(xout, xin; index_list=time_to_index, p=p, skipMissing=skipMissing, skipnan=skipnan)
+function mean_by_index_3(xout, xin; index_list=time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
     if !all(isnan, xin) || !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, xin[index_list[i]])
-                if !all(isnan, xin[index_list[i]])
-                    if skipMissing == true && skipnan == false
-                        xout[i] = quantile(skipmissing(xin[index_list[i]]), p = p)
-    
-                    elseif skipMissing == true && skipnan == true
-                        xout[i] = quantile(skipmissing(filter(!isnan, xin[index_list[i]])), p = p)
-    
-                    elseif skipMissing == false && skipnan == true
-                        xout[i] = quantile(filter(!isnan, xin[index_list[i]]), p = p)
-    
-                    elseif skipMissing == false && skipnan == false
-                        xout[i] = quantile(var(xin[index_list[i]]), p = p)
-                    end
-                end
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = mean(filter(!isnan, view(xin, index_list[i])))
             end
         end
     end
 end
 
+function mean_by_index_4(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = mean(view(xin, index_list[i]))
+            end
+        end
+    end
+end
+
+###############################################################
+
+#### std ####
+
+function std_by_index_1(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = std(skipmissing(view(xin, index_list[i])))
+            end
+        end
+    end
+end
+
+function std_by_index_2(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = std(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+            end
+        end
+    end
+end
+
+function std_by_index_3(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = std(filter(!isnan, view(xin, index_list[i])))
+            end
+        end
+    end
+end
+
+function std_by_index_4(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = std(view(xin, index_list[i]))
+            end
+        end
+    end
+end
+
+###################################################################################################
+
+#### variance ####
+
+function var_by_index_1(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = var(skipmissing(view(xin, index_list[i])))
+            end
+        end
+    end
+end
+
+function var_by_index_2(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = var(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+            end
+        end
+    end
+end
+
+function var_by_index_3(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = var(filter(!isnan, view(xin, index_list[i])))
+            end
+        end
+    end
+end
+
+function var_by_index_4(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = var(view(xin, index_list[i]))
+            end
+        end
+    end
+end
+
+####################################################################################################
+
+#### sum ####
+
+function sum_by_index_1(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = sum(skipmissing(view(xin, index_list[i])))
+            end
+        end
+    end
+end
+
+function sum_by_index_2(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = sum(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+            end
+        end
+    end
+end
+
+function sum_by_index_3(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = sum(filter(!isnan, view(xin, index_list[i])))
+            end
+        end
+    end
+end
+
+function sum_by_index_4(xout, xin; index_list=time_to_index)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = sum(view(xin, index_list[i]))
+            end
+        end
+    end
+end
+
+##########################################################################################################
+
+#### quantile ####
+
+function quant_by_index_1(xout, xin; index_list=time_to_index, p=p)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = quantile(skipmissing(view(xin, index_list[i])), p)
+            end
+        end
+    end
+end
+
+function quant_by_index_2(xout, xin; index_list=time_to_index, p=p)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = quantile(skipmissing(filter(!isnan, view(xin, index_list[i]))), p)
+            end
+        end
+    end
+end
+
+function quant_by_index_3(xout, xin; index_list=time_to_index, p=p)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = quantile(filter(!isnan, view(xin, index_list[i])), p)
+            end
+        end
+    end
+end
+
+function quant_by_index_4(xout, xin; index_list=time_to_index, p=p)
+    #@show size(xin)
+    #@show typeof(xin)
+    xout .= NaN
+    if !all(isnan, xin) || !all(ismissing, xin)
+        for i in eachindex(index_list)
+            if !all(isnan, view(xin, index_list[i])) || !all(ismissing, view(xin, index_list[i]))
+                xout[i] = quantile(view(xin, index_list[i]), p)
+            end
+        end
+    end
+end
+
+###############################################################################################################
 
 @doc raw"""
 
@@ -178,10 +365,10 @@ end
 - ```time_axis_name```: String. Name of the time axis
 - ```new_resolution```: String. New temporal resolution can be ```"day"```, ```"month"```, ```"year"```.
 - ```new_time_step```: Int64. Time step to be computed in the new time series. e.g. ```new_resolution="day", new_time_step=8``` will compute the function each 8 days. The new time dimenssion will only contain the days corresponding to the 8th day.
-- ```fun```: String. Function to be applied to aggregate the time. It can be "median", "mean", "std", "var", "sum", "quant".
+- ```fun```: String. Function to be applied to aggregate the time. It can be "median", "mean", "std", "var", "sum", "quant", "min", "max".
 - ```p```: Float64 on the interval [0,1]. If ```fun=quant``` p is the value of the quantile. 
-- ```skipMissing```: Boolean. Skip missing values when aggregating the data.
-- ```skipnan```: Boolean. Skip NaN values when aggregating the data
+- ```skipMissing```: Boolean. Skip missing values when aggregating the data. If all values are missing, NaN is returned
+- ```skipnan```: Boolean. Skip NaN values when aggregating the data. If all values are NaN, NaN is returned.
 - ```showprog```: Boolean. Progress Bar.
 - ```max_cache```: String. Maximum cache to read the data. It needs to be expressed in MB e.g. "100MB" or in GB "10GB"
 
@@ -262,27 +449,159 @@ function aggregate_time(cube_in; time_axis="time", new_resolution="month", new_t
 
     if fun == "median"
 
-        return mapCube(median_by_index, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, skipMissing=skipMissing, skipnan=skipnan, showprog=showprog, max_cache=max_cache)
+        if skipMissing == true && skipnan == false
+            return mapCube(median_by_index_1, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == true && skipnan == true
+
+            return mapCube(median_by_index_2, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == true
+            return mapCube(median_by_index_3, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == false
+
+            return mapCube(median_by_index_4, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        end
 
     elseif fun == "mean"
-        return mapCube(mean_by_index, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, skipMissing=skipMissing, skipnan=skipnan, showprog=showprog, max_cache=max_cache)
+
+        if skipMissing == true && skipnan == false
+            return mapCube(mean_by_index_1, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == true && skipnan == true
+
+            return mapCube(mean_by_index_2, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == true
+            return mapCube(mean_by_index_3, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == false
+
+            return mapCube(mean_by_index_4, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        end
 
     elseif fun == "std"
-        return mapCube(std_by_index, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, skipMissing=skipMissing, skipnan=skipnan, showprog=showprog, max_cache=max_cache)
+
+        if skipMissing == true && skipnan == false
+            return mapCube(std_by_index_1, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == true && skipnan == true
+
+            return mapCube(std_by_index_2, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == true
+            return mapCube(std_by_index_3, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == false
+
+            return mapCube(std_by_index_4, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        end
+
 
     elseif fun == "var"
 
-        return mapCube(var_by_index, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, skipMissing=skipMissing, skipnan=skipnan, showprog=showprog, max_cache=max_cache)
+        if skipMissing == true && skipnan == false
+            return mapCube(var_by_index_1, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == true && skipnan == true
+
+            return mapCube(var_by_index_2, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == true
+            return mapCube(var_by_index_3, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == false
+
+            return mapCube(var_by_index_4, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        end
 
     elseif fun == "sum"
 
-        return mapCube(sum_by_index, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, skipMissing=skipMissing, skipnan=skipnan, showprog=showprog, max_cache=max_cache)
+        if skipMissing == true && skipnan == false
+
+            return mapCube(sum_by_index_1, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == true && skipnan == true
+
+            return mapCube(sum_by_index_2, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == true
+            return mapCube(sum_by_index_3, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == false
+
+            return mapCube(sum_by_index_4, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        end
 
     elseif fun == "quant"
 
-        return mapCube(quant_by_index, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, p=p, skipMissing=skipMissing, skipnan=skipnan, showprog=showprog, max_cache=max_cache)
-    end
+        if skipMissing == true && skipnan == false
+            return mapCube(quant_by_index_1, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, p=p, showprog=showprog, max_cache=max_cache)
 
+        elseif skipMissing == true && skipnan == true
+
+            return mapCube(quant_by_index_2, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, p=p, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == true
+            return mapCube(quant_by_index_3, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, p=p, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == false
+
+            return mapCube(quant_by_index_4, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, p=p, showprog=showprog, max_cache=max_cache)
+
+        end
+
+    elseif fun == "max"
+
+        if skipMissing == true && skipnan == false
+
+            return mapCube(max_by_index_1, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == true && skipnan == true
+
+            return mapCube(max_by_index_2, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == true
+
+            return mapCube(max_by_index_3, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == false
+
+            return mapCube(max_by_index_4, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        end
+
+
+    elseif fun == "min"
+
+        if skipMissing == true && skipnan == false
+
+            return mapCube(min_by_index_1, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == true && skipnan == true
+
+            return mapCube(min_by_index_2, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == true
+
+            return mapCube(min_by_index_3, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        elseif skipMissing == false && skipnan == false
+
+            return mapCube(min_by_index_4, cube_in, indims=indims, outdims=outdims; index_list=index_in_cube, showprog=showprog, max_cache=max_cache)
+
+        end
+
+    else
+        error("$fun is not a valid argument for 'fun' try with: 'median', 'mean', 'std', 'var', 'sum', 'quant', 'min', or 'max'")
+
+    end
 
 end
 
