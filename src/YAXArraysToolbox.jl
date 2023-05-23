@@ -7,8 +7,6 @@ include("aggregate_time.jl")
 
 export aggregate_time
 
-export median_by_index
-export dates_builder
 # Space4time
 
 include("space4time.jl")
