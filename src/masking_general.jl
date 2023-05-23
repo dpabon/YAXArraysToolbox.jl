@@ -6,80 +6,80 @@ using YAXArrays, StatsBase
 function masking_stats(cube_out, cube_in_to_mask, cube_summary_stats; rsquared_thr)
     cube_out .= NaN
     for i in eachindex(cube_in_to_mask)
-        
-        if cube_summary_stats[i] < rsquared_thr 
-            
+
+        if cube_summary_stats[i] < rsquared_thr
+
             cube_out[i] = NaN
 
         else
             cube_out[i] = cube_in_to_mask[i]
 
         end
-        
+
     end
 end
 
 function masking_co_occurrence(cube_out, cube_in_to_mask, cube_co_occurence; co_occurence_thr)
-    
+
     cube_out .= NaN
-    
+
     for i in eachindex(cube_in_to_mask)
-        
+
         if cube_co_occurence[i] < co_occurence_thr
-            
+
             cube_out[i] = NaN
-            
+
         else
-            
+
             cube_out[i] .= cube_in_to_mask[i]
-            
+
         end
-        
+
     end
-    
+
 end
 
 
 function masking_delta(cube_out, cube_in_to_mask, cube_delta; minmax)
-    
+
     cube_out .= cube_in_to_mask
-    
-    if typeof(minmax) == Tuple{Float64, Float64} || typeof(minmax) == Tuple{Int64, Int64}
+
+    if typeof(minmax) == Tuple{Float64,Float64} || typeof(minmax) == Tuple{Int64,Int64}
         if any(!isnan, cube_in_to_mask)
-            
+
             for i in eachindex(cube_in_to_mask)
-                
+
                 if cube_delta[i] < minmax[1] || cube_delta[i] > minmax[2]
-                    
-                    cube_out[i] = NaN 
+
+                    cube_out[i] = NaN
                 end
             end
         end
 
-    elseif typeof(minmax) == Tuple{Float64, Nothing} || typeof(minmax) == Tuple{Int64, Nothing}
+    elseif typeof(minmax) == Tuple{Float64,Nothing} || typeof(minmax) == Tuple{Int64,Nothing}
         if any(!isnan, cube_in_to_mask)
-        
-            for i in eachindex(cube_in_to_mask)
-                
-                if cube_delta[i] < minmax[1]
-                    
-                    cube_out[i] = NaN 
-                end
-            end
-        end 
 
-    elseif typeof(minmax) == Tuple{Nothing, Float64} || typeof(minmax) == Tuple{Nothing, Int64}
-        if any(!isnan, cube_in_to_mask)
-        
             for i in eachindex(cube_in_to_mask)
-                
-                if cube_delta[i] > minmax[2]
-                    
-                    cube_out[i] = NaN 
+
+                if cube_delta[i] < minmax[1]
+
+                    cube_out[i] = NaN
                 end
             end
-        end 
-    end 
+        end
+
+    elseif typeof(minmax) == Tuple{Nothing,Float64} || typeof(minmax) == Tuple{Nothing,Int64}
+        if any(!isnan, cube_in_to_mask)
+
+            for i in eachindex(cube_in_to_mask)
+
+                if cube_delta[i] > minmax[2]
+
+                    cube_out[i] = NaN
+                end
+            end
+        end
+    end
 end
 
 
@@ -111,39 +111,39 @@ end
 - YAXArray cube masked.
 
 """
-function masking_proc(cube_in_to_mask::YAXArray; cube_rsquared = nothing, rsquared_thr = nothing, cube_co_occurrence = nothing, co_occurence_thr = nothing, cube_delta = nothing, minmax_delta = nothing, time_dim = "time", showprog = true)
-    
+function masking_proc(cube_in_to_mask::YAXArray; cube_rsquared=nothing, rsquared_thr=nothing, cube_co_occurrence=nothing, co_occurence_thr=nothing, cube_delta=nothing, minmax_delta=nothing, time_dim="time", showprog=true)
+
     if !isnothing(time_dim)
-        
+
         indims = (InDims(time_dim), InDims(time_dim))
         outdims = OutDims(time_dim)
-        
+
     else
         indims = (InDims(), InDims())
         outdims = OutDims()
     end
-    
-    if !isnothing(cube_rsquared) 
-        results_int = mapCube(masking_stats, (cube_in_to_mask, cube_rsquared), indims = indims, outdims = outdims, showprog = showprog; rsquared_thr = rsquared_thr)
+
+    if !isnothing(cube_rsquared)
+        results_int = mapCube(masking_stats, (cube_in_to_mask, cube_rsquared), indims=indims, outdims=outdims, showprog=showprog; rsquared_thr=rsquared_thr)
     end
-    
+
     if !isnothing(cube_co_occurrence)
         if @isdefined results
-            results_int = mapCube(masking_co_occurrence, (results_int, cube_co_occurrence), indims = indims, outdims = outdims, showprog = showprog; co_occurence_thr = co_occurence_thr)
+            results_int = mapCube(masking_co_occurrence, (results_int, cube_co_occurrence), indims=indims, outdims=outdims, showprog=showprog; co_occurence_thr=co_occurence_thr)
         else
-            results_int = mapCube(masking_co_occurrence, (cube_in_to_mask, cube_co_occurrence), indims = indims, outdims = outdims, showprog = showprog; co_occurence_thr = co_occurence_thr)
+            results_int = mapCube(masking_co_occurrence, (cube_in_to_mask, cube_co_occurrence), indims=indims, outdims=outdims, showprog=showprog; co_occurence_thr=co_occurence_thr)
         end
     end
-    
+
     if !isnothing(cube_delta)
         if @isdefined results
-            results_int = mapCube(masking_delta, (results_int, cube_delta), indims = indims, outdims = outdims, showprog = showprog; minmax = minmax_delta)
+            results_int = mapCube(masking_delta, (results_int, cube_delta), indims=indims, outdims=outdims, showprog=showprog; minmax=minmax_delta)
         else
-            results_int = mapCube(masking_delta, (cube_in_to_mask, cube_delta), indims = indims, outdims = outdims, showprog = showprog; minmax = minmax_delta)
+            results_int = mapCube(masking_delta, (cube_in_to_mask, cube_delta), indims=indims, outdims=outdims, showprog=showprog; minmax=minmax_delta)
         end
     end
-    
-    
+
+
     return results_int
 end
 
