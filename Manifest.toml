@@ -2,7 +2,7 @@
 
 julia_version = "1.9.0"
 manifest_format = "2.0"
-project_hash = "0ec76f7dccaa8ccc72a94e7ba6b8add34a3c5f0c"
+project_hash = "ee162e108659a3d883466969ead710052ec9f512"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -1995,6 +1995,12 @@ deps = ["IndexFunArrays", "NDTools", "Random", "Test"]
 git-tree-sha1 = "1e11d4c2bb20c32e12251c88f4d388ab346aa28d"
 uuid = "ab21d65a-3167-428d-8ea2-d01236aa30f2"
 version = "0.2.3"
+
+[[deps.TimeSeries]]
+deps = ["Dates", "DelimitedFiles", "DocStringExtensions", "RecipesBase", "Reexport", "Statistics", "Tables"]
+git-tree-sha1 = "8b9288d84da88ea44693ca8cf9c236da1778f274"
+uuid = "9e3dc215-6440-5c97-bce1-76c03772f85e"
+version = "0.23.2"
 
 [[deps.Tokenize]]
 git-tree-sha1 = "90538bf898832b6ebd900fa40f223e695970e3a5"
