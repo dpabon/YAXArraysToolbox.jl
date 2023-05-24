@@ -388,13 +388,13 @@ end
 - ```cube_in``` YAXArray Cube.
 - ```time_axis```: String. Name of the time axis.
 - ```new_resolution```: String. New temporal resolution can be ```"day"```, ```"month"```, ```"year"```.
-- ```new_time_step```: Int64. Time step to be computed in the new time series. e.g. ```new_resolution="day", new_time_step=8``` will compute the function each 8 days. The new time dimenssion will only contain the days corresponding to the 8th day.
+- ```new_time_step```: Int64. Time step to be computed in the new time series. e.g. ```new_resolution="day", new_time_step=8``` will compute the function each 8 days. The new time dimension will only contain the days corresponding to the 8th day.
 - ```fun```: String. Function to be applied to aggregate the time. It can be "median", "mean", "std", "var", "sum", "quant", "min", "max".
 - ```p```: Float64 in the interval [0,1]. If ```fun=quant``` p is the value of the quantile. 
-- ```skipMissing```: Boolean. Skip missing values when aggregating the data. If all values are missing, NaN is returned
+- ```skipMissing```: Boolean. Skip missing values when aggregating the data. If all values are missing, NaN is returned.
 - ```skipnan```: Boolean. Skip NaN values when aggregating the data. If all values are NaN, NaN is returned.
 - ```showprog```: Boolean. Progress Bar.
-- ```max_cache```: String. Maximum cache to read the data. It must be in MB e.g. "100MB" or in GB "10GB"
+- ```max_cache```: String. Maximum cache to read the data. It must be in MB e.g. "100MB" or in GB "10GB".
 
 ## Examples
 
