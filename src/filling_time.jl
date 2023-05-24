@@ -5,8 +5,8 @@ function filling_time(xout, xin)
     if !all(ismissing, xin)
         for i in eachindex(xin)
             if !ismissing(xin[i])
-                xout[:,i] .= xin[i]
+                xout[:, i] .= xin[i]
             end
         end
-    end    
-end 
+    end
+end

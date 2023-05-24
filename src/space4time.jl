@@ -1,11 +1,11 @@
 
-function empty_model(npred=3, nsample=100)
+function empty_model(npred = 3, nsample = 100)
     resp = GLM.LmResp(randn(nsample), similar(1:nsample, 0))
     chol = GLM.cholpred([ones(nsample) rand(nsample, npred)])
     GLM.LinearModel(resp, chol)
 end
 
-function reset_model!(model; X=nothing, y=nothing)
+function reset_model!(model; X = nothing, y = nothing)
 
     model.rr.mu .= 0.0
 
@@ -32,7 +32,7 @@ end
 
 
 function fit_with_data!(model, X, y)
-    reset_model!(model, X=X, y=y)
+    reset_model!(model, X = X, y = y)
     fit!(model)
 end
 
@@ -60,7 +60,10 @@ function coocufun(out, q1, q2, p1, p2, out_pmindist, denom)
         #@show typeof(vecq2)
         #@show size(vecq1) size(vecq2)
         #pmindist = minimum(([i - j for i in vecq1, j in p1]).^2 + ([i - j for i in vecq2, j in p2]).^2, dims = 1)
-        minimum!(out_pmindist, ([i - j for i in vecq1, j in p1]) .^ 2 + ([i - j for i in vecq2, j in p2]) .^ 2)
+        minimum!(
+            out_pmindist,
+            ([i - j for i in vecq1, j in p1]) .^ 2 + ([i - j for i in vecq2, j in p2]) .^ 2,
+        )
 
         out[1] = 1 - (sum(sqrt.(out_pmindist)) / denom)
 
@@ -99,10 +102,35 @@ Compute the space for time analysis for a given climate variable.
     
     
 """
-function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; empty_models,
+function s4time(
+    out_1,
+    out_2,
+    out_3,
+    clim_var_cube_in,
+    pfts_cube_in,
+    loopvars;
+    empty_models,
     pft_list::Vector{String},
     time_n::Int,
-    max_value::Int, p1_static, p2_static, sigma1_glob, prederr_glob, predres_glob, minDiffPxls, tran_check, half, localcomp_fix_glob, pftsvarmat_f_glob, winsize=5, transitions_n, pftstrans_comb_names, nc, out_pmindist_global, denom, minpxl)
+    max_value::Int,
+    p1_static,
+    p2_static,
+    sigma1_glob,
+    prederr_glob,
+    predres_glob,
+    minDiffPxls,
+    tran_check,
+    half,
+    localcomp_fix_glob,
+    pftsvarmat_f_glob,
+    winsize = 5,
+    transitions_n,
+    pftstrans_comb_names,
+    nc,
+    out_pmindist_global,
+    denom,
+    minpxl,
+)
     #println(size(clim_var_cube_in))
     #println(size(pfts_cube_in))
     #println(size(out_3))
@@ -149,9 +177,11 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
     climvarmat = reshape(clim_var_cube_in, ((winsize^2), time_n))
 
 
-    local_pft1 = [findall(pft_list .== pftstrans_comb_names[comp][1]) for comp in 1:transitions_n]
+    local_pft1 =
+        [findall(pft_list .== pftstrans_comb_names[comp][1]) for comp = 1:transitions_n]
     local_pft1 = reduce(vcat, local_pft1)
-    local_pft2 = [findall(pft_list .== pftstrans_comb_names[comp][2]) for comp in 1:transitions_n]
+    local_pft2 =
+        [findall(pft_list .== pftstrans_comb_names[comp][2]) for comp = 1:transitions_n]
     local_pft2 = reduce(vcat, local_pft2)
 
     #println("before if")
@@ -163,12 +193,13 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
 
     if time_n == 1
 
-        pfts_cube_in_1 = permutedims(reshape(pfts_cube_in_1, (winsize, winsize, nc, 1)), (4, 1, 2, 3))
+        pfts_cube_in_1 =
+            permutedims(reshape(pfts_cube_in_1, (winsize, winsize, nc, 1)), (4, 1, 2, 3))
 
     end
 
 
-    for it in 1:time_n
+    for it = 1:time_n
         # co-ocurrence estimation
         #println(it)
         #println(transitions_n)
@@ -179,7 +210,15 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
             #println(pfts_cube_in[it,:,:,local_pft1[comp]])
             #println(pfts_cube_in[it,:,:,local_pft2[comp]])
             # define the pfts to be processed
-            out_3[it, comp, 3] = coocufun([0.0], pfts_cube_in_1[it, :, :, local_pft1[comp]], pfts_cube_in_1[it, :, :, local_pft2[comp]], p1_static, p2_static, out_pmindist, denom)
+            out_3[it, comp, 3] = coocufun(
+                [0.0],
+                pfts_cube_in_1[it, :, :, local_pft1[comp]],
+                pfts_cube_in_1[it, :, :, local_pft2[comp]],
+                p1_static,
+                p2_static,
+                out_pmindist,
+                denom,
+            )
             #println("all good")
         end
 
@@ -210,19 +249,19 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
             # make sure compositions are really precisely right.
 
             #localcomp_fix = mapslices(x->1-sum(x), pftsvarmat, dims = 2)
-            localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims=1))
+            localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
             #map!(x->1-sum(x), localcomp_fix, eachslice(pftsvarmat, dims = 1))
             #println(size(localcomp_fix))
             #println(localcomp_fix)
             pftsvarmat_f = [pftsvarmat localcomp_fix]
 
-            map!((x) -> round(x, digits=4), pftsvarmat_f, pftsvarmat_f)
+            map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
 
             # some PFTs might not be present in the 5*5 window
             # these must be identified and removed, as they cannot be predicted
 
             #pftpres_check = vec(mapslices(sum, pftsvarmat, dims = 1) .> 0)
-            pftpres_check = vec(sum(pftsvarmat_f, dims=1) .> 0)
+            pftpres_check = vec(sum(pftsvarmat_f, dims = 1) .> 0)
 
             pftpres_check[nc+1] = 0
 
@@ -234,7 +273,7 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
 
             #uniquepixels_char = mapslices(x->string(x), pftsvarmat, dims = 2)
             #uniquepixels_char = string(eachrow(pftsvarmat))
-            uniquepixels_char = unique(eachslice(pftsvarmat_f, dims=1))
+            uniquepixels_char = unique(eachslice(pftsvarmat_f, dims = 1))
 
             uniquepixels = length(uniquepixels_char)
 
@@ -245,17 +284,17 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
                 # println("test")
                 # avoid divided by 0
                 #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
-                lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims=1))
+                lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
                 lc1 = reduce(vcat, lc1')
                 # centre the columns (to be in the centre wrt new space)
 
                 #lc2 = mapslices(x -> x .- mean(x), lc1, dims = 1)
-                lc2 = map(x -> x .- mean(x), eachslice(lc1, dims=2))
+                lc2 = map(x -> x .- mean(x), eachslice(lc1, dims = 2))
                 lc2 = reduce(hcat, lc2)
                 # remember col means for the subsequent predictions
 
                 #lcm = mapslices(mean, lc2, dims = 1)
-                lCm = mean(lc2, dims=1)
+                lCm = mean(lc2, dims = 1)
 
                 #@show size(lc2)
                 # decompose the resulting table
@@ -275,7 +314,7 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
 
                     #println(cumsum(lcsvd.S) / sum(lcsvd.S.^2))
 
-                    temp = round.(cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2), digits=8)
+                    temp = round.(cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2), digits = 8)
                     ndim = minimum(findall(temp .>= 1))
 
                     # store results to output object
@@ -299,7 +338,12 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
 
                     # remove absent pfts from bogus predictor compositions and close compositions.
                     #
-                    bogusc1 = mapslices(x -> x / sum(x), boguscomp[pftpres_check, pftpres_check], dims=2)'
+                    bogusc1 =
+                        mapslices(
+                            x -> x / sum(x),
+                            boguscomp[pftpres_check, pftpres_check],
+                            dims = 2,
+                        )'
 
                     #println(size(bogusc1))
                     #println(pftpres_check)
@@ -341,12 +385,18 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
                             # then do predictions for the log-normal approach
                             if isa(bogusc2, Vector)
 
-                                boguspred = predict(my_empty_models[ndim], [ones(length(bogusc3)) bogusc3])
+                                boguspred = predict(
+                                    my_empty_models[ndim],
+                                    [ones(length(bogusc3)) bogusc3],
+                                )
                                 # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
 
                             else
                                 # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
-                                boguspred = predict(my_empty_models[ndim], [ones(size(bogusc3, 1)) bogusc3])
+                                boguspred = predict(
+                                    my_empty_models[ndim],
+                                    [ones(size(bogusc3, 1)) bogusc3],
+                                )
 
                             end
 
@@ -395,11 +445,12 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
                             # only the PFTs identified in the pftlist are to be used
 
                             sigma1 .= NaN
-                            sigma1[view(pftpres_check, 1:nc), view(pftpres_check, 1:nc)] = sigma
+                            sigma1[view(pftpres_check, 1:nc), view(pftpres_check, 1:nc)] =
+                                sigma
 
                             # calculate the difference on climatevar caused by going from one pft to another.
 
-                            diff_clim_pft_pred = round.((predres .- predres'), digits=10)
+                            diff_clim_pft_pred = round.((predres .- predres'), digits = 10)
 
                             diff_clim_pft_pred = diff_clim_pft_pred[tran_check]
 
@@ -407,7 +458,11 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
                             # the covariance terms
                             # in the original implementation diffclim_pft_var = dZvar
 
-                            diff_clim_pft_pred_var = round.((diag(sigma1) .+ diag(sigma1)') .- 2 * sigma1, digits=10)
+                            diff_clim_pft_pred_var =
+                                round.(
+                                    (diag(sigma1) .+ diag(sigma1)') .- 2 * sigma1,
+                                    digits = 10,
+                                )
 
                             #print(diff_clim_pft_pred)
                             # flag out those with zero error (may occur with identical compositions for 2 pfts)
@@ -418,12 +473,18 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
 
                             # flag out those with zero error (may occur with identical compositions for 2 pfts)
 
-                            if any(round.(diff_clim_pft_pred, digits=8) .== 0.0)
-                                diff_clim_pft_pred[round.(diff_clim_pft_pred, digits=8).==0] .= NaN
+                            if any(round.(diff_clim_pft_pred, digits = 8) .== 0.0)
+                                diff_clim_pft_pred[round.(
+                                    diff_clim_pft_pred,
+                                    digits = 8,
+                                ).==0] .= NaN
                             end
 
-                            if any(round.(diff_clim_pft_pred_var, digits=8) .== 0.0)
-                                diff_clim_pft_pred_var[round.(diff_clim_pft_pred_var; digits=8).==0] .= NaN
+                            if any(round.(diff_clim_pft_pred_var, digits = 8) .== 0.0)
+                                diff_clim_pft_pred_var[round.(
+                                    diff_clim_pft_pred_var;
+                                    digits = 8,
+                                ).==0] .= NaN
                             end
 
                             # mask out low co-ocurrence ask to greg!!! This can be performed  masking the pixels
@@ -453,7 +514,8 @@ function s4time(out_1, out_2, out_3, clim_var_cube_in, pfts_cube_in, loopvars; e
 
                                 #else
                                 diff_clim_pft_pred_var[diff_clim_pft_pred_var.<0] .= NaN
-                                out_3[it, 1:transitions_n, 2] = sqrt.(diff_clim_pft_pred_var)
+                                out_3[it, 1:transitions_n, 2] =
+                                    sqrt.(diff_clim_pft_pred_var)
 
                                 #end
                             end
@@ -512,7 +574,21 @@ end
     - ```delta_error```:
     - ```coocurence```:
  """
-function space4time_proc(cube_con, cube_classes; time_axis_name="time", lon_axis_name="lon", lat_axis_name="lat", classes_var_name="classes", winsize=5, minDiffPxlspercentage=40, classes_vec=NaN, max_value=1, minpxl=25, showprog=true, max_cache=1e8)
+function space4time_proc(
+    cube_con,
+    cube_classes;
+    time_axis_name = "time",
+    lon_axis_name = "lon",
+    lat_axis_name = "lat",
+    classes_var_name = "classes",
+    winsize = 5,
+    minDiffPxlspercentage = 40,
+    classes_vec = NaN,
+    max_value = 1,
+    minpxl = 25,
+    showprog = true,
+    max_cache = 1e8,
+)
 
     # Checking that winsize is odd
 
@@ -538,11 +614,11 @@ function space4time_proc(cube_con, cube_classes; time_axis_name="time", lon_axis
     # assuming the last dimmension is PFTs
     nc = length(classes_vec)
 
-    sigma1_glob = [fill(NaN, (nc, nc)) for i in 1:Threads.nthreads()]
+    sigma1_glob = [fill(NaN, (nc, nc)) for i = 1:Threads.nthreads()]
 
-    prederr_glob = [fill(NaN, nc) for i in 1:Threads.nthreads()]
+    prederr_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
 
-    predres_glob = [fill(NaN, nc) for i in 1:Threads.nthreads()]
+    predres_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
     # lower triangular matrix index use further on
 
     ltriindex = NamedArray(LowerTriangular(fill(1, (nc, nc))))
@@ -564,13 +640,13 @@ function space4time_proc(cube_con, cube_classes; time_axis_name="time", lon_axis
 
     # linear regression
 
-    empty_models = [[empty_model(i, winsize^2) for i in 1:nc] for j in 1:Threads.nthreads()]
+    empty_models = [[empty_model(i, winsize^2) for i = 1:nc] for j = 1:Threads.nthreads()]
 
-    p1_static = range(0, 1, length=winsize^2)
+    p1_static = range(0, 1, length = winsize^2)
 
     p2_static = reverse(p1_static)
 
-    out_pmindist_global = [zeros(1, winsize^2) for i in 1:Threads.nthreads()]
+    out_pmindist_global = [zeros(1, winsize^2) for i = 1:Threads.nthreads()]
 
     denom = sum(sqrt.(sum.(eachrow([p1_static p2_static] .^ 2))))
 
@@ -578,47 +654,105 @@ function space4time_proc(cube_con, cube_classes; time_axis_name="time", lon_axis
 
     minDiffPxls = (winsize^2 * minDiffPxlspercentage / 100)
 
-    localcomp_fix_glob = [rand(winsize^2) for i in 1:Threads.nthreads()]
+    localcomp_fix_glob = [rand(winsize^2) for i = 1:Threads.nthreads()]
 
-    pftsvarmat_f_glob = [rand(winsize^2, nc + 1) for i in 1:Threads.nthreads()]
+    pftsvarmat_f_glob = [rand(winsize^2, nc + 1) for i = 1:Threads.nthreads()]
 
 
     # 
     if !isnothing(time_axis_name)
 
 
-        indims = InDims(time_axis_name, MovingWindow(lon_axis_name, pre_step, after_step),
-            MovingWindow(lat_axis_name, pre_step, after_step), window_oob_value=NaN)
+        indims = InDims(
+            time_axis_name,
+            MovingWindow(lon_axis_name, pre_step, after_step),
+            MovingWindow(lat_axis_name, pre_step, after_step),
+            window_oob_value = NaN,
+        )
 
-        indims_classes = InDims(time_axis_name, MovingWindow(lon_axis_name, pre_step, after_step),
+        indims_classes = InDims(
+            time_axis_name,
+            MovingWindow(lon_axis_name, pre_step, after_step),
             MovingWindow(lat_axis_name, pre_step, after_step),
             classes_var_name,
-            window_oob_value=NaN)
+            window_oob_value = NaN,
+        )
 
-        out_1_dims = OutDims(time_axis_name, CategoricalAxis("summary_stat", ["rsquared", "cumulative_variance", "predicted"]))
+        out_1_dims = OutDims(
+            time_axis_name,
+            CategoricalAxis(
+                "summary_stat",
+                ["rsquared", "cumulative_variance", "predicted"],
+            ),
+        )
 
         # Values of clim_var (z) for pure PFTs
-        out_2_dims = OutDims(time_axis_name, CategoricalAxis("classes", classes_vec), CategoricalAxis("Values_of_Z_for_pure_classes", ["estimated", "estimated_error"]))
+        out_2_dims = OutDims(
+            time_axis_name,
+            CategoricalAxis("classes", classes_vec),
+            CategoricalAxis(
+                "Values_of_Z_for_pure_classes",
+                ["estimated", "estimated_error"],
+            ),
+        )
         #println([join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)])
         # delta of clim_var produced by the transitions between PFTs
-        out_3_dims = OutDims(time_axis_name, CategoricalAxis("transitions", [join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)]), CategoricalAxis("Differences", ["delta", "delta_error", "coocurence"]))
+        out_3_dims = OutDims(
+            time_axis_name,
+            CategoricalAxis(
+                "transitions",
+                [
+                    join(pftstrans_comb_names[i], " to ") for
+                    i in eachindex(pftstrans_comb_names)
+                ],
+            ),
+            CategoricalAxis("Differences", ["delta", "delta_error", "coocurence"]),
+        )
 
     else
-        indims = InDims(MovingWindow(lon_axis_name, pre_step, after_step),
-            MovingWindow(lat_axis_name, pre_step, after_step), window_oob_value=NaN)
+        indims = InDims(
+            MovingWindow(lon_axis_name, pre_step, after_step),
+            MovingWindow(lat_axis_name, pre_step, after_step),
+            window_oob_value = NaN,
+        )
 
-        indims_classes = InDims(MovingWindow(lon_axis_name, pre_step, after_step),
+        indims_classes = InDims(
+            MovingWindow(lon_axis_name, pre_step, after_step),
             MovingWindow(lat_axis_name, pre_step, after_step),
             classes_var_name,
-            window_oob_value=NaN)
+            window_oob_value = NaN,
+        )
 
-        out_1_dims = OutDims(RangeAxis("time", [1]), CategoricalAxis("summary_stat", ["rsquared", "cumulative_variance", "predicted"]))
+        out_1_dims = OutDims(
+            RangeAxis("time", [1]),
+            CategoricalAxis(
+                "summary_stat",
+                ["rsquared", "cumulative_variance", "predicted"],
+            ),
+        )
 
         # Values of clim_var (z) for pure PFTs
-        out_2_dims = OutDims(RangeAxis("time", [1]), CategoricalAxis("classes", classes_vec), CategoricalAxis("Values_of_Z_for_pure_classes", ["estimated", "estimated_error"]))
+        out_2_dims = OutDims(
+            RangeAxis("time", [1]),
+            CategoricalAxis("classes", classes_vec),
+            CategoricalAxis(
+                "Values_of_Z_for_pure_classes",
+                ["estimated", "estimated_error"],
+            ),
+        )
         #println([join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)])
         # delta of clim_var produced by the transitions between PFTs
-        out_3_dims = OutDims(RangeAxis("time", [1]), CategoricalAxis("transitions", [join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)]), CategoricalAxis("Differences", ["delta", "delta_error", "coocurence"]))
+        out_3_dims = OutDims(
+            RangeAxis("time", [1]),
+            CategoricalAxis(
+                "transitions",
+                [
+                    join(pftstrans_comb_names[i], " to ") for
+                    i in eachindex(pftstrans_comb_names)
+                ],
+            ),
+            CategoricalAxis("Differences", ["delta", "delta_error", "coocurence"]),
+        )
 
     end
 
@@ -626,10 +760,41 @@ function space4time_proc(cube_con, cube_classes; time_axis_name="time", lon_axis
     outdims = (out_1_dims, out_2_dims, out_3_dims)
     #println(out_3_dims)
 
-    out_1, out_2, out_3 = mapCube(s4time, (cube_con, cube_classes),
-        indims=(indims, indims_classes),
-        outdims=outdims, max_cache=max_cache, showprog=showprog, include_loopvars=true; empty_models, pft_list=classes_vec, time_n=time_n, max_value=max_value, p1_static, p2_static, sigma1_glob, prederr_glob, predres_glob, minDiffPxls, tran_check, half, localcomp_fix_glob, pftsvarmat_f_glob, winsize=winsize, transitions_n=transitions_n, pftstrans_comb_names=pftstrans_comb_names, nc=nc, out_pmindist_global=out_pmindist_global, denom=denom, minpxl=minpxl)
+    out_1, out_2, out_3 = mapCube(
+        s4time,
+        (cube_con, cube_classes),
+        indims = (indims, indims_classes),
+        outdims = outdims,
+        max_cache = max_cache,
+        showprog = showprog,
+        include_loopvars = true;
+        empty_models,
+        pft_list = classes_vec,
+        time_n = time_n,
+        max_value = max_value,
+        p1_static,
+        p2_static,
+        sigma1_glob,
+        prederr_glob,
+        predres_glob,
+        minDiffPxls,
+        tran_check,
+        half,
+        localcomp_fix_glob,
+        pftsvarmat_f_glob,
+        winsize = winsize,
+        transitions_n = transitions_n,
+        pftstrans_comb_names = pftstrans_comb_names,
+        nc = nc,
+        out_pmindist_global = out_pmindist_global,
+        denom = denom,
+        minpxl = minpxl,
+    )
 
-    return Dataset(; SummaryStats=out_1, metrics_for_classes=out_2, metrics_for_transitions=out_3)
+    return Dataset(;
+        SummaryStats = out_1,
+        metrics_for_classes = out_2,
+        metrics_for_transitions = out_3,
+    )
 
 end
