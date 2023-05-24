@@ -1,7 +1,15 @@
 module YAXArraysToolbox
 
 import Dates
-import StatsBase, Distributions, Test, LinearAlgebra, GLM, NamedArrays, Combinatorics, YAXArrays, YAXArrayBase
+import StatsBase,
+    Distributions,
+    Test,
+    LinearAlgebra,
+    GLM,
+    NamedArrays,
+    Combinatorics,
+    YAXArrays,
+    YAXArrayBase
 # aggregate time
 include("aggregate_time.jl")
 

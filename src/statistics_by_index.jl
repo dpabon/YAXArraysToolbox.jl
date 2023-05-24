@@ -10,5 +10,5 @@ function median_by_index(xout, xin; index_list = time_to_index)
                 xout[i] = median(filter(!isnan, xin[index_list[i]]))
             end
         end
-    end    
-end 
+    end
+end

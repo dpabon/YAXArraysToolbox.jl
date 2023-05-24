@@ -4,7 +4,7 @@ using Test
 @testset "YAXArraysToolbox.jl" begin
     # Write your tests here.
 
-    
+
 
     # statistics by index
 
@@ -21,5 +21,5 @@ using Test
 
     # filling time variable using another cube time axis.
 
-    
+
 end
