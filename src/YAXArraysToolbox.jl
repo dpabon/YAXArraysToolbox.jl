@@ -1,6 +1,6 @@
 module YAXArraysToolbox
 
-import Dates
+
 import StatsBase,
     Distributions,
     Test,
@@ -10,7 +10,8 @@ import StatsBase,
     Combinatorics,
     YAXArrays,
     YAXArrayBase,
-    TimeSeries
+    TimeSeries,
+    Dates
 
 
 ###### Basic functions ######
