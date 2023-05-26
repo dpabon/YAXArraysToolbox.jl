@@ -77,8 +77,12 @@ The function allow to plot the time series of a given variables in a cube or all
 - ```lon_axis```: String. Name of the longitute axis.
 - ```fun```: String. Name of the function used to collapse the spatial dimensions. It must be "median", "mean", "std", "var", "sum", "quant", "min", or "max".
 - ```p```: Float64. in the interval [0,1]. If ```fun=quant``` p is the value of the quantile. 
+- ```resolution```: Tuple. Plot resolution. By default ```resolution = (600, 400)```. 
+- ```ncol```: Number of plots by column. By default ```ncol = 1```.
+- ```nrow```: Number of plots by row. By default ```ncol = 1```.
 - ```showprog```: Boolean. Progress Bar.
 - ```max_cache```: String. Maximum cache to read the data. It must be in MB e.g. "100MB" or in GB "10GB".
+
 
 ## Examples
 
@@ -259,7 +263,7 @@ function plot_time(
         lentime = length(tempo)
         slice_dates = range(1, lentime, step = lentime ÷ 8)
 
-        fig = Figure(resolution = resolution, fonts = (; regular = "sans"))
+        fig = Figure(resolution = resolution)
         ax = Axis(fig[1, 1], xlabel = "Date", ylabel = fun, title = var)
         line1 = lines!(ax, 1:lentime, vals; color = :black, linewidth = 0.85)
         ax.xticks = (slice_dates, tempo[slice_dates])
