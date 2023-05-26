@@ -222,7 +222,7 @@ function masking_time_comp_6_quant(cube_out, cube_in; p = p)
     end
 end
 
-@doc raw"""
+"""
 
 # Masking using time dimension.
 
