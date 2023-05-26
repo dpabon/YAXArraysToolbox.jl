@@ -39,6 +39,9 @@ export filling_time
 include("plot_time.jl")
 export plot_time
 
+include("plot_space.jl")
+export plot_space
+
 include("masking_time.jl")
 export masking_time
 
