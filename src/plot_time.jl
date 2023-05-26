@@ -61,7 +61,7 @@ function collapse_space_max(cube_out, cube_in)
 end
 
 
-@doc raw"""
+"""
 
 # Plot time
 
@@ -130,8 +130,8 @@ function plot_time(
     time_axis = "time",
     var_axis = "Variable",
     var = nothing,
-    lat_axis="lat",
-    lon_axis="lon",
+    lat_axis = "lat",
+    lon_axis = "lon",
     fun = "mean",
     p = nothing,
     resolution = (600, 400),
@@ -392,7 +392,8 @@ function plot_time(
 
             for j = 1:nrow
 
-                ax = Axis(fig[j, 1], xlabel = "Date", ylabel = fun, title = variables_loc[j])
+                ax =
+                    Axis(fig[j, 1], xlabel = "Date", ylabel = fun, title = variables_loc[j])
 
                 kwarg = (; Symbol(var_axis) => variables_loc[j])
 
@@ -419,7 +420,12 @@ function plot_time(
             for i = 1:ncol
                 for j = 1:nrow
 
-                    ax = Axis(fig[j, i], xlabel = "Date", ylabel = fun, title = variables_loc[counter])
+                    ax = Axis(
+                        fig[j, i],
+                        xlabel = "Date",
+                        ylabel = fun,
+                        title = variables_loc[counter],
+                    )
 
                     kwarg = (; Symbol(var_axis) => variables_loc[counter])
 
@@ -438,7 +444,7 @@ function plot_time(
                     end
 
                 end
-            
+
             end
             return fig
 
@@ -446,4 +452,3 @@ function plot_time(
 
     end
 end
-

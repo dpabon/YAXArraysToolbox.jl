@@ -55,7 +55,7 @@ plot_time(
     p = 0.2,
     showprog = true,
     max_cache = "100MB",
-    ncol = 2
+    ncol = 2,
 )
 
 test_out
