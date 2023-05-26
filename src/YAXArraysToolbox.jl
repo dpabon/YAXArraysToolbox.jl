@@ -1,5 +1,19 @@
 module YAXArraysToolbox
 
+import StatsBase,
+    Distributions,
+    Test,
+    LinearAlgebra,
+    GLM,
+    NamedArrays,
+    Combinatorics,
+    YAXArrays,
+    YAXArrayBase,
+    TimeSeries,
+    Dates
+
+
+module BasicOperations
 
 import StatsBase,
     Distributions,
@@ -14,26 +28,45 @@ import StatsBase,
     Dates
 
 
-###### Basic functions ######
-
-# aggregate time
 include("aggregate_time.jl")
 
 export aggregate_time
 
-# Masking
+include("filling_time.jl")
+
+export filling_time
+
+include("plot_time.jl")
+export plot_time
+
+include("masking_time.jl")
+export masking_time
+
+include("masking_space.jl")
+export masking_space
+
+end
+
+module SpaceTimeAnalysis
+
+import StatsBase,
+    Distributions,
+    Test,
+    LinearAlgebra,
+    GLM,
+    NamedArrays,
+    Combinatorics,
+    YAXArrays,
+    YAXArrayBase,
+    TimeSeries,
+    Dates
+
+# Masking 4 space4time
 include("masking_altitude.jl") # TO IMPROVE function names!!
 include("masking_general.jl") # Maybe TO MERGE with masking_altitude.
 
 export altitude_mask_results_proc, altitude_masking_proc
 export masking_proc
-# filling time
-
-include("filling_time.jl")
-
-# plot time
-include("plot_time.jl")
-export plot_time
 
 # Space4time
 
@@ -41,7 +74,6 @@ include("space4time.jl")
 
 export space4time_proc
 
-
-
+end
 
 end
