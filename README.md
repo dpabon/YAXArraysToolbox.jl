@@ -13,17 +13,17 @@ The YAXArraysToolbox package take advantage of the YAXArrays MapCube function to
 ### Dependencies
 
 
-<img src="docs/img/YAXArraysToolbox_dependencies.png" width="400">
+<img src="docs/img/YAXArraysToolbox_dependencies.png" width="500">
 
 ### Modules and functions
 
 **BasicOperations**
 
-<img src="docs/img/YAXArraysToolbox_basic_operations.png" width="500">
+<img src="docs/img/YAXArraysToolbox_basic_operations.png" width="700">
 
 **SpatioTemporalAnalyses**
 
-<img src="docs/img/YAXArraysToolbox_SpatioTemporalAnalyses.png" width="500">
+<img src="docs/img/YAXArraysToolbox_SpatioTemporalAnalyses.png" width="700">
 
 
 ## Installation
