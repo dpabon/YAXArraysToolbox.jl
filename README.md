@@ -19,7 +19,7 @@ The YAXArraysToolbox package take advantage of the YAXArrays MapCube function to
 
 **BasicOperations**
 
-<img src="docs/img/YAXArraysToolbox_basic_operations.png" width="700">
+<img src="docs/img/YAXArraysToolbox_BasicOperations.png" width="700">
 
 **SpatioTemporalAnalyses**
 
