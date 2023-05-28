@@ -344,7 +344,7 @@ function masking_time(
 
         indims = InDims(time_axis)
 
-        outdims = OutDims()
+        outdims = OutDims(RangeAxis(time_axis, getAxis(time_axis, cube_in).values))
 
         if comp == ">="
             return mapCube(
