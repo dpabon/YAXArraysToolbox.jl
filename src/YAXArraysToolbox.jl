@@ -13,21 +13,6 @@ import StatsBase,
     Dates
 
 
-module BasicOperations
-
-import StatsBase,
-    Distributions,
-    Test,
-    LinearAlgebra,
-    GLM,
-    NamedArrays,
-    Combinatorics,
-    YAXArrays,
-    YAXArrayBase,
-    TimeSeries,
-    Dates
-
-
 include("aggregate_time.jl")
 
 export aggregate_time
@@ -48,21 +33,6 @@ export masking_time
 include("masking_space.jl")
 export masking_space
 
-end
-
-module SpaceTimeAnalyses
-
-import StatsBase,
-    Distributions,
-    Test,
-    LinearAlgebra,
-    GLM,
-    NamedArrays,
-    Combinatorics,
-    YAXArrays,
-    YAXArrayBase,
-    TimeSeries,
-    Dates
 
 # Masking 4 space4time
 include("masking_altitude.jl") # TO IMPROVE function names!!
@@ -76,7 +46,5 @@ export masking_proc
 include("space4time.jl")
 
 export space4time_proc
-
-end
 
 end
