@@ -6,6 +6,25 @@
 
 Yet Another Toolbox to analyze spatio-temporal data using [YAXArrays.jl](https://github.com/JuliaDataCubes/YAXArrays.jl). Because laziness is not only good when reading big data.
 
+## What can the YAXArraysToolbox package do for you?
+
+The YAXArraysToolbox package take advantage of the YAXArrays MapCube function to effienctly perform basic operations as data aggregation and plotting on gridded data. Furthermore the YAXArraysToolbox can perform some spatio-temporal analysis. The package is structured in two modules 'BasicOperations' and 'SpatioTemporalAnlyses'. The structure and dependencies of the package is:
+
+### Dependencies
+
+
+<img src="docs/img/YAXArraysToolbox_dependencies.png" width="400">
+
+### Modules and functions
+
+**BasicOperations**
+
+<img src="docs/img/YAXArraysToolbox_basic_operations.png" width="500">
+
+**SpatioTemporalAnalyses**
+
+<img src="docs/img/YAXArraysToolbox_SpatioTemporalAnalyses.png" width="500">
+
 
 ## Installation
 
