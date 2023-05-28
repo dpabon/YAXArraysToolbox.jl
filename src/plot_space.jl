@@ -50,7 +50,7 @@ function collapse_time_sum(cube_out, cube_in)
     end
 end
 
-function collapse_time_quant(cube_out, cube_in; p=p)
+function collapse_time_quant(cube_out, cube_in; p = p)
     cube_out .= NaN
     if !all(isnan, cube_in)
         if !all(ismissing, cube_in)
@@ -161,19 +161,19 @@ plot_space(
 """
 function plot_space(
     cube_in::YAXArray;
-    time_axis="time",
-    var_axis="Variable",
-    var=nothing,
-    lat_axis="lat",
-    lon_axis="lon",
-    fun="mean",
-    p=nothing,
-    colormap=Reverse(:batlow),
-    resolution=(800, 300),
-    ncol=1,
-    nrow=1,
-    showprog=true,
-    max_cache="100MB"
+    time_axis = "time",
+    var_axis = "Variable",
+    var = nothing,
+    lat_axis = "lat",
+    lon_axis = "lon",
+    fun = "mean",
+    p = nothing,
+    colormap = Reverse(:batlow),
+    resolution = (800, 300),
+    ncol = 1,
+    nrow = 1,
+    showprog = true,
+    max_cache = "100MB",
 )
 
     if last(max_cache, 2) == "MB"
@@ -200,10 +200,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_mean,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "median"
@@ -211,10 +211,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_median,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "std"
@@ -222,10 +222,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_std,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "var"
@@ -233,10 +233,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_var,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "sum"
@@ -244,10 +244,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_sum,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "quant"
@@ -255,11 +255,11 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_quant,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                p=p,
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                p = p,
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "min"
@@ -267,10 +267,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_min,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "max"
@@ -278,10 +278,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_max,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         end
@@ -289,29 +289,29 @@ function plot_space(
         lon = getAxis(lon_axis, temp_cube).values
         lat = getAxis(lat_axis, temp_cube).values
 
-        fig = Figure(resolution=resolution)
+        fig = Figure(resolution = resolution)
 
         ga = GeoAxis(
             fig[1, 1],
-            source="+proj=longlat +datum=WGS84",
-            dest="+proj=longlat",
-            coastlines=true,
-            lonlims=(minimum(lon), maximum(lon)),
-            latlims=(minimum(lat), maximum(lat)),
-            title=var *
-                  " \n " *
-                  string(first(getAxis(time_axis, cube_in).values)) *
-                  " / " *
-                  string(last(getAxis(time_axis, cube_in).values)),
+            source = "+proj=longlat +datum=WGS84",
+            dest = "+proj=longlat",
+            coastlines = true,
+            lonlims = (minimum(lon), maximum(lon)),
+            latlims = (minimum(lat), maximum(lat)),
+            title = var *
+                    " \n " *
+                    string(first(getAxis(time_axis, cube_in).values)) *
+                    " / " *
+                    string(last(getAxis(time_axis, cube_in).values)),
         )
-        map1 = CairoMakie.heatmap!(ga, lon, lat, temp_cube[:, :], colormap=colormap)
+        map1 = CairoMakie.heatmap!(ga, lon, lat, temp_cube[:, :], colormap = colormap)
         cbar1 = Colorbar(
             fig[1, 2],
             map1,
-            label=fun,
-            ticklabelsize=18,
-            labelpadding=5,
-            width=10,
+            label = fun,
+            ticklabelsize = 18,
+            labelpadding = 5,
+            width = 10,
         )
 
         return fig
@@ -326,10 +326,10 @@ function plot_space(
             return temp_cube = mapCube(
                 collapse_time_mean,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "median"
@@ -337,10 +337,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_median,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "std"
@@ -348,10 +348,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_std,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "var"
@@ -359,10 +359,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_var,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "sum"
@@ -370,10 +370,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_sum,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "quant"
@@ -381,11 +381,11 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_quant,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                p=p,
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                p = p,
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "min"
@@ -393,10 +393,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_min,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         elseif fun == "max"
@@ -404,10 +404,10 @@ function plot_space(
             temp_cube = mapCube(
                 collapse_time_max,
                 cube_in,
-                indims=indims,
-                outdims=outdims;
-                showprog=showprog,
-                max_cache=max_cache
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
         end
@@ -422,7 +422,7 @@ function plot_space(
 
         end
 
-        fig = Figure(resolution=resolution)
+        fig = Figure(resolution = resolution)
 
         lon = getAxis(lon_axis, temp_cube).values
         lat = getAxis(lat_axis, temp_cube).values
@@ -436,34 +436,35 @@ function plot_space(
 
             for j = 1:nrow
 
-                
+
                 kwarg = (; Symbol(var_axis) => variables_loc[j])
 
                 temp_cube2 = getindex(temp_cube; kwarg...)
 
                 ga = GeoAxis(
                     fig[j, 1],
-                    source="+proj=longlat +datum=WGS84",
-                    dest="+proj=longlat",
-                    coastlines=true,
-                    lonlims=(minimum(lon), maximum(lon)),
-                    latlims=(minimum(lat), maximum(lat)),
+                    source = "+proj=longlat +datum=WGS84",
+                    dest = "+proj=longlat",
+                    coastlines = true,
+                    lonlims = (minimum(lon), maximum(lon)),
+                    latlims = (minimum(lat), maximum(lat)),
                     title = variables_loc[j] *
-                          " \n " *
-                          string(first(getAxis(time_axis, cube_in).values)) *
-                          " / " *
-                          string(last(getAxis(time_axis, cube_in).values)),
+                            " \n " *
+                            string(first(getAxis(time_axis, cube_in).values)) *
+                            " / " *
+                            string(last(getAxis(time_axis, cube_in).values)),
                 )
-                
-                map1 = CairoMakie.heatmap!(ga, lon, lat, temp_cube2[:, :], colormap=colormap)
+
+                map1 =
+                    CairoMakie.heatmap!(ga, lon, lat, temp_cube2[:, :], colormap = colormap)
 
                 cbar1 = Colorbar(
                     fig[j, 2],
                     map1,
-                    label=fun,
-                    ticklabelsize=18,
-                    labelpadding=5,
-                    width=10,
+                    label = fun,
+                    ticklabelsize = 18,
+                    labelpadding = 5,
+                    width = 10,
                 )
 
             end
@@ -478,23 +479,41 @@ function plot_space(
             init_row = 1
             init_col = 1
 
-            for i in 1:nrow
-                for j in 1:ncol
+            for i = 1:nrow
+                for j = 1:ncol
                     kwarg = (; Symbol(var_axis) => variables_loc[init_row])
 
                     temp_cube2 = getindex(temp_cube; kwarg...)
                     ga = GeoAxis(
                         fig[i, init_col],
-                        source="+proj=longlat +datum=WGS84", dest="+proj=longlat",
-                        coastlines=true,
-                        lonlims=(minimum(lon), maximum(lon)),
-                        latlims=(minimum(lat), maximum(lat)),
-                        title = variables_loc[init_row] * " \n " * string(first(getAxis(time_axis, cube_in).values)) * " / " * string(last(getAxis(time_axis, cube_in).values))
+                        source = "+proj=longlat +datum=WGS84",
+                        dest = "+proj=longlat",
+                        coastlines = true,
+                        lonlims = (minimum(lon), maximum(lon)),
+                        latlims = (minimum(lat), maximum(lat)),
+                        title = variables_loc[init_row] *
+                                " \n " *
+                                string(first(getAxis(time_axis, cube_in).values)) *
+                                " / " *
+                                string(last(getAxis(time_axis, cube_in).values)),
                     )
-                    map1 = CairoMakie.heatmap!(ga, lon, lat, temp_cube2[:, :], colormap = Reverse(:batlow))
+                    map1 = CairoMakie.heatmap!(
+                        ga,
+                        lon,
+                        lat,
+                        temp_cube2[:, :],
+                        colormap = Reverse(:batlow),
+                    )
                     init_row += 1
                     init_col += 1
-                    cbar1 = Colorbar(fig[i, init_col], map1, label=fun, ticklabelsize=18, labelpadding=5, width=10)
+                    cbar1 = Colorbar(
+                        fig[i, init_col],
+                        map1,
+                        label = fun,
+                        ticklabelsize = 18,
+                        labelpadding = 5,
+                        width = 10,
+                    )
                     init_col += 1
                     if init_row > length(variables_loc)
                         break
@@ -507,5 +526,3 @@ function plot_space(
 
     end
 end
-
-
