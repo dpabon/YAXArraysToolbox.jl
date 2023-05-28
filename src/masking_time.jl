@@ -30,11 +30,8 @@ function masking_time_comp_1(cube_out, cube_in, cube_mask; val = val)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(>=(val), cube_mask)) > 0
-        if length(findall(>=(val), cube_mask)) > 1
-            cube_out[findall(>=(val), cube_mask)] .= NaN
-        else
-            cube_out[findall(>=(val), cube_mask)] = NaN
-        end
+
+        cube_out[findall(>=(val), cube_mask)] .= NaN
 
     end
 end
@@ -46,13 +43,8 @@ function masking_time_comp_2(cube_out, cube_in, cube_mask; val = val)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(>(val), cube_mask)) > 0
-        if length(findall(>(val), cube_mask)) > 1
-            cube_out[findall(>(val), cube_mask)] .= NaN
-        else
-            cube_out[findall(>(val), cube_mask)] = NaN
-        end
 
-
+        cube_out[findall(>(val), cube_mask)] .= NaN
     end
 end
 
@@ -63,12 +55,8 @@ function masking_time_comp_3(cube_out, cube_in, cube_mask; val = val)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(<=(val), cube_mask)) > 0
-        if length(findall(<=(val), cube_mask)) > 1
-            cube_out[findall(<=(val), cube_mask)] .= NaN
-        else
-            cube_out[findall(<=(val), cube_mask)] = NaN
-        end
 
+        cube_out[findall(<=(val), cube_mask)] .= NaN
     end
 end
 
@@ -78,11 +66,8 @@ function masking_time_comp_4(cube_out, cube_in, cube_mask; val = val)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(<(val), cube_mask)) > 0
-        if length(findall(<(val), cube_mask)) > 1
-            cube_out[findall(<(val), cube_mask)] .= NaN
-        else
-            cube_out[findall(<(val), cube_mask)] = NaN
-        end
+        cube_out[findall(<(val), cube_mask)] .= NaN
+
     end
 end
 
@@ -93,11 +78,9 @@ function masking_time_comp_5(cube_out, cube_in, cube_mask; val = val)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(>=(val), cube_mask)) > 0
-        if length(findall(>=(val), cube_mask)) > 1
-            cube_out[findall(>=(val), cube_mask)] .= NaN
-        else
-            cube_out[findall(>=(val), cube_mask)] = NaN
-        end
+
+        cube_out[findall(>=(val), cube_mask)] .= NaN
+
     end
 end
 
@@ -107,11 +90,9 @@ function masking_time_comp_6(cube_out, cube_in, cube_mask; val = val)
         replace!(cube_out, missing => NaN)
     end
     if length(findall(!=(val), cube_mask)) > 0
-        if length(findall(!=(val), cube_mask)) > 1
-            cube_out[findall(!=(val), cube_mask)] .= NaN
-        else
-            cube_out[findall(!=(val), cube_mask)] = NaN
-        end
+
+        cube_out[findall(!=(val), cube_mask)] .= NaN
+
     end
 end
 
@@ -122,13 +103,8 @@ function masking_time_comp_1_quant(cube_out, cube_in; p = p)
     end
     if !all(isnan, cube_out)
         if length(findall(>=(quantile(filter(!isnan, cube_out), p)), cube_out)) > 0
-            if length(findall(>=(quantile(filter(!isnan, cube_out), p)), cube_out)) > 1
 
-                cube_out[findall(>=(quantile(filter(!isnan, cube_out), p)), cube_out)] .=
-                    NaN
-            else
-                cube_out[findall(>=(quantile(filter(!isnan, cube_out), p)), cube_out)] = NaN
-            end
+            cube_out[findall(>=(quantile(filter(!isnan, cube_out), p)), cube_out)] .= NaN
         end
     end
 end
@@ -140,12 +116,7 @@ function masking_time_comp_2_quant(cube_out, cube_in; p = p)
     end
     if !all(isnan, cube_out)
         if length(findall(>(quantile(filter(!isnan, cube_out), p)), cube_out)) > 0
-            if length(findall(>(quantile(filter(!isnan, cube_out), p)), cube_out)) > 1
-
-                cube_out[findall(>(quantile(filter(!isnan, cube_out), p)), cube_out)] .= NaN
-            else
-                cube_out[findall(>(quantile(filter(!isnan, cube_out), p)), cube_out)] = NaN
-            end
+            cube_out[findall(>(quantile(filter(!isnan, cube_out), p)), cube_out)] .= NaN
         end
     end
 end
@@ -158,13 +129,7 @@ function masking_time_comp_3_quant(cube_out, cube_in; p = p)
     end
     if !all(isnan, cube_out)
         if length(findall(<=(quantile(filter(!isnan, cube_out), p)), cube_out)) > 0
-            if length(findall(<=(quantile(filter(!isnan, cube_out), p)), cube_out)) > 1
-
-                cube_out[findall(<=(quantile(filter(!isnan, cube_out), p)), cube_out)] .=
-                    NaN
-            else
-                cube_out[findall(<=(quantile(filter(!isnan, cube_out), p)), cube_out)] = NaN
-            end
+            cube_out[findall(<=(quantile(filter(!isnan, cube_out), p)), cube_out)] .= NaN
         end
     end
 end
@@ -176,12 +141,8 @@ function masking_time_comp_4_quant(cube_out, cube_in; p = p)
     end
     if !all(isnan, cube_out)
         if length(findall(<(quantile(filter(!isnan, cube_out), p)), cube_out)) > 0
-            if length(findall(<(quantile(filter(!isnan, cube_out), p)), cube_out)) > 1
 
-                cube_out[findall(<(quantile(filter(!isnan, cube_out), p)), cube_out)] .= NaN
-            else
-                cube_out[findall(<(quantile(filter(!isnan, cube_out), p)), cube_out)] = NaN
-            end
+            cube_out[findall(<(quantile(filter(!isnan, cube_out), p)), cube_out)] .= NaN
         end
     end
 end
@@ -193,13 +154,8 @@ function masking_time_comp_5_quant(cube_out, cube_in; p = p)
     end
     if !all(isnan, cube_out)
         if length(findall(==(quantile(filter(!isnan, cube_out), p)), cube_out)) > 0
-            if length(findall(==(quantile(filter(!isnan, cube_out), p)), cube_out)) > 1
 
-                cube_out[findall(==(quantile(filter(!isnan, cube_out), p)), cube_out)] .=
-                    NaN
-            else
-                cube_out[findall(==(quantile(filter(!isnan, cube_out), p)), cube_out)] = NaN
-            end
+            cube_out[findall(==(quantile(filter(!isnan, cube_out), p)), cube_out)] .= NaN
         end
     end
 end
@@ -211,13 +167,8 @@ function masking_time_comp_6_quant(cube_out, cube_in; p = p)
     end
     if !all(isnan, cube_out)
         if length(findall(!=(quantile(filter(!isnan, cube_out), p)), cube_out)) > 0
-            if length(findall(!=(quantile(filter(!isnan, cube_out), p)), cube_out)) > 1
 
-                cube_out[findall(!=(quantile(filter(!isnan, cube_out), p)), cube_out)] .=
-                    NaN
-            else
-                cube_out[findall(!=(quantile(filter(!isnan, cube_out), p)), cube_out)] = NaN
-            end
+            cube_out[findall(!=(quantile(filter(!isnan, cube_out), p)), cube_out)] .= NaN
         end
     end
 end
@@ -245,6 +196,37 @@ The masked vales are set as ```NaN```.
 - ```max_cache```: String. Maximum cache to read the data. It must be in MB e.g. "100MB" or in GB "10GB".
 
 ## Examples
+
+```julia
+using YAXArrays, Statistics, Zarr, NetCDF, YAXArraysToolbox
+
+esds = open_dataset(
+    "https://s3.bgc-jena.mpg.de:9000/esdl-esdc-v2.1.1/esdc-8d-0.25deg-184x90x90-2.1.1.zarr",
+)
+esdc = Cube(esds)
+
+esdc_small = esdc[
+    lon = (-86, -35),
+    lat = (-56, 14),
+    time = (Date(2010), Date(2014)),
+    Variable = ["leaf_area_index", "sensible_heat", "potential_evaporation"],
+]
+
+test = masking_time(
+    esdc_small;
+    time_axis = "time",
+    var_axis = "Variable",
+    var_mask = "leaf_area_index",
+    val = 0.2,
+    comp = "<",
+    showprog = true,
+    max_cache = "1GB",
+)
+
+plot_time(esdc_small; time_axis="time", var_axis="Variable", var = "leaf_area_index", lat_axis = "lat", lon_axis="lon", fun = "min")
+
+plot_time(test; time_axis="time", var_axis="Variable", var = "leaf_area_index", lat_axis = "lat", lon_axis="lon", fun = "min")
+```
 
 """
 function masking_time(
@@ -286,7 +268,7 @@ function masking_time(
 
         indims = (InDims(time_axis), InDims(time_axis))
 
-        outdims = OutDims()
+        outdims = OutDims(RangeAxis(time_axis, getAxis(time_axis, cube_in).values))
 
         if comp == ">="
             return mapCube(
