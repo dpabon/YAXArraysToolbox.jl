@@ -11,4 +11,8 @@ Documentation for [YAXArraysToolbox](https://github.com/dpabon/YAXArraysToolbox.
 
 ```@autodocs
 Modules = [YAXArraysToolbox]
+
+Modules = [BasicOperations]
+
+Modules = [SpaceTimeAnalyses]
 ```

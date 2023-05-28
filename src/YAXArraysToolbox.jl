@@ -50,7 +50,7 @@ export masking_space
 
 end
 
-module SpaceTimeAnalysis
+module SpaceTimeAnalyses
 
 import StatsBase,
     Distributions,
