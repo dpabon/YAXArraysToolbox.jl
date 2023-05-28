@@ -1,10 +1,8 @@
 # YAXArraysToolbox.jl
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://dpabon.github.io/YAXArraysToolbox.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://dpabon.github.io/YAXArraysToolbox.jl/dev/)
-[![Build Status](https://github.com/dpabon/YAXArraysToolbox.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/dpabon/YAXArraysToolbox.jl/actions/workflows/CI.yml?query=branch%3Amain)
-[![Coverage](https://codecov.io/gh/dpabon/YAXArraysToolbox.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/dpabon/YAXArraysToolbox.jl)
-
+| **Documentation**                                                               | **Build Status**                                                                                |
+|:-------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------:|
+| [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://dpabon.github.io/YAXArraysToolbox.jl/stable/) [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://dpabon.github.io/YAXArraysToolbox.jl/dev/) | [![Build Status](https://github.com/dpabon/YAXArraysToolbox.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/dpabon/YAXArraysToolbox.jl/actions/workflows/CI.yml?query=branch%3Amain) [![Coverage](https://codecov.io/gh/dpabon/YAXArraysToolbox.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/dpabon/YAXArraysToolbox.jl) |
 
 Yet Another Toolbox to analyze spatio-temporal data using [YAXArrays.jl](https://github.com/JuliaDataCubes/YAXArrays.jl). Because laziness is not only good when reading big data.
 
@@ -30,11 +28,8 @@ using YAXArraysToolbox
 
 ```
 
-## Documentation
 
-https://dpabon.github.io/YAXArraysToolbox.jl/stable/
-
-## Notebook examples
+## Tutorials (Jupyter Notebooks)
 
 https://github.com/dpabon/YAXArraysToolboxNotebooks
 
