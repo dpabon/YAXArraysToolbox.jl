@@ -43,6 +43,9 @@ Create spatial, temporal or spatio-temporal Folds for cross validation based on 
 
 ```cv_indices_train, cv_indices_test = spacetime_folds(x;spacevar="var1", timevar="var2", k=10, class=nothing, seed=23)```
 
+## References
+
+Meyer, H., Reudenbach, C., Hengl, T., Katurji, M., Nauß, T. (2018): Improving performance of spatio-temporal machine learning models using forward feature selection and target-oriented validation. Environmental Modelling & Software 101: 1-9.
 """
 function spacetime_folds(
     x;
