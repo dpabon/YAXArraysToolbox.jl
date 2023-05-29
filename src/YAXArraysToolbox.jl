@@ -33,6 +33,8 @@ export masking_time
 include("masking_space.jl")
 export masking_space
 
+include("spacetime_folds.jl")
+export spacetime_folds
 
 # Masking 4 space4time
 include("masking_altitude.jl") # TO IMPROVE function names!!
