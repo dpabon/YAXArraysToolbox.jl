@@ -162,7 +162,7 @@ function plot_time(
         cube_in = getindex(cube_in; kwarg...)
 
         indims = InDims(lat_axis, lon_axis)
-        outdims = OutDims()
+        outdims = OutDims(outtype=Float32)
 
         if fun == "mean"
 
@@ -274,7 +274,7 @@ function plot_time(
     else
 
         indims = InDims(lat_axis, lon_axis)
-        outdims = OutDims()
+        outdims = OutDims(outtype=Float32)
 
         if fun == "mean"
 
