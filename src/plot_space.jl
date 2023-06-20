@@ -193,7 +193,7 @@ function plot_space(
         cube_in = getindex(cube_in; kwarg...)
 
         indims = InDims(time_axis)
-        outdims = OutDims()
+        outdims = OutDims(outtype=Float32)
 
         if fun == "mean"
 
@@ -319,7 +319,7 @@ function plot_space(
     else
 
         indims = InDims(time_axis)
-        outdims = OutDims()
+        outdims = OutDims(outtype=Float32)
 
         if fun == "mean"
 
