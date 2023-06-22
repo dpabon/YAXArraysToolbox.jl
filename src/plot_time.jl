@@ -548,4 +548,3 @@ The function allow to plot the time series of a given variables in a cube or all
             end
         end
     end
-end
