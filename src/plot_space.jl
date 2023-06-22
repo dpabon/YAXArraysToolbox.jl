@@ -93,6 +93,7 @@ end
 - ```fun```: String. Name of the function used to collapse the spatial dimensions. It must be "median", "mean", "std", "var", "sum", "quant", "min", or "max".
 - ```p```: Float64. in the interval [0,1]. If ```fun=quant``` p is the value of the quantile.
 - ```colormap```: Color Map. By default: ```colormap = Reverse(:batlow)```
+- ```coastlines```: Boolean. Plot coast lines. By default ```coastlines = false```
 - ```resolution```: Plot resolution. By default ```resolution = (800, 300)```.
 - ```ncol```: Number of plots by column. By default ```ncol = 1```.
 - ```nrow```: Number of plots by row. By default ```ncol = 1```.
@@ -169,6 +170,7 @@ function plot_space(
     fun = "mean",
     p = nothing,
     colormap = Reverse(:batlow),
+    coastlines = false,
     resolution = (800, 300),
     ncol = 1,
     nrow = 1,
@@ -295,7 +297,7 @@ function plot_space(
             fig[1, 1],
             source = "+proj=longlat +datum=WGS84",
             dest = "+proj=longlat",
-            coastlines = true,
+            coastlines = coastlines,
             lonlims = (minimum(lon), maximum(lon)),
             latlims = (minimum(lat), maximum(lat)),
             title = var *
@@ -445,7 +447,7 @@ function plot_space(
                     fig[j, 1],
                     source = "+proj=longlat +datum=WGS84",
                     dest = "+proj=longlat",
-                    coastlines = true,
+                    coastlines = coastlines,
                     lonlims = (minimum(lon), maximum(lon)),
                     latlims = (minimum(lat), maximum(lat)),
                     title = variables_loc[j] *
@@ -488,7 +490,7 @@ function plot_space(
                         fig[i, init_col],
                         source = "+proj=longlat +datum=WGS84",
                         dest = "+proj=longlat",
-                        coastlines = true,
+                        coastlines = coastlines,
                         lonlims = (minimum(lon), maximum(lon)),
                         latlims = (minimum(lat), maximum(lat)),
                         title = variables_loc[init_row] *
