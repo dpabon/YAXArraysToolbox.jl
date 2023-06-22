@@ -27,9 +27,10 @@ function median_by_index_1(xout, xin; index_list = time_to_index)
     xout .= NaN
     if !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
+            if !all(ismissing, view(xin, index_list[i]))
+               if !all(isnan, view(xin, index_list[i]))
                 xout[i] = median(skipmissing(view(xin, index_list[i])))
+               end
             end
         end
     end
@@ -39,12 +40,15 @@ function median_by_index_2(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = median(skipmissing(filter(!isnan, view(xin, index_list[i]))))
-            end
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                    xout[i] = median(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+                   end
+                end
+            end 
         end
     end
 end
@@ -53,11 +57,14 @@ function median_by_index_3(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = median(filter(!isnan, view(xin, index_list[i])))
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = median(filter(!isnan, view(xin, index_list[i])))
+                   end
+                end
             end
         end
     end
@@ -67,11 +74,16 @@ function median_by_index_4(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = median(view(xin, index_list[i]))
+    if !all(ismissing, xin)
+
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = median(view(xin, index_list[i]))
+                   end
+                    
+                end
             end
         end
     end
@@ -87,9 +99,10 @@ function mean_by_index_1(xout, xin; index_list = time_to_index)
     xout .= NaN
     if !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = mean(skipmissing(view(xin, index_list[i])))
+            if !all(ismissing, view(xin, index_list[i]))
+                if !all(isnan, view(xin, index_list[i]))
+                    xout[i] = mean(skipmissing(view(xin, index_list[i])))
+                end
             end
         end
     end
@@ -99,11 +112,14 @@ function mean_by_index_2(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = mean(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = mean(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+                   end
+                end
             end
         end
     end
@@ -113,11 +129,15 @@ function mean_by_index_3(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = mean(filter(!isnan, view(xin, index_list[i])))
+    if !all(ismissing, xin)
+
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = mean(filter(!isnan, view(xin, index_list[i])))
+                   end
+                end
             end
         end
     end
@@ -127,11 +147,14 @@ function mean_by_index_4(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = mean(view(xin, index_list[i]))
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = mean(view(xin, index_list[i]))
+                   end
+                end
             end
         end
     end
@@ -147,9 +170,10 @@ function std_by_index_1(xout, xin; index_list = time_to_index)
     xout .= NaN
     if !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = std(skipmissing(view(xin, index_list[i])))
+            if !all(ismissing, view(xin, index_list[i]))
+               if !all(isnan, view(xin, index_list[i]))
+                    xout[i] = std(skipmissing(view(xin, index_list[i])))
+               end
             end
         end
     end
@@ -159,11 +183,14 @@ function std_by_index_2(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = std(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = std(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+                   end
+                end
             end
         end
     end
@@ -173,11 +200,14 @@ function std_by_index_3(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = std(filter(!isnan, view(xin, index_list[i])))
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = std(filter(!isnan, view(xin, index_list[i])))
+                   end
+                end
             end
         end
     end
@@ -187,11 +217,14 @@ function std_by_index_4(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = std(view(xin, index_list[i]))
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = std(view(xin, index_list[i]))
+                   end
+                end
             end
         end
     end
@@ -207,9 +240,10 @@ function var_by_index_1(xout, xin; index_list = time_to_index)
     xout .= NaN
     if !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = var(skipmissing(view(xin, index_list[i])))
+            if !all(ismissing, view(xin, index_list[i]))
+               if !all(isnan, view(xin, index_list[i]))
+                    xout[i] = var(skipmissing(view(xin, index_list[i])))
+               end
             end
         end
     end
@@ -219,12 +253,15 @@ function var_by_index_2(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = var(skipmissing(filter(!isnan, view(xin, index_list[i]))))
-            end
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = var(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+                   end
+                end
+            end 
         end
     end
 end
@@ -233,11 +270,14 @@ function var_by_index_3(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = var(filter(!isnan, view(xin, index_list[i])))
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = var(filter(!isnan, view(xin, index_list[i])))
+                   end
+                end
             end
         end
     end
@@ -247,11 +287,14 @@ function var_by_index_4(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = var(view(xin, index_list[i]))
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = var(view(xin, index_list[i]))
+                   end
+                end
             end
         end
     end
@@ -267,9 +310,10 @@ function sum_by_index_1(xout, xin; index_list = time_to_index)
     xout .= NaN
     if !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
+            if !all(ismissing, view(xin, index_list[i]))
+               if !all(isnan, view(xin, index_list[i]))
                 xout[i] = sum(skipmissing(view(xin, index_list[i])))
+               end
             end
         end
     end
@@ -279,11 +323,14 @@ function sum_by_index_2(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = sum(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = sum(skipmissing(filter(!isnan, view(xin, index_list[i]))))
+                   end
+                end
             end
         end
     end
@@ -293,12 +340,15 @@ function sum_by_index_3(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = sum(filter(!isnan, view(xin, index_list[i])))
-            end
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = sum(filter(!isnan, view(xin, index_list[i])))
+                   end
+                end
+            end 
         end
     end
 end
@@ -307,11 +357,14 @@ function sum_by_index_4(xout, xin; index_list = time_to_index)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = sum(view(xin, index_list[i]))
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = sum(view(xin, index_list[i]))
+                   end
+                end
             end
         end
     end
@@ -327,9 +380,10 @@ function quant_by_index_1(xout, xin; index_list = time_to_index, p = p)
     xout .= NaN
     if !all(ismissing, xin)
         for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
+            if !all(ismissing, view(xin, index_list[i]))
+               if !all(isnan, view(xin, index_list[i]))
                 xout[i] = quantile(skipmissing(view(xin, index_list[i])), p)
+               end
             end
         end
     end
@@ -339,11 +393,14 @@ function quant_by_index_2(xout, xin; index_list = time_to_index, p = p)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = quantile(skipmissing(filter(!isnan, view(xin, index_list[i]))), p)
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = quantile(skipmissing(filter(!isnan, view(xin, index_list[i]))), p)
+                   end
+                end
             end
         end
     end
@@ -353,12 +410,15 @@ function quant_by_index_3(xout, xin; index_list = time_to_index, p = p)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = quantile(filter(!isnan, view(xin, index_list[i])), p)
-            end
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = quantile(filter(!isnan, view(xin, index_list[i])), p)
+                   end
+                end
+            end 
         end
     end
 end
@@ -367,11 +427,14 @@ function quant_by_index_4(xout, xin; index_list = time_to_index, p = p)
     #@show size(xin)
     #@show typeof(xin)
     xout .= NaN
-    if !all(isnan, xin) || !all(ismissing, xin)
-        for i in eachindex(index_list)
-            if !all(isnan, view(xin, index_list[i])) ||
-               !all(ismissing, view(xin, index_list[i]))
-                xout[i] = quantile(view(xin, index_list[i]), p)
+    if !all(ismissing, xin)
+        if !all(isnan, xin)
+            for i in eachindex(index_list)
+                if !all(ismissing, view(xin, index_list[i]))
+                   if !all(isnan, view(xin, index_list[i]))
+                        xout[i] = quantile(view(xin, index_list[i]), p)
+                   end
+                end
             end
         end
     end
