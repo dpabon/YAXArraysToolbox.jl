@@ -6,7 +6,8 @@ using StatsBase,
     NamedArrays,
     Combinatorics,
     YAXArrays,
-    YAXArrayBase
+    YAXArrayBase,
+    DimensionalData
 
 
 
