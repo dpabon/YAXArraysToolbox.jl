@@ -2754,7 +2754,9 @@ version = "0.6.1"
 
 [[deps.YAXArrays]]
 deps = ["CFTime", "DataStructures", "Dates", "DimensionalData", "DiskArrayTools", "DiskArrays", "Distributed", "DocStringExtensions", "Glob", "Interpolations", "IntervalSets", "IterTools", "Markdown", "OffsetArrays", "OnlineStats", "Optim", "OrderedCollections", "ParallelUtilities", "ProgressMeter", "Reexport", "Requires", "Statistics", "StatsBase", "Tables", "WeightedOnlineStats", "YAXArrayBase"]
-git-tree-sha1 = "4f4c96f7774b2188873f3019bbabd82e2eb34a15"
+git-tree-sha1 = "a90452ebcebfe3a14e8fab6e0af7267a662716b6"
+repo-rev = "master"
+repo-url = "https://github.com/JuliaDataCubes/YAXArrays.jl.git"
 uuid = "c21b50f5-aa40-41ea-b809-c0f5e47bfa5c"
 version = "0.5.0"
 
