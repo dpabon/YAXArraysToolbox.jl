@@ -36,7 +36,7 @@ function masking_co_occurrence(
 
         else
 
-            cube_out[i] .= cube_in_to_mask[i]
+            cube_out[i] = cube_in_to_mask[i]
 
         end
 
@@ -126,7 +126,7 @@ function masking_proc(
     co_occurence_thr = nothing,
     cube_delta = nothing,
     minmax_delta = nothing,
-    time_dim = "time",
+    time_dim = :Ti,
     showprog = true,
 )
 
