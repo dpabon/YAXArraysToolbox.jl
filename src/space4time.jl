@@ -1006,20 +1006,20 @@ function space4time_proc(
         )
 
         out_1_dims = OutDims(
-            time_axis_name,
+            Dim{time_axis_name},
             Dim{:summary_stat}(["rsquared", "cumulative_variance", "predicted"]),
         )
 
         # Values of clim_var (z) for pure PFTs
         out_2_dims = OutDims(
-            time_axis_name,
+            Dim{time_axis_name},
             Dim{:classes}(classes_vec),
             Dim{:values_of_Z_for_pure_classes}(["estimated", "estimated_error"]),
         )
         #println([join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)])
         # delta of clim_var produced by the transitions between PFTs
         out_3_dims = OutDims(
-            time_axis_name,
+            Dim{time_axis_name},
             Dim{:transitions}([join(pftstrans_comb_names[i], " to ") for i in eachindex(pftstrans_comb_names)]),
             Dim{:differences}(["delta", "delta_error", "coocurence"]),
         )
