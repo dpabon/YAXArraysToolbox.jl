@@ -859,13 +859,13 @@ end
  
 - ```cube_classes```: YAXARRAY with the discrete classes to be used in the space4time.
  
-- ```time_axis_name``` : String or nothing. Name of the time axis on the input cubes. By default ```time_axis_name = "time"```. if ```time_axis_name = nothing```, not time dimension considered.
+- ```time_axis_name``` : String or nothing. Name of the time axis on the input cubes. By default ```time_axis_name = :Ti```. if ```time_axis_name = nothing```, not time dimension considered.
  
-- ```lon_axis_name``` : String. Name of the longitude axis on the input cubes. By default ```lon_axis_name = "lon"```
+- ```lon_axis_name``` : String. Name of the longitude axis on the input cubes. By default ```lon_axis_name = :lon```
  
-- ```lat_axis_name``` :  String. Name of the longitude axis on the input cubes. By default ```lon_axis_name = "lat"```
+- ```lat_axis_name``` :  String. Name of the longitude axis on the input cubes. By default ```lon_axis_name = :lat```
  
-- ```classes_var_name``` : String. Name of the Variable containing the discrete classes. By default ```classes_var_name = "classes"```.
+- ```classes_var_name``` : String. Name of the Variable containing the discrete classes. By default ```classes_var_name = :classes```.
  
 - ```winsize```: Edge size of the moving window on pixels. By default winsize = 5. E.g. ```winsize = 5``` will produce a moving window with 5^2 pixels.
  
