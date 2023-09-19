@@ -924,19 +924,17 @@ function space4time_proc(
     #println(size(cube_classes))
     # assuming the first dimmension is time.
     if !isnothing(time_axis_name)
-        try
-            time_n = length(lookup(cube_con, Dim{time_axis_name}).data)
+        time_n = try
+             length(lookup(cube_con, Dim{time_axis_name}).data)
         catch e
-            time_n = length(lookup(cube_con, time_axis_name).data)
-            
-        end
-
-        try
-            time_seq = lookup(cube_con, Dim{time_axis_name}).data 
-        catch e
-            time_seq = lookup(cube_con, time_axis_name).data
+            length(lookup(cube_con, time_axis_name).data)
         end
         
+        time_seq = try
+            lookup(cube_con, Dim{time_axis_name}).data 
+        catch e
+            lookup(cube_con, time_axis_name).data
+        end
     else
         time_n = 1
     end
