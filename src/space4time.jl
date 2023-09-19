@@ -926,9 +926,14 @@ function space4time_proc(
     if !isnothing(time_axis_name)
         try
             time_n = length(lookup(cube_con, Dim{time_axis_name}).data)
-            time_seq = lookup(cube_con, Dim{time_axis_name}).data
         catch e
             time_n = length(lookup(cube_con, time_axis_name).data)
+            
+        end
+
+        try
+            time_seq = lookup(cube_con, Dim{time_axis_name}).data 
+        catch e
             time_seq = lookup(cube_con, time_axis_name).data
         end
         
