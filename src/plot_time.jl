@@ -1,4 +1,4 @@
-using YAXArrays, CairoMakie, Zarr, Statistics, Dates, TimeSeries
+using YAXArrays, CairoMakie, Zarr, Statistics, Dates, TimeSeries, DimensionalData
 
 function collapse_space_mean(cube_out, cube_in)
     
@@ -133,11 +133,11 @@ The function allow to plot the time series of a given variables in a cube or all
     """
     function plot_time(
         cube_in::YAXArray;
-        time_axis = "time",
-        var_axis = "Variable",
+        time_axis = :Ti,
+        var_axis = :Variable,
         var = nothing,
-        lat_axis = "lat",
-        lon_axis = "lon",
+        lat_axis = :lat,
+        lon_axis = :lon,
         fun = "mean",
         plot_type = "lines",
         p = nothing,
@@ -160,7 +160,7 @@ The function allow to plot the time series of a given variables in a cube or all
         end
         
         if typeof(var) != Nothing
-            kwarg = (; Symbol(var_axis) => var)
+            kwarg = (; Symbol(var_axis) => At(var))
             
             cube_in = getindex(cube_in; kwarg...)
             
@@ -257,8 +257,8 @@ The function allow to plot the time series of a given variables in a cube or all
                 )
                 
             end
-            dates = temp_cube.time.values
-            vals = temp_cube.data
+            dates = lookup(temp_cube, time_axis).data
+            vals = temp_cube.data[:]
             
             ta = TimeArray(dates, rand(length(dates)))
             
@@ -387,14 +387,14 @@ The function allow to plot the time series of a given variables in a cube or all
                 
             end
             
-            dates = getAxis(time_axis, temp_cube).values
+            dates = lookup(temp_cube, time_axis).data
             
             ta = TimeArray(dates, rand(length(dates)))
             
             tempo = string.(timestamp(ta))
             lentime = length(tempo)
             slice_dates = range(1, lentime, step = lentime ÷ 8)
-            variables_loc = getAxis(var_axis, cube_in).values
+            variables_loc = lookup(cube_in, var_axis).data
             
             
             
@@ -482,7 +482,7 @@ The function allow to plot the time series of a given variables in a cube or all
                                 title = variables_loc[counter],
                                 )
                                 
-                                kwarg = (; Symbol(var_axis) => variables_loc[counter])
+                                kwarg = (; Symbol(var_axis) => At(variables_loc[counter]))
                                 
                                 temp_cube2 = getindex(temp_cube; kwarg...)
                                 
