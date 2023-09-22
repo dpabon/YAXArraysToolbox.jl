@@ -881,17 +881,20 @@ end
 
  ## Output:
  The ```space4time_proc``` produces a YAXARRAY.Dataset with three cubes:
- - SummaryStats cube has one axis ```summary_stat```, and three variables:
-    - ```rsquared```:  
-    - ```cumulative_variance```:
-    - ```predicted```:
- - ```metrics_for_classes``` cube has one axis ```Values of Z for pure classes```, and two variables:
-    - ```estimated```:
-    - ```estimated_error```:
- - metrics_for_transitions has two axis ```transitions``` (all the transitions by pairs between the different classes), and ```Differences``` with three variables:
-    - ```delta```:
-    - ```delta_error```:
-    - ```coocurence```:
+
+ - summary_stats cube has one axis ```summary_stat```, and three variables:
+    - ```rsquared```: ``R^{2}`` of the linear regression in the local moving window.
+    - ```cumulative_variance```: Cumulative variance in the local moving window.
+    - ```predicted```: predicted values in the local moving window.
+
+ - ```metrics_for_classes``` cube has one axis ```values of_Z_for_pure_classes```, and two variables:
+    - ```estimated```: Estimated biophysical variable for a specific class.
+    - ```estimated_error```: Estimated error of the biophysical variable for a specific class.
+    
+ - ```metrics_for_transitions``` cube has two axis ```transitions``` (all the transitions by pairs between the different classes), and ```differences``` with three variables:
+    - ```delta```: Change on the biophysical variable produced by a specific transition.
+    - ```delta_error```: The error associated to the delta estimation.
+    - ```coocurence```: Co-occurrence between two classes in the local moving window.
  """
 function space4time_proc(
     cube_con,
