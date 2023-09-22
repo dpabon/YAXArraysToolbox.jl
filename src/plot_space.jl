@@ -95,6 +95,8 @@ end
 - ```colormap```: Color Map. By default: ```colormap = Reverse(:batlow)```
 - ```coastlines```: Boolean. Plot coast lines. By default ```coastlines = false```
 - ```resolution```: Plot resolution. By default ```resolution = (800, 300)```.
+- ```xticklabel_pad```: Int. X labels padding. By default ```xticklabel_pad = 20```.
+- ```yticklabel_pad```: Int. Y labels padding. By default ```yticklabel_pad =20```.
 - ```ncol```: Number of plots by column. By default ```ncol = 1```.
 - ```nrow```: Number of plots by row. By default ```ncol = 1```.
 - ```showprog```: Boolean. Progress Bar.
@@ -104,6 +106,14 @@ end
 
 ```julia
 
+using YAXArraysToolbox
+using CairoMakie
+using Statistics
+using GeoMakie
+using YAXArrays
+using DimensionalData
+
+
 cube_in = open_dataset(
     "https://s3.bgc-jena.mpg.de:9000/esdl-esdc-v2.1.1/esdc-8d-0.25deg-1x720x1440-2.1.1.zarr",
 )
@@ -112,13 +122,13 @@ cube_in = Cube(cube_in)
 
 
 cube_in = cube_in[
-    lon = (-9.0, 0.0),
-    lat = (35, 40),
-    time = (Date(2010), Date(2014)),
-    Variable = ["leaf_area_index", "sensible_heat"],
+    lon = (-9.0 .. 0.0),
+    lat = (35 .. 40),
+    Ti = (Date(2010) .. Date(2014)),
+    Variable = At(["leaf_area_index", "sensible_heat"]),
 ]
 
-plot_space(cube_in; time_axis = "time", resolution = (900, 600), var_axis = "Variable", var =  "leaf_area_index", fun = "median")
+plot_space(cube_in; time_axis = :Ti, resolution = (900, 500), xticklabel_pad = 25, yticklabel_pad = 25, var_axis = :Variable, var = "leaf_area_index", fun = "median")
 
 
 metric = ["median", "mean", "std", "var", "sum", "quant", "min", "max"]
@@ -128,10 +138,10 @@ for i in eachindex(metric)
     println(metric[i])
     plot_space(
         cube_in;
-        time_axis = "time",
-        var_axis = "Variable",
-        lon_axis = "lon",
-        lat_axis = "lat",
+        time_axis = :Ti,
+        var_axis = :Variable,
+        lon_axis = :lon,
+        lat_axis = :lat,
         var = "sensible_heat",
         fun = metric[i],
         p = 0.2,
@@ -144,34 +154,35 @@ end
 
 plot_space(
     cube_in;
-    time_axis = "time",
-    var_axis = "Variable",
-    lon_axis = "lon",
-    lat_axis = "lat",
+    time_axis = :Ti,
+    var_axis = :Variable,
+    lon_axis = :lon,
+    lat_axis = :lat,
     var = nothing,
     fun = "median",
-    resolution = (1200, 600),
+    resolution = (1200, 300),
     p = 0.2,
     showprog = true,
     max_cache = "100MB",
     ncol = 2,
 )
-
 ```
 
 """
 function plot_space(
     cube_in::YAXArray;
-    time_axis = "time",
-    var_axis = "Variable",
+    time_axis = :Ti,
+    var_axis = :Variable,
     var = nothing,
-    lat_axis = "lat",
-    lon_axis = "lon",
+    lat_axis = :lat,
+    lon_axis = :lon,
     fun = "mean",
     p = nothing,
-    colormap = Reverse(:batlow),
+    colormap_local = Reverse(:batlow),
     coastlines = false,
     resolution = (800, 300),
+    xticklabel_pad=20,
+    yticklabel_pad=20,
     ncol = 1,
     nrow = 1,
     showprog = true,
@@ -190,9 +201,11 @@ function plot_space(
     end
 
     if typeof(var) != Nothing
-        kwarg = (; Symbol(var_axis) => var)
+        kwarg = (; Symbol(var_axis) => At(var))
 
         cube_in = getindex(cube_in; kwarg...)
+
+        #cube_in = cube_in[var_axis = At(var)]
 
         indims = InDims(time_axis)
         outdims = OutDims()
@@ -288,25 +301,27 @@ function plot_space(
 
         end
 
-        lon = getAxis(lon_axis, temp_cube).values
-        lat = getAxis(lat_axis, temp_cube).values
+        lon = lookup(temp_cube, lon_axis).data
+        lat = lookup(temp_cube, lat_axis).data
 
         fig = Figure(resolution = resolution)
 
         ga = GeoAxis(
-            fig[1, 1],
+            fig[1, 1];
             source = "+proj=longlat +datum=WGS84",
             dest = "+proj=longlat",
             coastlines = coastlines,
             lonlims = (minimum(lon), maximum(lon)),
             latlims = (minimum(lat), maximum(lat)),
+            xticklabelpad=xticklabel_pad,
+            yticklabelpad=yticklabel_pad,
             title = var *
                     " \n " *
-                    string(first(getAxis(time_axis, cube_in).values)) *
+                    string(first(lookup(cube_in, time_axis).data)) *
                     " / " *
-                    string(last(getAxis(time_axis, cube_in).values)),
-        )
-        map1 = CairoMakie.heatmap!(ga, lon, lat, temp_cube[:, :], colormap = colormap)
+                    string(last(lookup(cube_in, time_axis).data)),
+                    )
+        map1 = CairoMakie.heatmap!(ga, lon, lat, temp_cube[:, :].data, colormap = colormap_local)
         cbar1 = Colorbar(
             fig[1, 2],
             map1,
@@ -415,7 +430,7 @@ function plot_space(
         end
 
 
-        variables_loc = getAxis(var_axis, cube_in).values
+        variables_loc = lookup(cube_in, var_axis).data
 
 
         if length(variables_loc) > 6
@@ -426,8 +441,8 @@ function plot_space(
 
         fig = Figure(resolution = resolution)
 
-        lon = getAxis(lon_axis, temp_cube).values
-        lat = getAxis(lat_axis, temp_cube).values
+        lon = lookup(temp_cube, lon_axis).data
+        lat = lookup(temp_cube, lat_axis).data
 
 
 
@@ -439,7 +454,7 @@ function plot_space(
             for j = 1:nrow
 
 
-                kwarg = (; Symbol(var_axis) => variables_loc[j])
+                kwarg = (; Symbol(var_axis) => At(variables_loc[j]))
 
                 temp_cube2 = getindex(temp_cube; kwarg...)
 
@@ -450,15 +465,17 @@ function plot_space(
                     coastlines = coastlines,
                     lonlims = (minimum(lon), maximum(lon)),
                     latlims = (minimum(lat), maximum(lat)),
+                    xticklabelpad=xticklabel_pad,
+                    yticklabelpad=yticklabel_pad,
                     title = variables_loc[j] *
                             " \n " *
-                            string(first(getAxis(time_axis, cube_in).values)) *
+                            string(first(lookup(cube_in, time_axis).data)) *
                             " / " *
-                            string(last(getAxis(time_axis, cube_in).values)),
+                            string(last(lookup(cube_in, time_axis).data)),
                 )
 
                 map1 =
-                    CairoMakie.heatmap!(ga, lon, lat, temp_cube2[:, :], colormap = colormap)
+                    CairoMakie.heatmap!(ga, lon, lat, temp_cube2[:, :].data, colormap = colormap_local)
 
                 cbar1 = Colorbar(
                     fig[j, 2],
@@ -483,7 +500,7 @@ function plot_space(
 
             for i = 1:nrow
                 for j = 1:ncol
-                    kwarg = (; Symbol(var_axis) => variables_loc[init_row])
+                    kwarg = (; Symbol(var_axis) => At(variables_loc[init_row]))
 
                     temp_cube2 = getindex(temp_cube; kwarg...)
                     ga = GeoAxis(
@@ -493,18 +510,20 @@ function plot_space(
                         coastlines = coastlines,
                         lonlims = (minimum(lon), maximum(lon)),
                         latlims = (minimum(lat), maximum(lat)),
+                        xticklabelpad=xticklabel_pad,
+                        yticklabelpad=yticklabel_pad,
                         title = variables_loc[init_row] *
                                 " \n " *
-                                string(first(getAxis(time_axis, cube_in).values)) *
+                                string(first(lookup(cube_in, time_axis).data)) *
                                 " / " *
-                                string(last(getAxis(time_axis, cube_in).values)),
+                                string(last(lookup(cube_in, time_axis).data)),
                     )
                     map1 = CairoMakie.heatmap!(
                         ga,
                         lon,
                         lat,
-                        temp_cube2[:, :],
-                        colormap = Reverse(:batlow),
+                        temp_cube2[:, :].data,
+                        colormap = colormap_local,
                     )
                     init_row += 1
                     init_col += 1
