@@ -43,42 +43,48 @@ The masked vales are set as ```NaN```!!.
 ## Examples
 
 ```julia
-using YAXArrays, Zarr
-
-
-axlist = [
-RangeAxis("time", range(1, 20, length = 20)),
-RangeAxis("x", range(1, 10, length = 10)),
-RangeAxis("y", range(1, 5, length = 15)),
-CategoricalAxis("Variable", ["var1", "var2"]),
-]
-
-
-data = rand(20, 10, 15, 2)
-
-
-ds = YAXArray(axlist, data, props)
-
-axlist = [
-RangeAxis("x", range(1, 10, length = 10)),
-RangeAxis("y", range(1, 5, length = 15)),
-CategoricalAxis("Variable", ["var1"]),
-]
-
-
-data = rand(10, 15, 1)
-
-ds_mask = YAXArray(axlist, data)
-
-masking_space(ds, ds_mask; lat_axis = "x", lon_axis = "y")
+using YAXArrays, Zarr, DimensionalData, Test
+axlist = (
+    Dim{:Ti}(range(1, 20, length = 20)),
+    Dim{:x}(range(1, 10, length = 10)),
+    Dim{:y}(range(1, 5, length = 15)),
+    Dim{:Variable}(["var1", "var2"]),
+    )
+    
+    
+    data = rand(20, 10, 15, 2)
+    
+    
+    ds = YAXArray(axlist, data)
+    
+    axlist = (
+    Dim{:x}(range(1, 10, length = 10)),
+    Dim{:y}(range(1, 5, length = 15)),
+    Dim{:Variable}(["var1"]),
+    )
+    
+    
+    data = rand(10, 15, 1)
+    
+    data[3,5,1] = NaN
+    
+    data[1,10,1] = NaN
+    
+    
+    data[9,5,1] = NaN
+    
+    ds_mask = YAXArray(axlist, data)
+    
+    
+    
+    test_cube = masking_space(ds, ds_mask; lat_axis = :x, lon_axis = :y)
 ```
-
 """
 function masking_space(
     cube_in,
     mask;
-    lat_axis,
-    lon_axis,
+    lat_axis = :lat,
+    lon_axis = :lon,
     val_mask = NaN,
     showprog = true,
     max_cache = "100MB",
@@ -98,18 +104,18 @@ function masking_space(
     indims = InDims(lon_axis, lat_axis)
 
     outdims = OutDims(
-        RangeAxis(lon_axis, getAxis(lon_axis, cube_in).values),
-        RangeAxis(lat_axis, getAxis(lat_axis, cube_in).values),
+        Dim{lon_axis}(lookup(cube_in, lon_axis).data),
+        Dim{lat_axis}(lookup(cube_in, lat_axis).data),
     )
 
     temp_mask = mask.data
 
-    if isnan(val_mask)
+    if ismissing(val_mask)
 
-        to_mask = findall(isnan, temp_mask)
-
-    elseif ismissing(val_mask)
         to_mask = findall(ismissing, temp_mask)
+
+    elseif isnan(val_mask)
+        to_mask = findall(isnan, temp_mask)
 
     else
         error("$val_mask is not a valid mask value only missing or NaN is possible.")
