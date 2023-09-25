@@ -1,6 +1,4 @@
-using YAXArrays, StatsBase
-
-
+using YAXArrays, StatsBase, DimensionalData
 
 
 function masking_stats(cube_out, cube_in_to_mask, cube_summary_stats; rsquared_thr)
@@ -133,7 +131,7 @@ function masking_proc(
     if !isnothing(time_dim)
 
         indims = (InDims(time_dim), InDims(time_dim))
-        outdims = OutDims(time_dim)
+        outdims = OutDims(Dim{time_dim}(lookup(cube_in_to_mask, time_dim).data))
 
     else
         indims = (InDims(), InDims())
