@@ -349,7 +349,8 @@ function s4time(
                                 #empty_models[ndim] = GLM.lm(Float32.(lr), convert(Array{Float32}, climvarmat[:,it]))
     
                             catch e
-                                println("error at", loopvars)
+                                println("error")
+                                fit_with_data!(empty_models[ndim], nothing, nothing)
                                 error()
     
                             end
@@ -912,7 +913,6 @@ function space4time_proc(
     minpxl = 25,
     showprog = true,
     max_cache = 1e8,
-    inc_loopvars =false,
 )
 
     # Checking that winsize is odd
