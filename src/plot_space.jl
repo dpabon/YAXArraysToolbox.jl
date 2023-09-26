@@ -475,7 +475,11 @@ function plot_space(
         end
 
 
-        variables_loc = lookup(cube_in, var_axis).data
+        variables_loc = try
+            lookup(cube_in, var_axis).data
+        catch e
+            lookup(cube_in, Dim{var_axis}).data
+        end 
 
 
         if length(variables_loc) > 6
