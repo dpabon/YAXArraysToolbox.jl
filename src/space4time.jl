@@ -109,7 +109,7 @@ function s4time(
     pfts_cube_in,
     buffers;
     pft_list::Vector{String},
-    time_n::Int,
+    time_n,
     max_value::Int,
     p1_static,
     p2_static,
@@ -158,7 +158,14 @@ function s4time(
 
     #clim_var_cube_2 = permutedims(clim_var_cube_in, (3,2,1))
 
-    climvarmat = reshape(clim_var_cube_in, ((winsize^2), time_n))
+    if isnothing(time_n)
+        climvarmat = reshape(clim_var_cube_in, (winsize^2))
+
+    else
+        climvarmat = reshape(clim_var_cube_in, ((winsize^2), time_n))
+    end
+
+    
 
 
     local_pft1 =
