@@ -912,6 +912,7 @@ function space4time_proc(
     minpxl = 25,
     showprog = true,
     max_cache = 1e8,
+    inc_loopvars =false,
 )
 
     # Checking that winsize is odd
@@ -1086,7 +1087,7 @@ function space4time_proc(
         outdims = outdims,
         max_cache = max_cache,
         showprog = showprog,
-        include_loopvars = false;
+        include_loopvars = inc_loopvars;
         pft_list = classes_vec,
         time_n = time_n,
         max_value = max_value,
