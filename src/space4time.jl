@@ -350,7 +350,7 @@ function s4time(
     
                             catch e
                                 println("error")
-                                fit_with_data!(empty_models[ndim], nothing, nothing)
+                                reset_model!(empty_models[ndim]; X = nothing, y = nothing)
                                 error()
     
                             end
