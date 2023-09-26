@@ -131,7 +131,12 @@ function masking_proc(
     if !isnothing(time_dim)
 
         indims = (InDims(time_dim), InDims(time_dim))
-        outdims = OutDims(Dim{time_dim}(lookup(cube_in_to_mask, time_dim).data))
+        outdims = try
+            OutDims(Dim{time_dim}(lookup(cube_in_to_mask, Dim{time_dim}).data))
+        catch e
+            OutDims(Dim{time_dim}(lookup(cube_in_to_mask, time_dim).data))
+        end
+        
 
     else
         indims = (InDims(), InDims())
