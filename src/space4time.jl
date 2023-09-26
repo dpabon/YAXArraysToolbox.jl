@@ -686,8 +686,8 @@ function s4time(
     
                             catch e
                                 #println("error at")
-                                #reset_model!(empty_models[ndim], X=nothing, y=nothing)
-                                break
+                                reset_model!(empty_models[ndim], X=nothing, y=nothing)
+                                
                                 #error()
     
                             end
