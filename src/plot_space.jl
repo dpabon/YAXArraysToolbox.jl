@@ -173,6 +173,7 @@ function plot_space(
     time_axis = :Ti,
     var_axis = :Variable,
     var = nothing,
+    title_op = " ",
     lat_axis = :lat,
     lon_axis = :lon,
     fun = "mean",
@@ -197,6 +198,14 @@ function plot_space(
 
     else
         error("only MB or GB values are accepted for max_cache")
+    end
+
+    if typeof(var_axis) != Nothing
+
+
+
+    else
+        
     end
 
     if typeof(var) != Nothing
@@ -426,6 +435,42 @@ function plot_space(
                 max_cache = max_cache,
             )
 
+        end
+
+        if isnothing(var_axis)
+
+            fig = Figure(resolution = resolution)
+
+            lon = lookup(temp_cube, lon_axis).data
+            lat = lookup(temp_cube, lat_axis).data
+
+            ga = GeoAxis(
+                    fig[1, 1],
+                    source = "+proj=longlat +datum=WGS84",
+                    dest = "+proj=longlat",
+                    coastlines = coastlines,
+                    lonlims = (minimum(lon), maximum(lon)),
+                    latlims = (minimum(lat), maximum(lat)),
+                    xticklabelpad=xticklabel_pad,
+                    yticklabelpad=yticklabel_pad,
+                    title = title_op * string(first(lookup(cube_in, time_axis).data)) *
+                            " / " *
+                            string(last(lookup(cube_in, time_axis).data)),
+                )
+
+                map1 =
+                    CairoMakie.heatmap!(ga, lon, lat, temp_cube[:, :].data, colormap = colormap_local)
+
+                cbar1 = Colorbar(
+                    fig[1, 2],
+                    map1,
+                    label = fun,
+                    ticklabelsize = 18,
+                    labelpadding = 5,
+                    width = 10,
+                )
+
+            return fig
         end
 
 
