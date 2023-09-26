@@ -351,7 +351,7 @@ function s4time(
                             catch e
                                 println("error")
                                 reset_model!(empty_models[ndim]; X = nothing, y = nothing)
-                                error()
+                                #error()
     
                             end
     
@@ -677,8 +677,9 @@ function s4time(
                                 #empty_models[ndim] = GLM.lm(Float32.(lr), convert(Array{Float32}, climvarmat[:,it]))
     
                             catch e
-                                println("error at", loopvars)
-                                error()
+                                println("error at")
+                                reset_model!(empty_models[ndim], X=nothing, Y=nothing)
+                                #error()
     
                             end
     
