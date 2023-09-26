@@ -176,7 +176,7 @@ function s4time(
     pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.0)
     pfts_cube_in_1 = replace!(pfts_cube_in, missing => 0.0)
 
-    if time_n == 1
+    if isnothing(time_n)
 
         #pfts_cube_in_1 =
             #permutedims(reshape(pfts_cube_in_1, (winsize, winsize, nc, 1)), (4, 1, 2, 3))
@@ -937,7 +937,7 @@ function space4time_proc(
             lookup(cube_con, time_axis_name).data
         end
     else
-        time_n = 1
+        time_n = nothing
     end
     # assuming that pfts presence change in time. last dimmension refer to the number of pfts.
     # pfts_cube = rand(Float32, (5,5, length(classes_vec)))
