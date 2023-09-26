@@ -9,7 +9,6 @@ function collapse_time_mean(cube_out, cube_in)
             cube_out .= mean(filter(!isnan, skipmissing(cube_in)))
         end
     end
-
 end
 
 
@@ -340,7 +339,7 @@ function plot_space(
 
         if fun == "mean"
 
-            return temp_cube = mapCube(
+            temp_cube = mapCube(
                 collapse_time_mean,
                 cube_in,
                 indims = indims,
@@ -544,6 +543,5 @@ function plot_space(
             end
             return fig
         end
-
     end
 end
