@@ -200,11 +200,20 @@ function plot_space(
         error("only MB or GB values are accepted for max_cache")
     end
 
-    if typeof(var_axis) != Nothing
+    time_vec = try 
+        lookup(cube_in, time_axis).data
+    catch e
+        lookup(cube_in, Dim{time_axis}).data
+    end
 
-
-
+    if length(time_vec) == 1
+        title_tmp = " \n " *
+        string(time_vec[1])
     else
+        title_tmp = " \n " *
+        string(first(lookup(cube_in, time_axis).data)) *
+        " / " *
+        string(last(lookup(cube_in, time_axis).data))
         
     end
 
@@ -323,12 +332,7 @@ function plot_space(
             latlims = (minimum(lat), maximum(lat)),
             xticklabelpad=xticklabel_pad,
             yticklabelpad=yticklabel_pad,
-            title = var *
-                    " \n " *
-                    string(first(lookup(cube_in, time_axis).data)) *
-                    " / " *
-                    string(last(lookup(cube_in, time_axis).data)),
-                    )
+            title = var * title_tmp)
         map1 = CairoMakie.heatmap!(ga, lon, lat, temp_cube[:, :].data, colormap = colormap_local)
         cbar1 = Colorbar(
             fig[1, 2],
@@ -453,10 +457,7 @@ function plot_space(
                     latlims = (minimum(lat), maximum(lat)),
                     xticklabelpad=xticklabel_pad,
                     yticklabelpad=yticklabel_pad,
-                    title = title_op * string(first(lookup(cube_in, time_axis).data)) *
-                            " / " *
-                            string(last(lookup(cube_in, time_axis).data)),
-                )
+                    title = title_op * title_tmp)
 
                 map1 =
                     CairoMakie.heatmap!(ga, lon, lat, temp_cube[:, :].data, colormap = colormap_local)
@@ -511,12 +512,7 @@ function plot_space(
                     latlims = (minimum(lat), maximum(lat)),
                     xticklabelpad=xticklabel_pad,
                     yticklabelpad=yticklabel_pad,
-                    title = variables_loc[j] *
-                            " \n " *
-                            string(first(lookup(cube_in, time_axis).data)) *
-                            " / " *
-                            string(last(lookup(cube_in, time_axis).data)),
-                )
+                    title = variables_loc[j] * title_tmp)
 
                 map1 =
                     CairoMakie.heatmap!(ga, lon, lat, temp_cube2[:, :].data, colormap = colormap_local)
@@ -556,12 +552,7 @@ function plot_space(
                         latlims = (minimum(lat), maximum(lat)),
                         xticklabelpad=xticklabel_pad,
                         yticklabelpad=yticklabel_pad,
-                        title = variables_loc[init_row] *
-                                " \n " *
-                                string(first(lookup(cube_in, time_axis).data)) *
-                                " / " *
-                                string(last(lookup(cube_in, time_axis).data)),
-                    )
+                        title = variables_loc[init_row] * title_tmp)
                     map1 = CairoMakie.heatmap!(
                         ga,
                         lon,
