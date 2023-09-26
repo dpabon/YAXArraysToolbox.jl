@@ -1087,7 +1087,7 @@ function space4time_proc(
         outdims = outdims,
         max_cache = max_cache,
         showprog = showprog,
-        include_loopvars = inc_loopvars;
+        include_loopvars = false;
         pft_list = classes_vec,
         time_n = time_n,
         max_value = max_value,
