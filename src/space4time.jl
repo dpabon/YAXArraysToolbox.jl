@@ -356,8 +356,9 @@ function s4time(
                             #empty_models[ndim] = GLM.lm(Float32.(lr), convert(Array{Float32}, climvarmat[:,it]))
 
                         catch e
-                            println("error at", loopvars)
-                            error()
+                            #println("error at", loopvars)
+                            #error()
+                            break
 
                         end
 
