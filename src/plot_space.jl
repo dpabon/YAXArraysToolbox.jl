@@ -325,7 +325,7 @@ function plot_space(
 
         if fun == "mean"
 
-            return temp_cube = mapCube(
+            temp_cube = mapCube(
                 collapse_time_mean,
                 cube_in,
                 indims = indims,
