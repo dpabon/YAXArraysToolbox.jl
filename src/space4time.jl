@@ -134,13 +134,7 @@ function s4time(
     #println(size(clim_var_cube_in))
     #println(size(pfts_cube_in))
     #println(size(out_3))
-    sigma1 = sigma1_glob[Threads.threadid()]
-    prederr = prederr_glob[Threads.threadid()]
-    predres = predres_glob[Threads.threadid()]
-    localcomp_fix = localcomp_fix_glob[Threads.threadid()]
-    pftsvarmat_f = pftsvarmat_f_glob[Threads.threadid()]
-    my_empty_models = empty_models[Threads.threadid()]
-    out_pmindist = out_pmindist_global[Threads.threadid()]
+    sigma1_glob, prederr_glob, predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_global = take!(buffers)
     #println(Threads.threadid())
     #println(loopvars)
 
@@ -248,20 +242,20 @@ function s4time(
 
             # make sure compositions are really precisely right.
 
-            #localcomp_fix = mapslices(x->1-sum(x), pftsvarmat, dims = 2)
-            localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
-            #map!(x->1-sum(x), localcomp_fix, eachslice(pftsvarmat, dims = 1))
-            #println(size(localcomp_fix))
-            #println(localcomp_fix)
-            pftsvarmat_f = [pftsvarmat localcomp_fix]
+            #localcomp_fix_glob = mapslices(x->1-sum(x), pftsvarmat, dims = 2)
+            localcomp_fix_glob = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
+            #map!(x->1-sum(x), localcomp_fix_glob, eachslice(pftsvarmat, dims = 1))
+            #println(size(localcomp_fix_glob))
+            #println(localcomp_fix_glob)
+            pftsvarmat_f_glob = [pftsvarmat localcomp_fix_glob]
 
-            map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
+            map!((x) -> round(x, digits = 4), pftsvarmat_f_glob, pftsvarmat_f_glob)
 
             # some PFTs might not be present in the 5*5 window
             # these must be identified and removed, as they cannot be predicted
 
             #pftpres_check = vec(mapslices(sum, pftsvarmat, dims = 1) .> 0)
-            pftpres_check = vec(sum(pftsvarmat_f, dims = 1) .> 0)
+            pftpres_check = vec(sum(pftsvarmat_f_glob, dims = 1) .> 0)
 
             pftpres_check[nc+1] = 0
 
@@ -273,7 +267,7 @@ function s4time(
 
             #uniquepixels_char = mapslices(x->string(x), pftsvarmat, dims = 2)
             #uniquepixels_char = string(eachrow(pftsvarmat))
-            uniquepixels_char = unique(eachslice(pftsvarmat_f, dims = 1))
+            uniquepixels_char = unique(eachslice(pftsvarmat_f_glob, dims = 1))
 
             uniquepixels = length(uniquepixels_char)
 
@@ -284,7 +278,7 @@ function s4time(
                 # println("test")
                 # avoid divided by 0
                 #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
-                lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
+                lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f_glob, dims = 1))
                 lc1 = reduce(vcat, lc1')
                 # centre the columns (to be in the centre wrt new space)
 
@@ -365,8 +359,8 @@ function s4time(
 
                         #println("before fail")
                         try
-                            fit_with_data!(my_empty_models[ndim], lr, climvarmat[:, it])
-                            #my_empty_models[ndim] = GLM.lm(Float32.(lr), convert(Array{Float32}, climvarmat[:,it]))
+                            fit_with_data!(empty_models[ndim], lr, climvarmat[:, it])
+                            #empty_models[ndim] = GLM.lm(Float32.(lr), convert(Array{Float32}, climvarmat[:,it]))
 
                         catch e
                             println("error at", loopvars)
@@ -377,7 +371,7 @@ function s4time(
 
                         # continue only if there are no NA in the estimated coefficients
 
-                        coef_reg = GLM.coef(my_empty_models[ndim])
+                        coef_reg = GLM.coef(empty_models[ndim])
                         #println("original coef $coef_reg")
                         #println("second estimation coef $(lr\climvarmat[:,it])")
 
@@ -386,7 +380,7 @@ function s4time(
                             if isa(bogusc2, Vector)
 
                                 boguspred = predict(
-                                    my_empty_models[ndim],
+                                    empty_models[ndim],
                                     [ones(length(bogusc3)) bogusc3],
                                 )
                                 # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
@@ -394,7 +388,7 @@ function s4time(
                             else
                                 # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
                                 boguspred = predict(
-                                    my_empty_models[ndim],
+                                    empty_models[ndim],
                                     [ones(size(bogusc3, 1)) bogusc3],
                                 )
 
@@ -403,7 +397,7 @@ function s4time(
 
                             x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
 
-                            vcv = GLM.vcov(my_empty_models[ndim])
+                            vcv = GLM.vcov(empty_models[ndim])
                             # vcv = GLM.vcov(compreg)
 
                             sigma = x2pred * vcv * x2pred'
@@ -414,43 +408,43 @@ function s4time(
 
                             # value of climatevar for pure ptfs
 
-                            predres .= NaN
+                            predres_glob .= NaN
                             #println(boguspred)
-                            predres[view(pftpres_check, 1:nc)] = boguspred
+                            predres_glob[view(pftpres_check, 1:nc)] = boguspred
                             #println(it)
 
 
-                            out_2[it, :, 1] = predres
+                            out_2[it, :, 1] = predres_glob
 
 
-                            prederr .= NaN
+                            prederr_glob .= NaN
 
-                            prederr[view(pftpres_check, 1:nc)] = sqrt.(diag(sigma))
+                            prederr_glob[view(pftpres_check, 1:nc)] = sqrt.(diag(sigma))
 
 
-                            out_2[it, :, 2] = prederr
+                            out_2[it, :, 2] = prederr_glob
 
 
                             # prediction of varclim for the central pixel with its real pft combination
 
-                            out_1[it, 3] = StatsModels.predict(my_empty_models[ndim])[half]
+                            out_1[it, 3] = StatsModels.predict(empty_models[ndim])[half]
 
                             # Rsquare of the regression
 
-                            out_1[it, 1] = StatsModels.r2(my_empty_models[ndim])
+                            out_1[it, 1] = StatsModels.r2(empty_models[ndim])
                             # println(out_1)
                             # println(r2(compreg))
 
                             # and now for the transitions
                             # only the PFTs identified in the pftlist are to be used
 
-                            sigma1 .= NaN
-                            sigma1[view(pftpres_check, 1:nc), view(pftpres_check, 1:nc)] =
+                            sigma1_glob .= NaN
+                            sigma1_glob[view(pftpres_check, 1:nc), view(pftpres_check, 1:nc)] =
                                 sigma
 
                             # calculate the difference on climatevar caused by going from one pft to another.
 
-                            diff_clim_pft_pred = round.((predres .- predres'), digits = 10)
+                            diff_clim_pft_pred = round.((predres_glob .- predres_glob'), digits = 10)
 
                             diff_clim_pft_pred = diff_clim_pft_pred[tran_check]
 
@@ -460,7 +454,7 @@ function s4time(
 
                             diff_clim_pft_pred_var =
                                 round.(
-                                    (diag(sigma1) .+ diag(sigma1)') .- 2 * sigma1,
+                                    (diag(sigma1_glob) .+ diag(sigma1_glob)') .- 2 * sigma1_glob,
                                     digits = 10,
                                 )
 
@@ -526,6 +520,18 @@ function s4time(
         end
         #println(it)
     end
+    # Releasing buffer:
+
+    sigma1_glob .= NaN
+    prederr_glob .= NaN
+    prederr_glob .= NaN
+    localcomp_fix_glob .= rand(winsize^2)
+    pftsvarmat_f_glob .= rand(winsize^2, nc + 1)
+    out_pmindist_global .= zeros(1, winsize^2)
+
+    alltempobjects = (sigma1_glob, prederr_glob, predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_global)
+
+    put!(buffers, alltempobjects)
 end
 
 
@@ -614,11 +620,26 @@ function space4time_proc(
     # assuming the last dimmension is PFTs
     nc = length(classes_vec)
 
-    sigma1_glob = [fill(NaN, (nc, nc)) for i = 1:Threads.nthreads()]
+    sigma1_glob = fill(NaN, (nc, nc))
 
-    prederr_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
+    prederr_glob = fill(NaN, nc)
 
-    predres_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
+    predres_glob = fill(NaN, nc)
+
+    localcomp_fix_glob = rand(winsize^2)
+
+    pftsvarmat_f_glob = rand(winsize^2, nc + 1)
+
+    empty_models = [empty_model(i, winsize^2) for i = 1:nc]
+
+    out_pmindist_global = zeros(1, winsize^2)
+
+    alltempobjects = (sigma1_glob,prederr_glob,predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_global)
+
+    tempchannel = Channel{typeof(alltempobjects)}(Threads.nthreads()) #Create a channel that can hold the buffers for each thread
+    for i in 1:Threads.nthreads()
+        put!(tempchannel,copy.(alltempobjects))
+    end
     # lower triangular matrix index use further on
 
     ltriindex = NamedArray(LowerTriangular(fill(1, (nc, nc))))
@@ -640,13 +661,12 @@ function space4time_proc(
 
     # linear regression
 
-    empty_models = [[empty_model(i, winsize^2) for i = 1:nc] for j = 1:Threads.nthreads()]
+    
 
     p1_static = range(0, 1, length = winsize^2)
 
     p2_static = reverse(p1_static)
 
-    out_pmindist_global = [zeros(1, winsize^2) for i = 1:Threads.nthreads()]
 
     denom = sum(sqrt.(sum.(eachrow([p1_static p2_static] .^ 2))))
 
