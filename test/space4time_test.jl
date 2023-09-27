@@ -59,7 +59,7 @@ using Statistics
     # New spatial resolution in meters
     size_new_pixel = 10
 
-    size_new_edge = Int(edge / size_pixel_new)
+    size_new_edge = Int(edge / size_new_pixel)
 
     # we will use Tiled View to create a view of each one of the new pixels
     a = TiledView(
