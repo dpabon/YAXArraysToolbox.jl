@@ -108,33 +108,26 @@ function s4time(
     out_3,
     clim_var_cube_in,
     pfts_cube_in,
-    loopvars;
-    empty_models,
+    buffers;
     pft_list::Vector{String},
     time_n::Int,
     max_value::Int,
     p1_static,
     p2_static,
-    sigma1_glob,
-    prederr_glob,
-    predres_glob,
     minDiffPxls,
     tran_check,
     half,
-    localcomp_fix_glob,
-    pftsvarmat_f_glob,
     winsize = 5,
     transitions_n,
     pftstrans_comb_names,
     nc,
-    out_pmindist_global,
     denom,
     minpxl,
 )
     #println(size(clim_var_cube_in))
     #println(size(pfts_cube_in))
     #println(size(out_3))
-    sigma1_glob, prederr_glob, predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_global = take!(buffers)
+    sigma1_glob, prederr_glob, predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_glob = take!(buffers)
     #println(Threads.threadid())
     #println(loopvars)
 
@@ -210,7 +203,7 @@ function s4time(
                 pfts_cube_in_1[it, :, :, local_pft2[comp]],
                 p1_static,
                 p2_static,
-                out_pmindist,
+                out_pmindist_glob,
                 denom,
             )
             #println("all good")
@@ -527,9 +520,9 @@ function s4time(
     prederr_glob .= NaN
     localcomp_fix_glob .= rand(winsize^2)
     pftsvarmat_f_glob .= rand(winsize^2, nc + 1)
-    out_pmindist_global .= zeros(1, winsize^2)
+    out_pmindist_glob .= zeros(1, winsize^2)
 
-    alltempobjects = (sigma1_glob, prederr_glob, predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_global)
+    alltempobjects = (sigma1_glob, prederr_glob, predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_glob)
 
     put!(buffers, alltempobjects)
 end
@@ -632,9 +625,9 @@ function space4time_proc(
 
     empty_models = [empty_model(i, winsize^2) for i = 1:nc]
 
-    out_pmindist_global = zeros(1, winsize^2)
+    out_pmindist_glob = zeros(1, winsize^2)
 
-    alltempobjects = (sigma1_glob,prederr_glob,predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_global)
+    alltempobjects = (sigma1_glob,prederr_glob,predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_glob)
 
     tempchannel = Channel{typeof(alltempobjects)}(Threads.nthreads()) #Create a channel that can hold the buffers for each thread
     for i in 1:Threads.nthreads()
@@ -783,30 +776,24 @@ function space4time_proc(
     out_1, out_2, out_3 = mapCube(
         s4time,
         (cube_con, cube_classes),
+        tempchannel,
         indims = (indims, indims_classes),
         outdims = outdims,
         max_cache = max_cache,
         showprog = showprog,
-        include_loopvars = true;
-        empty_models,
+        include_loopvars = false;
         pft_list = classes_vec,
         time_n = time_n,
         max_value = max_value,
         p1_static,
         p2_static,
-        sigma1_glob,
-        prederr_glob,
-        predres_glob,
         minDiffPxls,
         tran_check,
         half,
-        localcomp_fix_glob,
-        pftsvarmat_f_glob,
         winsize = winsize,
         transitions_n = transitions_n,
         pftstrans_comb_names = pftstrans_comb_names,
         nc = nc,
-        out_pmindist_global = out_pmindist_global,
         denom = denom,
         minpxl = minpxl,
     )
