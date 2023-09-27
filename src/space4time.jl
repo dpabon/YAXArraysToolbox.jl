@@ -187,6 +187,13 @@ function s4time(
 
 
     for it = 1:time_n
+
+        sigma1_glob .= NaN
+        prederr_glob .= NaN
+        prederr_glob .= NaN
+        localcomp_fix_glob .= rand(winsize^2)
+        pftsvarmat_f_glob .= rand(winsize^2, nc + 1)
+        out_pmindist_glob .= zeros(1, winsize^2)
         # co-ocurrence estimation
         #println(it)
         #println(transitions_n)
@@ -356,9 +363,9 @@ function s4time(
                             #empty_models[ndim] = GLM.lm(Float32.(lr), convert(Array{Float32}, climvarmat[:,it]))
 
                         catch e
-                            #println("error at", loopvars)
+                            println("error at ...") # , loopvars
                             #error()
-                            break
+                            #break
 
                         end
 
@@ -514,18 +521,19 @@ function s4time(
         end
         #println(it)
         # Releasing buffer:
-
+        reset_model!.(empty_models)
+    end
     sigma1_glob .= NaN
     prederr_glob .= NaN
     prederr_glob .= NaN
     localcomp_fix_glob .= rand(winsize^2)
     pftsvarmat_f_glob .= rand(winsize^2, nc + 1)
     out_pmindist_glob .= zeros(1, winsize^2)
+    reset_model!.(empty_models)
 
     alltempobjects = (sigma1_glob, prederr_glob, predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_glob)
 
     put!(buffers, alltempobjects)
-    end
 end
 
 
