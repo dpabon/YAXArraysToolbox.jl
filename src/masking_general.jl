@@ -36,7 +36,7 @@ function masking_co_occurrence(
 
         else
 
-            cube_out[i] .= cube_in_to_mask[i]
+            cube_out[i] = cube_in_to_mask[i]
 
         end
 
