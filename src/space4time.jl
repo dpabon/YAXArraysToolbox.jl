@@ -513,8 +513,7 @@ function s4time(
             end
         end
         #println(it)
-    end
-    # Releasing buffer:
+        # Releasing buffer:
 
     sigma1_glob .= NaN
     prederr_glob .= NaN
@@ -526,6 +525,7 @@ function s4time(
     alltempobjects = (sigma1_glob, prederr_glob, predres_glob, localcomp_fix_glob, pftsvarmat_f_glob, empty_models, out_pmindist_glob)
 
     put!(buffers, alltempobjects)
+    end
 end
 
 
