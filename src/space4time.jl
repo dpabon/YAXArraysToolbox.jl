@@ -190,6 +190,7 @@ function s4time(
     #println(local_pft1)
     #println(local_pft2)
     pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.0)
+    pfts_cube_in_1 = replace!(pfts_cube_in, missing => 0.0)
 
     if time_n == 1
 
