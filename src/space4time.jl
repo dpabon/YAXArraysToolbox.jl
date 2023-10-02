@@ -174,7 +174,9 @@ function s4time(
 
     #clim_var_cube_2 = permutedims(clim_var_cube_in, (3,2,1))
 
-    climvarmat = reshape(clim_var_cube_in, ((winsize^2), time_n))
+    climvarmat = collect(reshape(clim_var_cube_in, ((winsize^2), time_n)))
+
+    replace!(climvarmat, missing => NaN)
 
 
     local_pft1 =
