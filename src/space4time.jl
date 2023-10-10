@@ -367,20 +367,14 @@ function s4time(
                         # compreg = GLM.lm(Term(:lt) ~ sum(Term.(Symbol.(names(data[:, Not(:lt)])))), data)
 
                         #println("before fail")
-                        try
-                            fit_with_data!(my_empty_models[ndim], lr, climvarmat[:, it])
-                            #my_empty_models[ndim] = GLM.lm(Float32.(lr), convert(Array{Float32}, climvarmat[:,it]))
+                       
+                        ols = lm([ones(size(climvarmat, 1)) lr], climvarmat[:,it]; method=:qr, dropcollinear=false)
 
-                        catch e
-                            println("error at", loopvars)
-                            error()
-
-                        end
-
+                    
 
                         # continue only if there are no NA in the estimated coefficients
 
-                        coef_reg = GLM.coef(my_empty_models[ndim])
+                        coef_reg = GLM.coef(ols)
                         #println("original coef $coef_reg")
                         #println("second estimation coef $(lr\climvarmat[:,it])")
 
@@ -397,7 +391,7 @@ function s4time(
                             else
                                 # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
                                 boguspred = predict(
-                                    my_empty_models[ndim],
+                                    ols,
                                     [ones(size(bogusc3, 1)) bogusc3],
                                 )
 
@@ -406,7 +400,7 @@ function s4time(
 
                             x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
 
-                            vcv = GLM.vcov(my_empty_models[ndim])
+                            vcv = GLM.vcov(ols)
                             # vcv = GLM.vcov(compreg)
 
                             sigma = x2pred * vcv * x2pred'
@@ -436,11 +430,11 @@ function s4time(
 
                             # prediction of varclim for the central pixel with its real pft combination
 
-                            out_1[it, 3] = StatsModels.predict(my_empty_models[ndim])[half]
+                            out_1[it, 3] = StatsModels.predict(ols)[half]
 
                             # Rsquare of the regression
 
-                            out_1[it, 1] = StatsModels.r2(my_empty_models[ndim])
+                            out_1[it, 1] = StatsModels.r2(ols)
                             # println(out_1)
                             # println(r2(compreg))
 
