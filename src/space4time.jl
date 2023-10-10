@@ -1,42 +1,4 @@
 
-function empty_model(npred = 3, nsample = 100)
-    resp = GLM.LmResp(randn(nsample), similar(1:nsample, 0))
-    chol = GLM.cholpred([ones(nsample) rand(nsample, npred)])
-    GLM.LinearModel(resp, chol)
-end
-
-function reset_model!(model; X = nothing, y = nothing)
-
-    model.rr.mu .= 0.0
-
-    if y !== nothing
-        model.rr.y .= y
-    end
-
-    p = model.pp
-
-    if X !== nothing
-        p.X[:, 2:end] .= X
-        X2 = p.X
-        newchol = cholesky!(Hermitian(float(X2'X2)))
-        p.chol.factors .= newchol.factors
-    end
-
-    p.beta0 .= 0
-
-    p.delbeta .= 0
-
-end
-
-
-
-
-function fit_with_data!(model, X, y)
-    reset_model!(model, X = X, y = y)
-    fit!(model)
-end
-
-
 
 
 function coocufun(out, q1, q2, p1, p2, out_pmindist, denom)
