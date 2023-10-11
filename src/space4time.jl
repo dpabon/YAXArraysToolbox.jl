@@ -136,9 +136,11 @@ function s4time(
 
     if isnothing(time_n)
         climvarmat = reshape(clim_var_cube_in, (winsize^2))
+        climvarmat = covert(Array{Float64}, climvarmat)
 
     else
         climvarmat = reshape(clim_var_cube_in, ((winsize^2), time_n))
+        climvarmat = covert(Array{Float64}, climvarmat)
     end
 
 
@@ -161,6 +163,7 @@ function s4time(
     replace!(pfts_cube_in_1, missing => 0.0)
     replace!(pfts_cube_in_1, NaN32 => 0.0)
     replace!(pfts_cube_in_1, NaN16 => 0.0)
+    pfts_cube_in_1 = covert(Array{Float64}, pfts_cube_in_1)
 
 
     if isnothing(time_n)
