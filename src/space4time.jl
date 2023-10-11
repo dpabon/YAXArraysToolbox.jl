@@ -577,7 +577,7 @@ function s4time(
                 # making the problem 0-dimensional
     
                 if uniquepixels > minDiffPxls && sum(pftpres_check) > 1
-                    println("test")
+                    #println("test")
                     # avoid divided by 0
                     #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
                     lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
@@ -660,17 +660,6 @@ function s4time(
                             # compreg = GLM.lm(Term(:lt) ~ sum(Term.(Symbol.(names(data[:, Not(:lt)])))), data)
     
                             #println("before fail")
-                            try
-                                fit_with_data!(empty_models[ndim], lr, climvarmat[:, it])
-                                #empty_models[ndim] = GLM.lm(Float32.(lr), convert(Array{Float32}, climvarmat[:,it]))
-    
-                            catch e
-                                #println("error at")
-                                #reset_model!(empty_models[ndim], X=nothing, y=nothing)
-                                break
-                                #error()
-    
-                            end
 
                             ols = lm([ones(size(lr, 1)) lr], climvarmat[:, it]; method=:qr, dropcollinear = false)
 
