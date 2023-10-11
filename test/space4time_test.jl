@@ -252,7 +252,14 @@ using Dates
     )
 
 
+
     metrics_transitions_cube = results_space4time.metrics_for_transitions
+
+    all(isnan, metrics_transitions_cube[differences = At("delta")].data)
+
+    all(iszero, metrics_transitions_cube[differences = At("coocurence")].data)
+
+
 
     masking_without_delta = masking_proc(
         results_space4time.metrics_for_transitions;
@@ -266,6 +273,8 @@ using Dates
     )
 
     transitions = getAxis("transitions", masking_without_delta)
+
+    @test all(isnan,masking_without_delta.data) == false
 
 
 end
