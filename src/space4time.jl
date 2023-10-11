@@ -163,7 +163,7 @@ function s4time(
     replace!(pfts_cube_in_1, missing => 0.0)
     replace!(pfts_cube_in_1, NaN32 => 0.0)
     replace!(pfts_cube_in_1, NaN16 => 0.0)
-    pfts_cube_in_1 = covert(Array{Float64}, pfts_cube_in_1)
+    pfts_cube_in_1 = convert(Array{Float64}, pfts_cube_in_1)
 
 
     if isnothing(time_n)
