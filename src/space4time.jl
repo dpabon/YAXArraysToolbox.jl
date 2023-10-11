@@ -537,7 +537,7 @@ function s4time(
             #println(pftsvarmat)
     
             if isfinite(sum(pftsvarmat)) && sum(pftsvarmat) > 0.0
-                println("test")
+                #println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
                 #println(maximum(vec(pftsvarmat)))
@@ -577,7 +577,7 @@ function s4time(
                 # making the problem 0-dimensional
     
                 if uniquepixels > minDiffPxls && sum(pftpres_check) > 1
-                    # println("test")
+                    println("test")
                     # avoid divided by 0
                     #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
                     lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
