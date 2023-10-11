@@ -2,7 +2,7 @@
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "df404005ef78ddcc5bc085d148b7827b4e575c4a"
+project_hash = "38a89a25d032a6d2350da4a4ebd0397ef01c1b57"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -1595,12 +1595,6 @@ version = "1.1.1"
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
 
-[[deps.NeutralLandscapes]]
-deps = ["DataStructures", "Distributions", "NaNMath", "NearestNeighbors", "Random", "Requires", "Statistics", "StatsBase"]
-git-tree-sha1 = "9f7d6447d9ec5aa31777020244af65ef0b70a23c"
-uuid = "71847384-8354-4223-ac08-659a5128069f"
-version = "0.1.2"
-
 [[deps.Observables]]
 git-tree-sha1 = "6862738f9796b3edc1c09d0890afce4eca9e7e93"
 uuid = "510215fc-4207-5dde-b226-833fc4488ee2"
@@ -2275,9 +2269,11 @@ version = "1.7.0"
 
 [[deps.StatsBase]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics", "StatsAPI"]
-git-tree-sha1 = "d1bf48bfcc554a3761a133fe3a9bb01488e06916"
+git-tree-sha1 = "c8552d0f7eeac601056f7285b985847899e39cab"
+repo-rev = "master"
+repo-url = "https://github.com/JuliaStats/StatsBase.jl.git"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
-version = "0.33.21"
+version = "0.34.2"
 
 [[deps.StatsFuns]]
 deps = ["HypergeometricFunctions", "IrrationalConstants", "LogExpFunctions", "Reexport", "Rmath", "SpecialFunctions"]
