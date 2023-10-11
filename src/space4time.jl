@@ -488,7 +488,7 @@ function s4time(
         for it = 1:time_n
             # co-ocurrence estimation
 
-            #println(it)
+            println(it)
             #println(local_pft1)
             #println(local_pft2)
             #println(transitions_n)
