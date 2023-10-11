@@ -158,9 +158,9 @@ function s4time(
     #println(local_pft1)
     #println(local_pft2)
     pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.0)
-    pfts_cube_in_1 = replace!(pfts_cube_in, missing => 0.0)
-    pfts_cube_in_1 = replace!(pfts_cube_in, NaN32 => 0.0)
-    pfts_cube_in_1 = replace!(pfts_cube_in, NaN16 => 0.0)
+    replace!(pfts_cube_in_1, missing => 0.0)
+    replace!(pfts_cube_in_1, NaN32 => 0.0)
+    replace!(pfts_cube_in_1, NaN16 => 0.0)
 
 
     if isnothing(time_n)
@@ -401,7 +401,7 @@ function s4time(
                                 # println(r2(compreg))
     
                                 # and now for the transitions
-                                # only the PFTs identified in the pftlist are to be used
+                                all(iszero, metrics_transitions_cube[differences = At("coocurence")].data)                        # only the PFTs identified in the pftlist are to be used
     
                                 sigma1 .= NaN
                                 sigma1[view(pftpres_check, 1:nc), view(pftpres_check, 1:nc)] =
@@ -487,14 +487,17 @@ function s4time(
 
         for it = 1:time_n
             # co-ocurrence estimation
+
             #println(it)
+            #println(local_pft1)
+            #println(local_pft2)
             #println(transitions_n)
             for comp in eachindex(local_pft1)
                 #println(comp)
                 #println(size(pfts_cube_in))
                 #println("I'm here")
-                #println(pfts_cube_in[it,:,:,local_pft1[comp]])
-                #println(pfts_cube_in[it,:,:,local_pft2[comp]])
+                println(pfts_cube_in[it,:,:,local_pft1[comp]])
+                println(pfts_cube_in[it,:,:,local_pft2[comp]])
                 # define the pfts to be processed
                 out_3[it, comp, 3] = coocufun(
                     [0.0],
@@ -527,7 +530,7 @@ function s4time(
             #println(pftsvarmat)
     
             if isfinite(sum(pftsvarmat)) && sum(pftsvarmat) > 0.0
-                #println("test")
+                println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
                 #println(maximum(vec(pftsvarmat)))
