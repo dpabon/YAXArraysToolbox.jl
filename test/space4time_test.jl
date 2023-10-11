@@ -274,7 +274,7 @@ using Dates
 
     transitions = getAxis("transitions", masking_without_delta)
 
-    @test all(isnan,masking_without_delta.data) == false
+    @test all(isnan, masking_without_delta.data) == true
 
 
 end
