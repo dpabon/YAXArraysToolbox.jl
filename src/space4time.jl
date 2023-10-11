@@ -496,8 +496,8 @@ function s4time(
                 #println(comp)
                 #println(size(pfts_cube_in))
                 #println("I'm here")
-                println(pfts_cube_in[it,:,:,local_pft1[comp]])
-                println(pfts_cube_in[it,:,:,local_pft2[comp]])
+                #println(pfts_cube_in[it,:,:,local_pft1[comp]])
+                #println(pfts_cube_in[it,:,:,local_pft2[comp]])
                 # define the pfts to be processed
                 out_3[it, comp, 3] = coocufun(
                     [0.0],
