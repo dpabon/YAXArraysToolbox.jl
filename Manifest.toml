@@ -2,7 +2,7 @@
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "38a89a25d032a6d2350da4a4ebd0397ef01c1b57"
+project_hash = "df404005ef78ddcc5bc085d148b7827b4e575c4a"
 
 [[deps.ANSIColoredPrinters]]
 git-tree-sha1 = "574baf8110975760d391c710b6341da1afa48d8c"
@@ -1356,10 +1356,16 @@ uuid = "64a0f543-368b-4a9a-827a-e71edb2a0b83"
 version = "0.4.4"
 
 [[deps.MLJ]]
-deps = ["CategoricalArrays", "ComputationalResources", "Distributed", "Distributions", "LinearAlgebra", "MLJBase", "MLJEnsembles", "MLJFlow", "MLJIteration", "MLJModels", "MLJTuning", "OpenML", "Pkg", "ProgressMeter", "Random", "Reexport", "ScientificTypes", "StatisticalMeasures", "Statistics", "StatsBase", "Tables"]
-git-tree-sha1 = "58d17a367ee211ade6e53f83a9cc5adf9d26f833"
+deps = ["CategoricalArrays", "ComputationalResources", "Distributed", "Distributions", "LinearAlgebra", "MLJBalancing", "MLJBase", "MLJEnsembles", "MLJFlow", "MLJIteration", "MLJModels", "MLJTuning", "OpenML", "Pkg", "ProgressMeter", "Random", "Reexport", "ScientificTypes", "StatisticalMeasures", "Statistics", "StatsBase", "Tables"]
+git-tree-sha1 = "84e6df71f7685860dd98e8a96da832c9fc253bb5"
 uuid = "add582a8-e3ab-11e8-2d5e-e98b27df1bc7"
-version = "0.20.0"
+version = "0.20.1"
+
+[[deps.MLJBalancing]]
+deps = ["MLJBase", "MLJModelInterface", "MLUtils", "OrderedCollections", "Random", "StatsBase"]
+git-tree-sha1 = "8f54987aa15794eede3fc7d2143d693daeac7aa4"
+uuid = "45f359ea-796d-4f51-95a5-deb1a414c586"
+version = "0.1.2"
 
 [[deps.MLJBase]]
 deps = ["CategoricalArrays", "CategoricalDistributions", "ComputationalResources", "Dates", "DelimitedFiles", "Distributed", "Distributions", "InteractiveUtils", "InvertedIndices", "LearnAPI", "LinearAlgebra", "MLJModelInterface", "Missings", "OrderedCollections", "Parameters", "PrettyTables", "ProgressMeter", "Random", "Reexport", "ScientificTypes", "Serialization", "StatisticalMeasuresBase", "StatisticalTraits", "Statistics", "StatsBase", "Tables"]
@@ -1594,6 +1600,14 @@ version = "1.1.1"
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
+
+[[deps.NeutralLandscapes]]
+deps = ["DataStructures", "Distributions", "HaltonSequences", "NaNMath", "NearestNeighbors", "Random", "Requires", "Statistics", "StatsBase"]
+git-tree-sha1 = "e3261a7b9ec49b9fe42c6474be817a3653eaea6b"
+repo-rev = "main"
+repo-url = "https://github.com/dpabon/NeutralLandscapes.jl"
+uuid = "71847384-8354-4223-ac08-659a5128069f"
+version = "0.1.3"
 
 [[deps.Observables]]
 git-tree-sha1 = "6862738f9796b3edc1c09d0890afce4eca9e7e93"
@@ -2269,9 +2283,7 @@ version = "1.7.0"
 
 [[deps.StatsBase]]
 deps = ["DataAPI", "DataStructures", "LinearAlgebra", "LogExpFunctions", "Missings", "Printf", "Random", "SortingAlgorithms", "SparseArrays", "Statistics", "StatsAPI"]
-git-tree-sha1 = "c8552d0f7eeac601056f7285b985847899e39cab"
-repo-rev = "master"
-repo-url = "https://github.com/JuliaStats/StatsBase.jl.git"
+git-tree-sha1 = "1d77abd07f617c4868c33d4f5b9e1dbb2643c9cf"
 uuid = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 version = "0.34.2"
 
@@ -2748,8 +2760,6 @@ version = "0.6.1"
 [[deps.YAXArrays]]
 deps = ["CFTime", "DataStructures", "Dates", "DimensionalData", "DiskArrayTools", "DiskArrays", "Distributed", "DocStringExtensions", "Glob", "Interpolations", "IntervalSets", "IterTools", "Markdown", "OffsetArrays", "OnlineStats", "Optim", "OrderedCollections", "ParallelUtilities", "ProgressMeter", "Reexport", "Requires", "Statistics", "StatsBase", "Tables", "WeightedOnlineStats", "YAXArrayBase"]
 git-tree-sha1 = "272c21461f77ecfe0df45a803d3b224b9033fd84"
-repo-rev = "master"
-repo-url = "https://github.com/JuliaDataCubes/YAXArrays.jl.git"
 uuid = "c21b50f5-aa40-41ea-b809-c0f5e47bfa5c"
 version = "0.5.2"
 
