@@ -485,10 +485,17 @@ function s4time(
             end
     else
 
+        if time_n == 1
+
+            pfts_cube_in_1 =
+                permutedims(reshape(pfts_cube_in_1, (winsize, winsize, nc, 1)), (4, 1, 2, 3))
+    
+        end
+
         for it = 1:time_n
             # co-ocurrence estimation
 
-            println(it)
+            #println(it)
             #println(local_pft1)
             #println(local_pft2)
             #println(transitions_n)
