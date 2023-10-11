@@ -404,7 +404,7 @@ function s4time(
                                 # println(r2(compreg))
     
                                 # and now for the transitions
-                                all(iszero, metrics_transitions_cube[differences = At("coocurence")].data)                        # only the PFTs identified in the pftlist are to be used
+                                # only the PFTs identified in the pftlist are to be used
     
                                 sigma1 .= NaN
                                 sigma1[view(pftpres_check, 1:nc), view(pftpres_check, 1:nc)] =
