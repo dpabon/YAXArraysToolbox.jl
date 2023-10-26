@@ -134,6 +134,7 @@ function s4time(
     #println(size(clim_var_cube_in))
     #println(size(pfts_cube_in))
     #println(size(out_3))
+    GC.gc()
     sigma1 = sigma1_glob[Threads.threadid()]
     prederr = prederr_glob[Threads.threadid()]
     predres = predres_glob[Threads.threadid()]
@@ -529,6 +530,7 @@ function s4time(
         end
         #println(it)
     end
+    GC.gc()
 end
 
 
