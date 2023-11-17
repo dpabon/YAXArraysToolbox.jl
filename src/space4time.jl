@@ -333,7 +333,7 @@ function s4time(
     
                             #println("before fail")
                             
-                            ols = lm([ones(size(lr, 1)) lr], climvarmat[:]; method=:qr, dropcollinear = false)
+                            ols = lm([ones(size(lr, 1)) lr], climvarmat[:]; method=:qr, dropcollinear = true)
 
     
     
