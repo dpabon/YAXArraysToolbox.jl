@@ -1103,6 +1103,12 @@ function s4time_space(
                     # compreg = GLM.lm(Term(:lt) ~ sum(Term.(Symbol.(names(data[:, Not(:lt)])))), data)
                     
                     #println("before fail")
+
+                    try
+                        lm([ones(size(lr, 1)) lr], convert.(Float64, climvarmat[:]); method=:qr, dropcollinear = true)
+                    catch err
+                        return
+                    end
                     
                     ols = lm([ones(size(lr, 1)) lr], convert.(Float64, climvarmat[:]); method=:qr, dropcollinear = true)
                     
