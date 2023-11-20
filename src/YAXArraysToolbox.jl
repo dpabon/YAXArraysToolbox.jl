@@ -53,4 +53,6 @@ include("space4time.jl")
 
 export space4time_proc
 
+export space4time_proc_space
+
 end
