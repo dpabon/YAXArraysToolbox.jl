@@ -870,6 +870,7 @@ function s4time_space(
     denom,
     minpxl,
     )
+    GC.gc()
     #println(size(clim_var_cube_in))
     #println(size(pfts_cube_in))
     #println(size(out_3))
@@ -1256,6 +1257,7 @@ function s4time_space(
             end
         end
     end
+    GC.gc()
 end
 
 """
