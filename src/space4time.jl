@@ -1103,7 +1103,7 @@ function s4time_space(
                     
                     #println("before fail")
                     
-                    ols = lm([ones(size(lr, 1)) lr], climvarmat[:]; method=:qr, dropcollinear = true)
+                    ols = lm([ones(size(lr, 1)) lr], convert.(Float64, climvarmat[:]); method=:qr, dropcollinear = true)
                     
                     
                     
