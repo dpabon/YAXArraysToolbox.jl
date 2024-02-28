@@ -290,3 +290,64 @@ function altitude_masking_proc(
     return Dataset(; cube_masked = result, masked_pixels = result2)
 
 end
+
+function altitude_mask_results2(cube_out, cube_in; center_coord)
+
+    cube_out .= NaN
+
+    if (any(!isnan, cube_in))
+
+        # v1
+        cube_out[1] = std(filter(!isnan, vec(cube_in[:, :])))
+
+        # v2
+        cube_out[2] = abs(
+            cube_in[center_coord, center_coord] -
+            mean(filter(!isnan, vec(cube_in[:, :]))),
+        )
+    end
+end
+
+
+function altitude_mask_results_proc2(
+    cube_in_altitude;
+    lon_axis_name = "lon",
+    lat_axis_name = "lat",
+    variable_name = "Variable",
+    winsize = 5,
+    showprog = true,
+)
+
+    # Checking that winsize is odd
+
+    if isodd(winsize)
+        pre_step = after_step = floor(winsize / 2)
+    else
+        pre_step = after_step = floor(winsize / 2) - 1
+
+        @warn "Window size is not odd. Going on however... windowsize = $(winsize - 1)"
+    end
+
+    center_coord = Int(pre_step + 1)
+
+    indims_altitude = InDims(
+        variable_name,
+        MovingWindow(lon_axis_name, pre_step, after_step),
+        MovingWindow(lat_axis_name, pre_step, after_step),
+        window_oob_value = NaN,
+    )
+
+    outdims_altitude = OutDims(CategoricalAxis("Indicators", ["v1", "v2"]))
+
+    result_cube = mapCube(
+        altitude_mask_results2,
+        cube_in_altitude,
+        indims = indims_altitude,
+        outdims = outdims_altitude,
+        showprog = showprog;
+        center_coord = center_coord,
+    )
+
+    return (result_cube)
+
+end
