@@ -48,6 +48,7 @@ export altitude_mask_results_proc, altitude_masking_proc
 export masking_proc
 
 export altitude_mask_results_proc2
+export altitude_mask_results2
 
 # Space4time
 
