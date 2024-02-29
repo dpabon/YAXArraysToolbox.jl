@@ -313,7 +313,6 @@ function altitude_mask_results_proc2(
     cube_in_altitude;
     lon_axis_name = "lon",
     lat_axis_name = "lat",
-    variable_name = "Variable",
     winsize = 5,
     showprog = true,
 )
@@ -331,7 +330,6 @@ function altitude_mask_results_proc2(
     center_coord = Int(pre_step + 1)
 
     indims_altitude = InDims(
-        variable_name,
         MovingWindow(lon_axis_name, pre_step, after_step),
         MovingWindow(lat_axis_name, pre_step, after_step),
         window_oob_value = NaN,
