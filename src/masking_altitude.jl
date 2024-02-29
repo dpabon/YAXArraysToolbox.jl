@@ -335,7 +335,7 @@ function altitude_mask_results_proc2(
         window_oob_value = NaN,
     )
 
-    outdims_altitude = OutDims(CategoricalAxis("Indicators", ["v1", "v2"]))
+    outdims_altitude = OutDims(Dim{:Indicators}(["v1", "v2"]))
 
     result_cube = mapCube(
         altitude_mask_results2,
