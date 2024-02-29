@@ -47,6 +47,8 @@ include("masking_general.jl") # Maybe TO MERGE with masking_altitude.
 export altitude_mask_results_proc, altitude_masking_proc
 export masking_proc
 
+export altitude_mask_results_proc2
+
 # Space4time
 
 include("space4time.jl")
@@ -54,5 +56,7 @@ include("space4time.jl")
 export space4time_proc
 
 export space4time_proc_space
+
+
 
 end
