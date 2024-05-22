@@ -457,12 +457,12 @@ function s4time(
     
                                 if length(diff_clim_pft_pred) == 1
     
-                                    out_3[it, 1, 1] = diff_clim_pft_pred[1]
+                                    out_3[1, 1] = diff_clim_pft_pred[1]
                                     #println(out1_delta)
                                     if diff_clim_pft_pred_var[1] .< 0
-                                        out_3[it, 1, 2] = NaN
+                                        out_3[1, 2] = NaN
                                     else
-                                        out_3[it, 1, 2] = sqrt.(diff_clim_pft_pred_var)[1]
+                                        out_3[1, 2] = sqrt.(diff_clim_pft_pred_var)[1]
     
                                     end
     
