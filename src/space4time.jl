@@ -17,7 +17,7 @@ function coocufun(out, q1, q2, p1, p2, out_pmindist, denom)
     vecq2 = vec(q2)
     #p1 = range(0, 1, length = length(vecq1))
     #p2 = reverse(p1)
-    if length(vecq1) == length(vec1q2) && isfinite(sum(vecq1)) && isfinite(sum(vecq2)) && sum(vecq1)> 0. && sum(vecq2) > 0.
+    if length(vecq1) == length(vecq2) && isfinite(sum(vecq1)) && isfinite(sum(vecq2)) && sum(vecq1)> 0. && sum(vecq2) > 0.
         #@show typeof(vecq1)
         #@show typeof(vecq2)
         #@show size(vecq1) size(vecq2)
