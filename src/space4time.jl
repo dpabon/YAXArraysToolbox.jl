@@ -17,7 +17,7 @@ function coocufun(out, q1, q2, p1, p2, out_pmindist, denom)
     vecq2 = vec(q2)
     #p1 = range(0, 1, length = length(vecq1))
     #p2 = reverse(p1)
-    if length(q1) == length(q2) && isfinite(sum(q1)) && isfinite(sum(q2))
+    if length(vecq1) == length(vec1q2) && isfinite(sum(vecq1)) && isfinite(sum(vecq2)) && sum(vecq1)> 0. && sum(vecq2) > 0.
         #@show typeof(vecq1)
         #@show typeof(vecq2)
         #@show size(vecq1) size(vecq2)
@@ -208,7 +208,7 @@ function s4time(
             # @show sum(pftsvarmat), sum(pftsvarmat)
             #println(pftsvarmat)
     
-            if isfinite(sum(pftsvarmat)) && sum(pftsvarmat) > 0.0
+            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .!= 0.) > 1
                 #println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
@@ -539,7 +539,7 @@ function s4time(
             # @show sum(pftsvarmat), sum(pftsvarmat)
             #println(pftsvarmat)
     
-            if isfinite(sum(pftsvarmat)) && sum(pftsvarmat) > 0.0
+            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .!= 0.) > 1
                 #println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
@@ -979,7 +979,7 @@ function s4time_space(
     # @show sum(pftsvarmat), sum(pftsvarmat)
     #println(pftsvarmat)
     
-    if isfinite(sum(pftsvarmat)) && sum(pftsvarmat) > 0.0
+    if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .!= 0.) > 1
         #println("test")
         #println(any(isnan.(pftsvarmat)))
         # check if pftsvarmat is 0 to 1 or 0 to 100
