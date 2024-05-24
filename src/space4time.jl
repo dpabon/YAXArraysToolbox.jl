@@ -210,7 +210,7 @@ function s4time(
             # @show sum(pftsvarmat), sum(pftsvarmat)
             #println(pftsvarmat)
     
-            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
+            if isfinite(sum(climvarmat)) && isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
                 #println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
@@ -540,7 +540,7 @@ function s4time(
             # @show sum(pftsvarmat), sum(pftsvarmat)
             #println(pftsvarmat)
     
-            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
+            if isfinite(sum(climvarmat)) && isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
                 #println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
@@ -984,7 +984,7 @@ function s4time_space(
     # @show sum(pftsvarmat), sum(pftsvarmat)
     #println(pftsvarmat)
     
-    if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
+    if isfinite(sum(climvarmat)) && isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
         #println("test")
         #println(any(isnan.(pftsvarmat)))
         # check if pftsvarmat is 0 to 1 or 0 to 100
