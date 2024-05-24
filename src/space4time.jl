@@ -161,10 +161,11 @@ function s4time(
 
     #println(local_pft1)
     #println(local_pft2)
-    pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.0)
-    replace!(pfts_cube_in_1, missing => 0.0)
-    replace!(pfts_cube_in_1, NaN32 => 0.0)
-    replace!(pfts_cube_in_1, NaN16 => 0.0)
+    #pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.0)
+    pfts_cube_in_1 = pfts_cube_in
+    #replace!(pfts_cube_in_1, missing => 0.0)
+    #replace!(pfts_cube_in_1, NaN32 => 0.0)
+    #replace!(pfts_cube_in_1, NaN16 => 0.0)
     pfts_cube_in_1 = convert(Array{Float64}, pfts_cube_in_1)
 
 
@@ -937,10 +938,11 @@ function s4time_space(
     
     #println(local_pft1)
     #println(local_pft2)
-    pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.0)
-    replace!(pfts_cube_in_1, missing => 0.0)
-    replace!(pfts_cube_in_1, NaN32 => 0.0)
-    replace!(pfts_cube_in_1, NaN16 => 0.0)
+    #pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.0)
+    fts_cube_in_1 = pfts_cube_in
+    #replace!(pfts_cube_in_1, missing => 0.0)
+    #replace!(pfts_cube_in_1, NaN32 => 0.0)
+    #replace!(pfts_cube_in_1, NaN16 => 0.0)
     pfts_cube_in_1 = convert(Array{Float64}, pfts_cube_in_1)
     
     #pfts_cube_in_1 =
