@@ -1,7 +1,7 @@
 
 
 
-function coocufun(out, q1, q2, p1, p2, out_pmindist, denom)
+function coocufun(out, q1, q2, p1, p2, denom)
     #replace!(q1, NaN => missing)
     #replace!(q2, NaN => missing)
     # Where q1 and q2 are the ratio of presence of pft1 and pft2 in the moving window.
@@ -22,10 +22,7 @@ function coocufun(out, q1, q2, p1, p2, out_pmindist, denom)
         #@show typeof(vecq2)
         #@show size(vecq1) size(vecq2)
         #pmindist = minimum(([i - j for i in vecq1, j in p1]).^2 + ([i - j for i in vecq2, j in p2]).^2, dims = 1)
-        minimum!(
-            out_pmindist,
-            ([i - j for i in vecq1, j in p1]) .^ 2 + ([i - j for i in vecq2, j in p2]) .^ 2,
-        )
+        out_pmindist = minimum(([i - j for i in vecq1, j in p1]) .^ 2 + ([i - j for i in vecq2, j in p2]) .^ 2)
 
         out[1] = 1 - (sum(sqrt.(out_pmindist)) / denom)
 
@@ -76,31 +73,36 @@ function s4time(
     max_value::Int,
     p1_static,
     p2_static,
-    sigma1_glob,
-    prederr_glob,
-    predres_glob,
+    #sigma1_glob,
+    #prederr_glob,
+    #predres_glob,
     minDiffPxls,
     tran_check,
     half,
-    localcomp_fix_glob,
-    pftsvarmat_f_glob,
+    #localcomp_fix_glob,
+    #pftsvarmat_f_glob,
     winsize = 5,
     transitions_n,
     pftstrans_comb_names,
     nc,
-    out_pmindist_global,
+    #out_pmindist_global,
     denom,
     minpxl,
+    
 )
     #println(size(clim_var_cube_in))
     #println(size(pfts_cube_in))
     #println(size(out_3))
-    sigma1 = sigma1_glob[Threads.threadid()]
-    prederr = prederr_glob[Threads.threadid()]
-    predres = predres_glob[Threads.threadid()]
-    localcomp_fix = localcomp_fix_glob[Threads.threadid()]
-    pftsvarmat_f = pftsvarmat_f_glob[Threads.threadid()]
-    out_pmindist = out_pmindist_global[Threads.threadid()]
+    #igma1 = sigma1_glob[Threads.threadid()]
+    sigma1 = fill(NaN, (nc, nc))
+    #prederr = prederr_glob[Threads.threadid()]
+    prederr = fill(NaN, nc) 
+    #predres = predres_glob[Threads.threadid()]
+    predres = fill(NaN, nc)
+    #localcomp_fix = localcomp_fix_glob[Threads.threadid()]
+    #pftsvarmat_f = pftsvarmat_f_glob[Threads.threadid()]
+    #out_pmindist = out_pmindist_global[Threads.threadid()]
+    #out_pmindist = zeros(1, winsize^2)
     #println(Threads.threadid())
     #println(loopvars)
 
@@ -184,7 +186,6 @@ function s4time(
                     pfts_cube_in_1[:, :, local_pft2[comp]],
                     p1_static,
                     p2_static,
-                    out_pmindist,
                     denom,
                 )
                 #println("all good")
@@ -208,7 +209,7 @@ function s4time(
             # @show sum(pftsvarmat), sum(pftsvarmat)
             #println(pftsvarmat)
     
-            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .!= 0.) > 1
+            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
                 #println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
@@ -515,7 +516,6 @@ function s4time(
                     pfts_cube_in_1[it, :, :, local_pft2[comp]],
                     p1_static,
                     p2_static,
-                    out_pmindist,
                     denom,
                 )
                 #println("all good")
@@ -539,7 +539,7 @@ function s4time(
             # @show sum(pftsvarmat), sum(pftsvarmat)
             #println(pftsvarmat)
     
-            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .!= 0.) > 1
+            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
                 #println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
@@ -854,19 +854,19 @@ function s4time_space(
     max_value::Int,
     p1_static,
     p2_static,
-    sigma1_glob,
-    prederr_glob,
-    predres_glob,
+    #sigma1_glob,
+    #prederr_glob,
+    #predres_glob,
     minDiffPxls,
     tran_check,
     half,
-    localcomp_fix_glob,
-    pftsvarmat_f_glob,
+    #localcomp_fix_glob,
+    #pftsvarmat_f_glob,
     winsize = 5,
     transitions_n,
     pftstrans_comb_names,
     nc,
-    out_pmindist_global,
+    #out_pmindist_global,
     denom,
     minpxl,
     )
@@ -874,12 +874,16 @@ function s4time_space(
     #println(size(clim_var_cube_in))
     #println(size(pfts_cube_in))
     #println(size(out_3))
-    sigma1 = sigma1_glob[Threads.threadid()]
-    prederr = prederr_glob[Threads.threadid()]
-    predres = predres_glob[Threads.threadid()]
-    localcomp_fix = localcomp_fix_glob[Threads.threadid()]
-    pftsvarmat_f = pftsvarmat_f_glob[Threads.threadid()]
-    out_pmindist = out_pmindist_global[Threads.threadid()]
+    #sigma1 = sigma1_glob[Threads.threadid()]
+    sigma1 = fill(NaN, (nc, nc))
+    #prederr = prederr_glob[Threads.threadid()]
+    prederr = fill(NaN, nc)
+    #predres = predres_glob[Threads.threadid()]
+    predres = fill(NaN, nc)
+    #localcomp_fix = localcomp_fix_glob[Threads.threadid()]
+    #pftsvarmat_f = pftsvarmat_f_glob[Threads.threadid()]
+    #out_pmindist = out_pmindist_global[Threads.threadid()]
+    #out_pmindist = zeros(1, winsize^2)
     #println(Threads.threadid())
     #println(loopvars)
     
@@ -955,7 +959,6 @@ function s4time_space(
         pfts_cube_in_1[:, :, local_pft2[comp]],
         p1_static,
         p2_static,
-        out_pmindist,
         denom,
         )
         #println("all good")
@@ -979,7 +982,7 @@ function s4time_space(
     # @show sum(pftsvarmat), sum(pftsvarmat)
     #println(pftsvarmat)
     
-    if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .!= 0.) > 1
+    if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
         #println("test")
         #println(any(isnan.(pftsvarmat)))
         # check if pftsvarmat is 0 to 1 or 0 to 100
@@ -1360,11 +1363,11 @@ function space4time_proc(
     # assuming the last dimmension is PFTs
     nc = length(classes_vec)
 
-    sigma1_glob = [fill(NaN, (nc, nc)) for i = 1:Threads.nthreads()]
+    #sigma1_glob = [fill(NaN, (nc, nc)) for i = 1:Threads.nthreads()]
 
-    prederr_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
+    #prederr_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
 
-    predres_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
+    #predres_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
     # lower triangular matrix index use further on
 
     ltriindex = NamedArray(LowerTriangular(fill(1, (nc, nc))))
@@ -1391,7 +1394,7 @@ function space4time_proc(
 
     p2_static = reverse(p1_static)
 
-    out_pmindist_global = [zeros(1, winsize^2) for i = 1:Threads.nthreads()]
+    #out_pmindist_global = [zeros(1, winsize^2) for i = 1:Threads.nthreads()]
 
     denom = sum(sqrt.(sum.(eachrow([p1_static p2_static] .^ 2))))
 
@@ -1399,9 +1402,9 @@ function space4time_proc(
 
     minDiffPxls = (winsize^2 * minDiffPxlspercentage / 100)
 
-    localcomp_fix_glob = [rand(winsize^2) for i = 1:Threads.nthreads()]
+    #localcomp_fix_glob = [rand(winsize^2) for i = 1:Threads.nthreads()]
 
-    pftsvarmat_f_glob = [rand(winsize^2, nc + 1) for i = 1:Threads.nthreads()]
+    #pftsvarmat_f_glob = [rand(winsize^2, nc + 1) for i = 1:Threads.nthreads()]
 
 
     # 
@@ -1491,19 +1494,19 @@ function space4time_proc(
         max_value = max_value,
         p1_static,
         p2_static,
-        sigma1_glob,
-        prederr_glob,
-        predres_glob,
+        #sigma1_glob,
+        #prederr_glob,
+        #predres_glob,
         minDiffPxls,
         tran_check,
         half,
-        localcomp_fix_glob,
-        pftsvarmat_f_glob,
+        #localcomp_fix_glob,
+        #pftsvarmat_f_glob,
         winsize = winsize,
         transitions_n = transitions_n,
         pftstrans_comb_names = pftstrans_comb_names,
         nc = nc,
-        out_pmindist_global = out_pmindist_global,
+        #out_pmindist_global = out_pmindist_global,
         denom = denom,
         minpxl = minpxl,
     )
@@ -1611,11 +1614,11 @@ function space4time_proc_space(
     # assuming the last dimmension is PFTs
     nc = length(classes_vec)
 
-    sigma1_glob = [fill(NaN, (nc, nc)) for i = 1:Threads.nthreads()]
+    #sigma1_glob = [fill(NaN, (nc, nc)) for i = 1:Threads.nthreads()]
 
-    prederr_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
+    #prederr_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
 
-    predres_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
+    #predres_glob = [fill(NaN, nc) for i = 1:Threads.nthreads()]
     # lower triangular matrix index use further on
 
     ltriindex = NamedArray(LowerTriangular(fill(1, (nc, nc))))
@@ -1642,7 +1645,7 @@ function space4time_proc_space(
 
     p2_static = reverse(p1_static)
 
-    out_pmindist_global = [zeros(1, winsize^2) for i = 1:Threads.nthreads()]
+    #out_pmindist_global = [zeros(1, winsize^2) for i = 1:Threads.nthreads()]
 
     denom = sum(sqrt.(sum.(eachrow([p1_static p2_static] .^ 2))))
 
@@ -1650,9 +1653,9 @@ function space4time_proc_space(
 
     minDiffPxls = (winsize^2 * minDiffPxlspercentage / 100)
 
-    localcomp_fix_glob = [rand(winsize^2) for i = 1:Threads.nthreads()]
+    #localcomp_fix_glob = [rand(winsize^2) for i = 1:Threads.nthreads()]
 
-    pftsvarmat_f_glob = [rand(winsize^2, nc + 1) for i = 1:Threads.nthreads()]
+    #pftsvarmat_f_glob = [rand(winsize^2, nc + 1) for i = 1:Threads.nthreads()]
 
 
     # 
@@ -1736,19 +1739,19 @@ function space4time_proc_space(
         max_value = max_value,
         p1_static,
         p2_static,
-        sigma1_glob,
-        prederr_glob,
-        predres_glob,
+        #sigma1_glob,
+        #prederr_glob,
+        #predres_glob,
         minDiffPxls,
         tran_check,
         half,
-        localcomp_fix_glob,
-        pftsvarmat_f_glob,
+        #localcomp_fix_glob,
+        #pftsvarmat_f_glob,
         winsize = winsize,
         transitions_n = transitions_n,
         pftstrans_comb_names = pftstrans_comb_names,
         nc = nc,
-        out_pmindist_global = out_pmindist_global,
+        #out_pmindist_global = out_pmindist_global,
         denom = denom,
         minpxl = minpxl,
     )
