@@ -284,7 +284,7 @@ function s4time(
     
                         #println(cumsum(lcsvd.S) / sum(lcsvd.S.^2))
     
-                        temp = round.(cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2), digits = 8)
+                        temp = cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2)
                         ndim = minimum(findall(temp .>= 1))
     
                         # store results to output object
