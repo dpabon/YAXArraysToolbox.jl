@@ -21,10 +21,10 @@ function coocufun(out, q1, q2, p1, p2, denom)
         #@show typeof(vecq1)
         #@show typeof(vecq2)
         #@show size(vecq1) size(vecq2)
-        #pmindist = minimum(([i - j for i in vecq1, j in p1]).^2 + ([i - j for i in vecq2, j in p2]).^2, dims = 1)
-        out_pmindist = minimum(([i - j for i in vecq1, j in p1]) .^ 2 + ([i - j for i in vecq2, j in p2]) .^ 2)
+        pmindist = minimum(([i - j for i in vecq1, j in p1]).^2 + ([i - j for i in vecq2, j in p2]).^2, dims = 1)
+        #out_pmindist = minimum(([i - j for i in vecq1, j in p1]) .^ 2 + ([i - j for i in vecq2, j in p2]) .^ 2)
 
-        out[1] = 1 - (sum(sqrt.(out_pmindist)) / denom)
+        out[1] = 1 - (sum(sqrt.(pmindist)) / denom)
 
         #return 1 - (sum(sqrt.(pmindist)) / denom)
     else
