@@ -335,7 +335,7 @@ function s4time(
     
                             #println("before fail")
                             
-                            ols = lm([ones(size(lr, 1)) lr], climvarmat[:]; method=:qr, dropcollinear = true)
+                            ols = lm([ones(size(lr, 1)) lr], climvarmat[:]; method=:qr, dropcollinear = false)
 
     
     
@@ -1110,12 +1110,12 @@ function s4time_space(
                     #println("before fail")
 
                     try
-                        lm([ones(size(lr, 1)) lr], convert.(Float64, climvarmat[:]); method=:qr, dropcollinear = true)
+                        lm([ones(size(lr, 1)) lr], convert.(Float64, climvarmat[:]); method=:qr, dropcollinear = false)
                     catch err
                         return
                     end
                     
-                    ols = lm([ones(size(lr, 1)) lr], convert.(Float64, climvarmat[:]); method=:qr, dropcollinear = true)
+                    ols = lm([ones(size(lr, 1)) lr], convert.(Float64, climvarmat[:]); method=:qr, dropcollinear = false)
                     
                     
                     
