@@ -210,7 +210,7 @@ function s4time(
             # @show sum(pftsvarmat), sum(pftsvarmat)
             #println(pftsvarmat)
     
-            if isfinite(sum(climvarmat)) && isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
+            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
                 #println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
@@ -335,7 +335,7 @@ function s4time(
     
                             #println("before fail")
                             
-                            ols = lm([ones(size(lr, 1)) lr], climvarmat[:]; method=:qr, dropcollinear = false)
+                            ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
 
     
     
@@ -540,7 +540,7 @@ function s4time(
             # @show sum(pftsvarmat), sum(pftsvarmat)
             #println(pftsvarmat)
     
-            if isfinite(sum(climvarmat)) && isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
+            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
                 #println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
@@ -665,7 +665,7 @@ function s4time(
     
                             #println("before fail")
 
-                            ols = lm([ones(size(lr, 1)) lr], climvarmat[:, it]; method=:qr, dropcollinear = false)
+                            ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:, it]); method=:qr, dropcollinear = false)
 
     
     
@@ -984,7 +984,7 @@ function s4time_space(
     # @show sum(pftsvarmat), sum(pftsvarmat)
     #println(pftsvarmat)
     
-    if isfinite(sum(climvarmat)) && isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
+    if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
         #println("test")
         #println(any(isnan.(pftsvarmat)))
         # check if pftsvarmat is 0 to 1 or 0 to 100
@@ -1109,13 +1109,9 @@ function s4time_space(
                     
                     #println("before fail")
 
-                    try
-                        lm([ones(size(lr, 1)) lr], convert.(Float64, climvarmat[:]); method=:qr, dropcollinear = false)
-                    catch err
-                        return
-                    end
+               
                     
-                    ols = lm([ones(size(lr, 1)) lr], convert.(Float64, climvarmat[:]); method=:qr, dropcollinear = false)
+                    ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                     
                     
                     
