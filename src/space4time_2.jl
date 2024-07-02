@@ -1,4 +1,26 @@
+using MLJ
+using DataFrames
+randomforest  = @load RandomForestRegressor pkg = "BetaML"
 
+randomforest()
+
+RandomForestRegressor = @load RandomForestRegressor pkg=DecisionTree
+
+
+model = RandomForestRegressor()
+
+X = randn(25,2)
+y = randn(25,1)
+
+DataFrame(X, :auto)
+
+X2 = DataFrame(randn(1,2), :auto)
+
+mach = machine(model, DataFrame(X, :auto), y)
+
+fit!(mach)
+
+ŷ = predict(mach, X2)
 
 """
 space4time(climate_cube, pfts_cube, pft_list::Vector{String}, winsize = 5, minpxl = 100, minDiffPxlspercentage = 40)
@@ -28,7 +50,7 @@ function s4time_ml(
     out_3,
     clim_var_cube_in,
     pfts_cube_in,
-    
+    altitude_cube_in,
     loopvars;
     pft_list::Vector{String},
     time_n,
@@ -56,6 +78,7 @@ function s4time_ml(
     #println(size(pfts_cube_in))
     #println(size(out_3))
     #igma1 = sigma1_glob[Threads.threadid()]
+    RandomForestRegressor = @load RandomForestRegressor pkg=DecisionTree
     sigma1 = fill(NaN, (nc, nc))
     #prederr = prederr_glob[Threads.threadid()]
     prederr = fill(NaN, nc) 
@@ -181,13 +204,16 @@ function s4time_ml(
                 # make sure compositions are really precisely right.
     
                 #localcomp_fix_glob = mapslices(x->1-sum(x), pftsvarmat, dims = 2)
-                localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
-                #map!(x->1-sum(x), localcomp_fix_glob, eachslice(pftsvarmat, dims = 1))
-                #println(size(localcomp_fix_glob))
-                #println(localcomp_fix_glob)
+
+                # removed as part of ML
+                #localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
+
+                
+                # removed as part of ML AND ADDING ALTITUDE mean and sd
                 pftsvarmat_f = [pftsvarmat localcomp_fix]
+                #pftsvarmat_f = pftsvarmat
     
-                map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
+                #map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
     
                 # some PFTs might not be present in the 5*5 window
                 # these must be identified and removed, as they cannot be predicted
@@ -195,7 +221,7 @@ function s4time_ml(
                 #pftpres_check = vec(mapslices(sum, pftsvarmat, dims = 1) .> 0)
                 pftpres_check = vec(sum(pftsvarmat_f, dims = 1) .> 0)
     
-                pftpres_check[nc+1] = 0
+                #pftpres_check[nc+1] = 0
     
                 # println(pftpres_check)
                 # @show typeof(pftpres_check)
@@ -216,6 +242,7 @@ function s4time_ml(
                     # println("test")
                     # avoid divided by 0
                     #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
+
                     lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
                     lc1 = reduce(vcat, lc1')
                     # centre the columns (to be in the centre wrt new space)
@@ -299,33 +326,26 @@ function s4time_ml(
                             
                             ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
 
+
+                            model = RandomForestRegressor()
+
+                            X = randn(25,2)
+                            y = randn(25,1)
+
+                            DataFrame(X, :auto)
+
+                            X2 = DataFrame(randn(1,2), :auto)
+
+                            mach = machine(model, DataFrame(pftsvarmat_f, :auto), DataFrame(lst = vec(climvarmat)))
+
+                            fit!(mach)
+
+                            y = predict(mach, XXXX) # here a matrix using 0s and 1s.!!!
     
-    
-                            # continue only if there are no NA in the estimated coefficients
-    
-                            coef_reg = GLM.coef(ols)
                             #println("original coef $coef_reg")
                             #println("second estimation coef $(lr\climvarmat[:,it])")
     
-                            if isfinite(sum(coef_reg))
-                                # then do predictions for the log-normal approach
-                                if isa(bogusc2, Vector)
-    
-                                    boguspred = predict(
-                                        ols,
-                                        [ones(length(bogusc3)) bogusc3],
-                                    )
-                                    # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
-    
-                                else
-                                    # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
-                                    boguspred = predict(
-                                        ols,
-                                        [ones(size(bogusc3, 1)) bogusc3],
-                                    )
-    
-                                end
-    
+                            
     
                                 x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
     
