@@ -285,6 +285,12 @@ function s4time(
                         #println(cumsum(lcsvd.S) / sum(lcsvd.S.^2))
     
                         temp = cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2)
+                        try
+                            minimum(findall(temp .>= 1))
+                        catch e
+                            return
+                        end
+                        
                         ndim = minimum(findall(temp .>= 1))
     
                         # store results to output object
