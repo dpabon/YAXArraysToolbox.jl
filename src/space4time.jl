@@ -89,7 +89,7 @@ function s4time(
     denom,
     minpxl,
     
-)
+    )
     #println(size(clim_var_cube_in))
     #println(size(pfts_cube_in))
     #println(size(out_3))
@@ -105,60 +105,60 @@ function s4time(
     #out_pmindist = zeros(1, winsize^2)
     #println(Threads.threadid())
     #println(loopvars)
-
+    
     if max_value == 100
         pfts_cube_in = pfts_cube_in ./ 100
     end
-
-
-
+    
+    
+    
     #@show typeof(pfts_cube_in), typeof(clim_var_cube_in)    
     #println(size(pfts_cube_in))
     #println(size(clim_var_cube_in))
-
+    
     #@show typeof(out_1) typeof(out_2) typeof(out_3)
     #println(size(out_1), size(out_2), size(out_3))
     out_1 .= NaN
     out_2 .= NaN
     out_3 .= NaN
-
+    
     #replace!(pfts_cube_in, missing => NaN)
     #replace!(clim_var_cube_in, missing => NaN)
-
+    
     # be sure that values are really NaN
     #=
     There are two possible cases:
     1. When pfts_cube is time dimension less, or when
     time is present as an axis.!!! The first case is as implemented in the original code
-
+    
     the second one here
     =#
-
+    
     #clim_var_cube_2 = permutedims(clim_var_cube_in, (3,2,1))
-
+    
     if isnothing(time_n)
         climvarmat = reshape(clim_var_cube_in, (winsize^2))
         climvarmat = convert(Array{Float64}, climvarmat)
-
+        
     else
         climvarmat = reshape(clim_var_cube_in, ((winsize^2), time_n))
         climvarmat = convert(Array{Float64}, climvarmat)
     end
-
-
+    
+    
     climvarmat = replace!(climvarmat, missing => NaN)
     
-
+    
     local_pft1 =
-        [findall(pft_list .== pftstrans_comb_names[comp][1]) for comp = 1:transitions_n]
+    [findall(pft_list .== pftstrans_comb_names[comp][1]) for comp = 1:transitions_n]
     local_pft1 = reduce(vcat, local_pft1)
     local_pft2 =
-        [findall(pft_list .== pftstrans_comb_names[comp][2]) for comp = 1:transitions_n]
+    [findall(pft_list .== pftstrans_comb_names[comp][2]) for comp = 1:transitions_n]
     local_pft2 = reduce(vcat, local_pft2)
-
+    
     #println("before if")
     #println(out_3[1,1,1])
-
+    
     #println(local_pft1)
     #println(local_pft2)
     #pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.0)
@@ -167,89 +167,89 @@ function s4time(
     #replace!(pfts_cube_in_1, NaN32 => 0.0)
     #replace!(pfts_cube_in_1, NaN16 => 0.0)
     pfts_cube_in_1 = convert(Array{Float64}, pfts_cube_in_1)
-
-
+    
+    
     if isnothing(time_n)
-
+        
         #pfts_cube_in_1 =
-            #permutedims(reshape(pfts_cube_in_1, (winsize, winsize, nc, 1)), (4, 1, 2, 3))
-
-            for comp in eachindex(local_pft1)
-                #println(comp)
-                #println(size(pfts_cube_in))
-                #println("I'm here")
-                #println(pfts_cube_in[it,:,:,local_pft1[comp]])
-                #println(pfts_cube_in[it,:,:,local_pft2[comp]])
-                # define the pfts to be processed
-                out_3[comp, 3] = coocufun(
-                    [0.0],
-                    pfts_cube_in_1[:, :, local_pft1[comp]],
-                    pfts_cube_in_1[:, :, local_pft2[comp]],
-                    p1_static,
-                    p2_static,
-                    denom,
-                )
-                #println("all good")
+        #permutedims(reshape(pfts_cube_in_1, (winsize, winsize, nc, 1)), (4, 1, 2, 3))
+        
+        for comp in eachindex(local_pft1)
+            #println(comp)
+            #println(size(pfts_cube_in))
+            #println("I'm here")
+            #println(pfts_cube_in[it,:,:,local_pft1[comp]])
+            #println(pfts_cube_in[it,:,:,local_pft2[comp]])
+            # define the pfts to be processed
+            out_3[comp, 3] = coocufun(
+            [0.0],
+            pfts_cube_in_1[:, :, local_pft1[comp]],
+            pfts_cube_in_1[:, :, local_pft2[comp]],
+            p1_static,
+            p2_static,
+            denom,
+            )
+            #println("all good")
+        end
+        
+        
+        
+        pfts_cube_in_2 = pfts_cube_in_1[:, :, :]
+        #println(all(isnan, pfts_cube_in_2))
+        
+        #println(size(pfts_cube_in_2))
+        
+        pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
+        
+        if count(!isnan, climvarmat[:]) >= minpxl
+            
+            if count(!isnan, climvarmat[:]) != 0
+                
+                pftsvarmat = pftsvarmat[findall(!isnan, climvarmat[:]), :]
+                
+                climvarmat = filter(!isnan, climvarmat)
             end
-    
-    
-    
-            pfts_cube_in_2 = pfts_cube_in_1[:, :, :]
-            #println(all(isnan, pfts_cube_in_2))
-    
-            #println(size(pfts_cube_in_2))
-    
-            pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
-    
-            # for debug from R -------
-    
-            # pftsvarmat = Matrix(CSV.read("/Net/Groups/BGI/people/dpabon/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
-            # pftsvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
-            # climvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_temperature_example_from_R.csv", DataFrame))
-            # check that there are not NaN values on pfts and at least one pft is present
-            # @show sum(pftsvarmat), sum(pftsvarmat)
-            #println(pftsvarmat)
-    
+            
             if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
                 #println("test")
                 #println(any(isnan.(pftsvarmat)))
                 # check if pftsvarmat is 0 to 1 or 0 to 100
                 #println(maximum(vec(pftsvarmat)))
-    
+                
                 # make sure compositions are really precisely right.
-    
+                
                 #localcomp_fix_glob = mapslices(x->1-sum(x), pftsvarmat, dims = 2)
                 localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
                 #map!(x->1-sum(x), localcomp_fix_glob, eachslice(pftsvarmat, dims = 1))
                 #println(size(localcomp_fix_glob))
                 #println(localcomp_fix_glob)
                 pftsvarmat_f = [pftsvarmat localcomp_fix]
-    
+                
                 map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
-    
+                
                 # some PFTs might not be present in the 5*5 window
                 # these must be identified and removed, as they cannot be predicted
-    
+                
                 #pftpres_check = vec(mapslices(sum, pftsvarmat, dims = 1) .> 0)
                 pftpres_check = vec(sum(pftsvarmat_f, dims = 1) .> 0)
-    
+                
                 pftpres_check[nc+1] = 0
-    
+                
                 # println(pftpres_check)
                 # @show typeof(pftpres_check)
                 # pftpos = pft_list[pftpres_check[1:length(pft_list)]]
-    
+                
                 # check that at least XX percent of the pixels is different
-    
+                
                 #uniquepixels_char = mapslices(x->string(x), pftsvarmat, dims = 2)
                 #uniquepixels_char = string(eachrow(pftsvarmat))
                 uniquepixels_char = unique(eachslice(pftsvarmat_f, dims = 1))
-    
+                
                 uniquepixels = length(uniquepixels_char)
-    
+                
                 # Sometimes there is only 1 PFT in all 25 gridcells,
                 # making the problem 0-dimensional
-    
+                
                 if uniquepixels > minDiffPxls && sum(pftpres_check) > 1
                     # println("test")
                     # avoid divided by 0
@@ -257,33 +257,33 @@ function s4time(
                     lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
                     lc1 = reduce(vcat, lc1')
                     # centre the columns (to be in the centre wrt new space)
-    
+                    
                     #lc2 = mapslices(x -> x .- mean(x), lc1, dims = 1)
                     lc2 = map(x -> x .- mean(x), eachslice(lc1, dims = 2))
                     lc2 = reduce(hcat, lc2)
                     # remember col means for the subsequent predictions
-    
+                    
                     #lcm = mapslices(mean, lc2, dims = 1)
                     lCm = mean(lc2, dims = 1)
-    
+                    
                     #@show size(lc2)
                     # decompose the resulting table
                     # println("before svd")
                     lcsvd = svd(lc2)
                     # println("after svd")
-    
+                    
                     # related to "enough PFTs", is there enough variability between observations?
                     # if all obs have exactly the same composition, the regression is not possible
                     # so only do the regression if there is some variability...
                     # println(sum(lcsvd.S))
                     if sum(lcsvd.S) > 0
                         # n. of dimmensions that explain 100 % of the variance
-    
+                        
                         # when there are only two pfts are in the matrix 
                         # cumsum(lcsvd.S) / sum(lcsvd.S.^2) sometimes can be lower than 1 in that case
-    
+                        
                         #println(cumsum(lcsvd.S) / sum(lcsvd.S.^2))
-    
+                        
                         temp = cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2)
                         try
                             minimum(findall(temp .>= 1))
@@ -292,220 +292,224 @@ function s4time(
                         end
                         
                         ndim = minimum(findall(temp .>= 1))
-    
+                        
                         # store results to output object
                         # cumulative variance
                         out_1[2] = sum(lcsvd.S)
-    
+                        
                         #println(out7_cumulated_variance)
-    
+                        
                         # dimmensions that explain 100 % of the variance
-    
+                        
                         lr = lc2 * lcsvd.V[:, 1:ndim]
-    
-    
+                        
+                        
                         # create bogus composition dataset
-    
+                        
                         #boguscomp = zeros(Float64, nc+1, nc+1)
                         #boguscomp[diagind(boguscomp)] .= 1
-    
+                        
                         boguscomp = I(nc + 1)
                         # println(boguscomp)
-    
+                        
                         # remove absent pfts from bogus predictor compositions and close compositions.
                         #
                         bogusc1 =
-                            mapslices(
-                                x -> x / sum(x),
-                                boguscomp[pftpres_check, pftpres_check],
-                                dims = 2,
-                            )'
-    
+                        mapslices(
+                        x -> x / sum(x),
+                        boguscomp[pftpres_check, pftpres_check],
+                        dims = 2,
+                        )'
+                        
                         #println(size(bogusc1))
                         #println(pftpres_check)
-    
+                        
                         # center the columns as the training data were centered
-    
+                        
                         bogusc2 = (I(sum(pftpres_check)) .- lCm[pftpres_check])
-    
+                        
                         bogusc2 = (bogusc1' .- lCm[pftpres_check])
-    
+                        
                         bogusc3 = bogusc2 * lcsvd.V[pftpres_check, 1:ndim]
                         #println(climvarmat[:,it])
-    
-                        if sum(!isnan, climvarmat[:]) >= minpxl
-                            #println("test")
-                            # data = hcat(DataFrame(lt = convert(Vector{Float64}, climvarmat[:,it])), DataFrame(lr, :auto))
-    
-                            # compreg = GLM.lm(Term(:lt) ~ sum(Term.(Symbol.(names(data[:, Not(:lt)])))), data)
-    
-                            #println("before fail")
+                        #println("test")
+                        # data = hcat(DataFrame(lt = convert(Vector{Float64}, climvarmat[:,it])), DataFrame(lr, :auto))
+                        
+                        # compreg = GLM.lm(Term(:lt) ~ sum(Term.(Symbol.(names(data[:, Not(:lt)])))), data)
+                        
+                        #println("before fail")
+                        
+                        ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
+                        
+                        # continue only if there are no NA in the estimated coefficients
+                        
+                        coef_reg = GLM.coef(ols)
+                        #println("original coef $coef_reg")
+                        #println("second estimation coef $(lr\climvarmat[:,it])")
+                        
+                        if isfinite(sum(coef_reg))
+                            # then do predictions for the log-normal approach
+                            if isa(bogusc2, Vector)
+                                
+                                boguspred = predict(
+                                ols,
+                                [ones(length(bogusc3)) bogusc3],
+                                )
+                                # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
+                                
+                            else
+                                # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
+                                boguspred = predict(
+                                ols,
+                                [ones(size(bogusc3, 1)) bogusc3],
+                                )
+                                
+                            end
                             
-                            ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-
-    
-    
-                            # continue only if there are no NA in the estimated coefficients
-    
-                            coef_reg = GLM.coef(ols)
-                            #println("original coef $coef_reg")
-                            #println("second estimation coef $(lr\climvarmat[:,it])")
-    
-                            if isfinite(sum(coef_reg))
-                                # then do predictions for the log-normal approach
-                                if isa(bogusc2, Vector)
-    
-                                    boguspred = predict(
-                                        ols,
-                                        [ones(length(bogusc3)) bogusc3],
-                                    )
-                                    # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
-    
+                            
+                            x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
+                            
+                            vcv = GLM.vcov(ols)
+                            # vcv = GLM.vcov(compreg)
+                            
+                            sigma = x2pred * vcv * x2pred'
+                            
+                            # now store the target variables
+                            # but make sure appropiate temperatures go back to appropiate
+                            # pfts (as absent pfts were removed)
+                            
+                            # value of climatevar for pure ptfs
+                            
+                            predres .= NaN
+                            #println(boguspred)
+                            predres[view(pftpres_check, 1:nc)] = boguspred
+                            #println(it)
+                            
+                            
+                            out_2[:, 1] = predres
+                            
+                            
+                            prederr .= NaN
+                            
+                            prederr[view(pftpres_check, 1:nc)] = sqrt.(diag(sigma))
+                            
+                            
+                            out_2[:, 2] = prederr
+                            
+                            
+                            # prediction of varclim for the central pixel with its real pft combination
+                            
+                            out_1[3] = StatsModels.predict(ols)[half]
+                            
+                            # Rsquare of the regression
+                            
+                            out_1[1] = StatsModels.r2(ols)
+                            # println(out_1)
+                            # println(r2(compreg))
+                            
+                            # and now for the transitions
+                            # only the PFTs identified in the pftlist are to be used
+                            
+                            sigma1 .= NaN
+                            sigma1[view(pftpres_check, 1:nc), view(pftpres_check, 1:nc)] =
+                            sigma
+                            
+                            # calculate the difference on climatevar caused by going from one pft to another.
+                            
+                            diff_clim_pft_pred = round.((predres .- predres'), digits = 10)
+                            
+                            diff_clim_pft_pred = diff_clim_pft_pred[tran_check]
+                            
+                            # propagate the error (as variances) taking into account
+                            # the covariance terms
+                            # in the original implementation diffclim_pft_var = dZvar
+                            
+                            diff_clim_pft_pred_var =
+                            round.(
+                            (diag(sigma1) .+ diag(sigma1)') .- 2 * sigma1,
+                            digits = 10,
+                            )
+                            
+                            #print(diff_clim_pft_pred)
+                            # flag out those with zero error (may occur with identical compositions for 2 pfts)
+                            
+                            diff_clim_pft_pred_var = diff_clim_pft_pred_var[tran_check]
+                            
+                            #println(diff_clim_pft_pred)
+                            
+                            # flag out those with zero error (may occur with identical compositions for 2 pfts)
+                            
+                            if any(round.(diff_clim_pft_pred, digits = 8) .== 0.0)
+                                diff_clim_pft_pred[round.(
+                                diff_clim_pft_pred,
+                                digits = 8,
+                                ).==0] .= NaN
+                            end
+                            
+                            if any(round.(diff_clim_pft_pred_var, digits = 8) .== 0.0)
+                                diff_clim_pft_pred_var[round.(
+                                diff_clim_pft_pred_var;
+                                digits = 8,
+                                ).==0] .= NaN
+                            end
+                            
+                            # mask out low co-ocurrence ask to greg!!! This can be performed  masking the pixels
+                            # before all estimations
+                            
+                            #println("inside loop")
+                            #println(diff_clim_pft_pred)
+                            
+                            if length(diff_clim_pft_pred) == 1
+                                
+                                out_3[1, 1] = diff_clim_pft_pred[1]
+                                #println(out1_delta)
+                                if diff_clim_pft_pred_var[1] .< 0
+                                    out_3[1, 2] = NaN
                                 else
-                                    # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
-                                    boguspred = predict(
-                                        ols,
-                                        [ones(size(bogusc3, 1)) bogusc3],
-                                    )
-    
+                                    out_3[1, 2] = sqrt.(diff_clim_pft_pred_var)[1]
+                                    
                                 end
-    
-    
-                                x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
-    
-                                vcv = GLM.vcov(ols)
-                                # vcv = GLM.vcov(compreg)
-    
-                                sigma = x2pred * vcv * x2pred'
-    
-                                # now store the target variables
-                                # but make sure appropiate temperatures go back to appropiate
-                                # pfts (as absent pfts were removed)
-    
-                                # value of climatevar for pure ptfs
-    
-                                predres .= NaN
-                                #println(boguspred)
-                                predres[view(pftpres_check, 1:nc)] = boguspred
-                                #println(it)
-    
-    
-                                out_2[:, 1] = predres
-    
-    
-                                prederr .= NaN
-    
-                                prederr[view(pftpres_check, 1:nc)] = sqrt.(diag(sigma))
-    
-    
-                                out_2[:, 2] = prederr
-    
-    
-                                # prediction of varclim for the central pixel with its real pft combination
-    
-                                out_1[3] = StatsModels.predict(ols)[half]
-    
-                                # Rsquare of the regression
-    
-                                out_1[1] = StatsModels.r2(ols)
-                                # println(out_1)
-                                # println(r2(compreg))
-    
-                                # and now for the transitions
-                                # only the PFTs identified in the pftlist are to be used
-    
-                                sigma1 .= NaN
-                                sigma1[view(pftpres_check, 1:nc), view(pftpres_check, 1:nc)] =
-                                    sigma
-    
-                                # calculate the difference on climatevar caused by going from one pft to another.
-    
-                                diff_clim_pft_pred = round.((predres .- predres'), digits = 10)
-    
-                                diff_clim_pft_pred = diff_clim_pft_pred[tran_check]
-    
-                                # propagate the error (as variances) taking into account
-                                # the covariance terms
-                                # in the original implementation diffclim_pft_var = dZvar
-    
-                                diff_clim_pft_pred_var =
-                                    round.(
-                                        (diag(sigma1) .+ diag(sigma1)') .- 2 * sigma1,
-                                        digits = 10,
-                                    )
-    
-                                #print(diff_clim_pft_pred)
-                                # flag out those with zero error (may occur with identical compositions for 2 pfts)
-    
-                                diff_clim_pft_pred_var = diff_clim_pft_pred_var[tran_check]
-    
-                                #println(diff_clim_pft_pred)
-    
-                                # flag out those with zero error (may occur with identical compositions for 2 pfts)
-    
-                                if any(round.(diff_clim_pft_pred, digits = 8) .== 0.0)
-                                    diff_clim_pft_pred[round.(
-                                        diff_clim_pft_pred,
-                                        digits = 8,
-                                    ).==0] .= NaN
-                                end
-    
-                                if any(round.(diff_clim_pft_pred_var, digits = 8) .== 0.0)
-                                    diff_clim_pft_pred_var[round.(
-                                        diff_clim_pft_pred_var;
-                                        digits = 8,
-                                    ).==0] .= NaN
-                                end
-    
-                                # mask out low co-ocurrence ask to greg!!! This can be performed  masking the pixels
-                                # before all estimations
-    
-                                #println("inside loop")
-                                #println(diff_clim_pft_pred)
-    
-                                if length(diff_clim_pft_pred) == 1
-    
-                                    out_3[1, 1] = diff_clim_pft_pred[1]
-                                    #println(out1_delta)
-                                    if diff_clim_pft_pred_var[1] .< 0
-                                        out_3[1, 2] = NaN
-                                    else
-                                        out_3[1, 2] = sqrt.(diff_clim_pft_pred_var)[1]
-    
-                                    end
-    
-    
-                                else
-    
-                                    out_3[1:transitions_n, 1] = diff_clim_pft_pred
-                                    #println(out1_delta)
-                                    #if diff_clim_pft_pred_var .< 0
-                                    #out_3[it,1:transitions_n,2] .= NaN
-    
-                                    #else
-                                    diff_clim_pft_pred_var[diff_clim_pft_pred_var.<0] .= NaN
-                                    out_3[1:transitions_n, 2] =
-                                        sqrt.(diff_clim_pft_pred_var)
-    
-                                    #end
-                                end
+                                
+                                
+                            else
+                                
+                                out_3[1:transitions_n, 1] = diff_clim_pft_pred
+                                #println(out1_delta)
+                                #if diff_clim_pft_pred_var .< 0
+                                #out_3[it,1:transitions_n,2] .= NaN
+                                
+                                #else
+                                diff_clim_pft_pred_var[diff_clim_pft_pred_var.<0] .= NaN
+                                out_3[1:transitions_n, 2] =
+                                sqrt.(diff_clim_pft_pred_var)
+                                
+                                #end
                             end
                         end
                     end
                 end
             end
-    else
-
-        if time_n == 1
-
-            pfts_cube_in_1 =
-                permutedims(reshape(pfts_cube_in_1, (winsize, winsize, nc, 1)), (4, 1, 2, 3))
-    
         end
-
+        # for debug from R -------
+        
+        # pftsvarmat = Matrix(CSV.read("/Net/Groups/BGI/people/dpabon/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
+        # pftsvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
+        # climvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_temperature_example_from_R.csv", DataFrame))
+        # check that there are not NaN values on pfts and at least one pft is present
+        # @show sum(pftsvarmat), sum(pftsvarmat)
+        #println(pftsvarmat)
+    else
+        
+        if time_n == 1
+            
+            pfts_cube_in_1 =
+            permutedims(reshape(pfts_cube_in_1, (winsize, winsize, nc, 1)), (4, 1, 2, 3))
+            
+        end
+        
         for it = 1:time_n
             # co-ocurrence estimation
-
+            
             #println(it)
             #println(local_pft1)
             #println(local_pft2)
@@ -518,304 +522,314 @@ function s4time(
                 #println(pfts_cube_in[it,:,:,local_pft2[comp]])
                 # define the pfts to be processed
                 out_3[it, comp, 3] = coocufun(
-                    [0.0],
-                    pfts_cube_in_1[it, :, :, local_pft1[comp]],
-                    pfts_cube_in_1[it, :, :, local_pft2[comp]],
-                    p1_static,
-                    p2_static,
-                    denom,
+                [0.0],
+                pfts_cube_in_1[it, :, :, local_pft1[comp]],
+                pfts_cube_in_1[it, :, :, local_pft2[comp]],
+                p1_static,
+                p2_static,
+                denom,
                 )
                 #println("all good")
             end
-    
-    
-    
+            
+            
+            
             pfts_cube_in_2 = pfts_cube_in_1[it, :, :, :]
             #println(all(isnan, pfts_cube_in_2))
-    
+            
             #println(size(pfts_cube_in_2))
-    
+            
             pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
-    
-            # for debug from R -------
-    
-            # pftsvarmat = Matrix(CSV.read("/Net/Groups/BGI/people/dpabon/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
-            # pftsvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
-            # climvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_temperature_example_from_R.csv", DataFrame))
-            # check that there are not NaN values on pfts and at least one pft is present
-            # @show sum(pftsvarmat), sum(pftsvarmat)
-            #println(pftsvarmat)
-    
-            if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
-                #println("test")
-                #println(any(isnan.(pftsvarmat)))
-                # check if pftsvarmat is 0 to 1 or 0 to 100
-                #println(maximum(vec(pftsvarmat)))
-    
-                # make sure compositions are really precisely right.
-    
-                #localcomp_fix_glob = mapslices(x->1-sum(x), pftsvarmat, dims = 2)
-                localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
-                #map!(x->1-sum(x), localcomp_fix_glob, eachslice(pftsvarmat, dims = 1))
-                #println(size(localcomp_fix_glob))
-                #println(localcomp_fix_glob)
-                pftsvarmat_f = [pftsvarmat localcomp_fix]
-    
-                map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
-    
-                # some PFTs might not be present in the 5*5 window
-                # these must be identified and removed, as they cannot be predicted
-    
-                #pftpres_check = vec(mapslices(sum, pftsvarmat, dims = 1) .> 0)
-                pftpres_check = vec(sum(pftsvarmat_f, dims = 1) .> 0)
-    
-                pftpres_check[nc+1] = 0
-    
-                # println(pftpres_check)
-                # @show typeof(pftpres_check)
-                # pftpos = pft_list[pftpres_check[1:length(pft_list)]]
-    
-                # check that at least XX percent of the pixels is different
-    
-                #uniquepixels_char = mapslices(x->string(x), pftsvarmat, dims = 2)
-                #uniquepixels_char = string(eachrow(pftsvarmat))
-                uniquepixels_char = unique(eachslice(pftsvarmat_f, dims = 1))
-    
-                uniquepixels = length(uniquepixels_char)
-    
-                # Sometimes there is only 1 PFT in all 25 gridcells,
-                # making the problem 0-dimensional
-    
-                if uniquepixels > minDiffPxls && sum(pftpres_check) > 1
+            
+            
+            if count(!isnan, climvarmat[:, it]) >= minpxl
+                
+                if count(!isnan, climvarmat[:, it]) != 0
+                    
+                    pftsvarmat = pftsvarmat[findall(!isnan, climvarmat[:, it]), :]
+                    
+                    climvarmat[:,it] = filter(!isnan, climvarmat[:,it])
+                end
+
+                # for debug from R -------
+            
+                # pftsvarmat = Matrix(CSV.read("/Net/Groups/BGI/people/dpabon/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
+                # pftsvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
+                # climvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_temperature_example_from_R.csv", DataFrame))
+                # check that there are not NaN values on pfts and at least one pft is present
+                # @show sum(pftsvarmat), sum(pftsvarmat)
+                #println(pftsvarmat)
+            
+            
+                #println(it)
+                
+                if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
                     #println("test")
-                    # avoid divided by 0
-                    #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
-                    lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
-                    lc1 = reduce(vcat, lc1')
-                    # centre the columns (to be in the centre wrt new space)
-    
-                    #lc2 = mapslices(x -> x .- mean(x), lc1, dims = 1)
-                    lc2 = map(x -> x .- mean(x), eachslice(lc1, dims = 2))
-                    lc2 = reduce(hcat, lc2)
-                    # remember col means for the subsequent predictions
-    
-                    #lcm = mapslices(mean, lc2, dims = 1)
-                    lCm = mean(lc2, dims = 1)
-    
-                    #@show size(lc2)
-                    # decompose the resulting table
-                    # println("before svd")
-                    lcsvd = svd(lc2)
-                    # println("after svd")
-    
-                    # related to "enough PFTs", is there enough variability between observations?
-                    # if all obs have exactly the same composition, the regression is not possible
-                    # so only do the regression if there is some variability...
-                    # println(sum(lcsvd.S))
-                    if sum(lcsvd.S) > 0
-                        # n. of dimmensions that explain 100 % of the variance
-    
-                        # when there are only two pfts are in the matrix 
-                        # cumsum(lcsvd.S) / sum(lcsvd.S.^2) sometimes can be lower than 1 in that case
-    
-                        #println(cumsum(lcsvd.S) / sum(lcsvd.S.^2))
-    
-                        temp = round.(cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2), digits = 8)
-                        ndim = minimum(findall(temp .>= 1))
-    
-                        # store results to output object
-                        # cumulative variance
-                        out_1[it, 2] = sum(lcsvd.S)
-    
-                        #println(out7_cumulated_variance)
-    
-                        # dimmensions that explain 100 % of the variance
-    
-                        lr = lc2 * lcsvd.V[:, 1:ndim]
-    
-    
-                        # create bogus composition dataset
-    
-                        #boguscomp = zeros(Float64, nc+1, nc+1)
-                        #boguscomp[diagind(boguscomp)] .= 1
-    
-                        boguscomp = I(nc + 1)
-                        # println(boguscomp)
-    
-                        # remove absent pfts from bogus predictor compositions and close compositions.
-                        #
-                        bogusc1 =
-                            mapslices(
-                                x -> x / sum(x),
-                                boguscomp[pftpres_check, pftpres_check],
-                                dims = 2,
-                            )'
-    
-                        #println(size(bogusc1))
-                        #println(pftpres_check)
+                    #println(any(isnan.(pftsvarmat)))
+                    # check if pftsvarmat is 0 to 1 or 0 to 100
+                    #println(maximum(vec(pftsvarmat)))
+                    
+                    # make sure compositions are really precisely right.
+                    
+                    #localcomp_fix_glob = mapslices(x->1-sum(x), pftsvarmat, dims = 2)
+                    localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
+                    #map!(x->1-sum(x), localcomp_fix_glob, eachslice(pftsvarmat, dims = 1))
+                    #println(size(localcomp_fix_glob))
+                    #println(localcomp_fix_glob)
+                    pftsvarmat_f = [pftsvarmat localcomp_fix]
+                    
+                    map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
+                    
+                    # some PFTs might not be present in the 5*5 window
+                    # these must be identified and removed, as they cannot be predicted
+                    
+                    #pftpres_check = vec(mapslices(sum, pftsvarmat, dims = 1) .> 0)
+                    pftpres_check = vec(sum(pftsvarmat_f, dims = 1) .> 0)
+                    
+                    pftpres_check[nc+1] = 0
+                    
+                    # println(pftpres_check)
+                    # @show typeof(pftpres_check)
+                    # pftpos = pft_list[pftpres_check[1:length(pft_list)]]
+                    
+                    # check that at least XX percent of the pixels is different
+                    
+                    #uniquepixels_char = mapslices(x->string(x), pftsvarmat, dims = 2)
+                    #uniquepixels_char = string(eachrow(pftsvarmat))
+                    uniquepixels_char = unique(eachslice(pftsvarmat_f, dims = 1))
+                    
+                    uniquepixels = length(uniquepixels_char)
+                    
+                    # Sometimes there is only 1 PFT in all 25 gridcells,
+                    # making the problem 0-dimensional
+                    
+                    if uniquepixels > minDiffPxls && sum(pftpres_check) > 1
+                        #println("test")
+                        # avoid divided by 0
+                        #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
+                        lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
+                        lc1 = reduce(vcat, lc1')
+                        # centre the columns (to be in the centre wrt new space)
                         
-                        # center the columns as the training data were centered
-    
-                        bogusc2 = (I(sum(pftpres_check)) .- lCm[pftpres_check])
-    
-                        bogusc2 = (bogusc1' .- lCm[pftpres_check])
-    
-                        bogusc3 = bogusc2 * lcsvd.V[pftpres_check, 1:ndim]
-                        #println(climvarmat[:,it])
-    
-                        if sum(!isnan, climvarmat[:, it]) >= minpxl
+                        #lc2 = mapslices(x -> x .- mean(x), lc1, dims = 1)
+                        lc2 = map(x -> x .- mean(x), eachslice(lc1, dims = 2))
+                        lc2 = reduce(hcat, lc2)
+                        # remember col means for the subsequent predictions
+                        
+                        #lcm = mapslices(mean, lc2, dims = 1)
+                        lCm = mean(lc2, dims = 1)
+                        
+                        #@show size(lc2)
+                        # decompose the resulting table
+                        # println("before svd")
+                        lcsvd = svd(lc2)
+                        # println("after svd")
+                        
+                        # related to "enough PFTs", is there enough variability between observations?
+                        # if all obs have exactly the same composition, the regression is not possible
+                        # so only do the regression if there is some variability...
+                        # println(sum(lcsvd.S))
+                        if sum(lcsvd.S) > 0
+                            # n. of dimmensions that explain 100 % of the variance
+                            
+                            # when there are only two pfts are in the matrix 
+                            # cumsum(lcsvd.S) / sum(lcsvd.S.^2) sometimes can be lower than 1 in that case
+                            
+                            #println(cumsum(lcsvd.S) / sum(lcsvd.S.^2))
+                            
+                            temp = round.(cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2), digits = 8)
+                            ndim = minimum(findall(temp .>= 1))
+                            
+                            # store results to output object
+                            # cumulative variance
+                            out_1[it, 2] = sum(lcsvd.S)
+                            
+                            #println(out7_cumulated_variance)
+                            
+                            # dimmensions that explain 100 % of the variance
+                            
+                            lr = lc2 * lcsvd.V[:, 1:ndim]
+                            
+                            
+                            # create bogus composition dataset
+                            
+                            #boguscomp = zeros(Float64, nc+1, nc+1)
+                            #boguscomp[diagind(boguscomp)] .= 1
+                            
+                            boguscomp = I(nc + 1)
+                            # println(boguscomp)
+                            
+                            # remove absent pfts from bogus predictor compositions and close compositions.
+                            #
+                            bogusc1 =
+                            mapslices(
+                            x -> x / sum(x),
+                            boguscomp[pftpres_check, pftpres_check],
+                            dims = 2,
+                            )'
+                            
+                            #println(size(bogusc1))
+                            #println(pftpres_check)
+                            
+                            # center the columns as the training data were centered
+                            
+                            bogusc2 = (I(sum(pftpres_check)) .- lCm[pftpres_check])
+                            
+                            bogusc2 = (bogusc1' .- lCm[pftpres_check])
+                            
+                            bogusc3 = bogusc2 * lcsvd.V[pftpres_check, 1:ndim]
+                            #println(climvarmat[:,it])
+                            
                             #println("test")
                             # data = hcat(DataFrame(lt = convert(Vector{Float64}, climvarmat[:,it])), DataFrame(lr, :auto))
-    
+                            
                             # compreg = GLM.lm(Term(:lt) ~ sum(Term.(Symbol.(names(data[:, Not(:lt)])))), data)
-    
+                            
                             #println("before fail")
-
+                            
                             ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:, it]); method=:qr, dropcollinear = false)
-
-    
-    
+                            
                             # continue only if there are no NA in the estimated coefficients
-    
+                            
                             coef_reg = GLM.coef(ols)
                             #println("original coef $coef_reg")
                             #println("second estimation coef $(lr\climvarmat[:,it])")
-    
+                            
                             if isfinite(sum(coef_reg))
                                 # then do predictions for the log-normal approach
                                 if isa(bogusc2, Vector)
-    
+                                    
                                     boguspred = predict(
-                                        ols,
-                                        [ones(length(bogusc3)) bogusc3],
+                                    ols,
+                                    [ones(length(bogusc3)) bogusc3],
                                     )
                                     # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
-    
+                                    
                                 else
                                     # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
                                     boguspred = predict(
-                                        ols,
-                                        [ones(size(bogusc3, 1)) bogusc3],
+                                    ols,
+                                    [ones(size(bogusc3, 1)) bogusc3],
                                     )
-    
+                                    
                                 end
-    
-    
+                                
+                                
                                 x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
-    
+                                
                                 vcv = GLM.vcov(ols)
                                 # vcv = GLM.vcov(compreg)
-    
+                                
                                 sigma = x2pred * vcv * x2pred'
-    
+                                
                                 # now store the target variables
                                 # but make sure appropiate temperatures go back to appropiate
                                 # pfts (as absent pfts were removed)
-    
+                                
                                 # value of climatevar for pure ptfs
-    
+                                
                                 predres .= NaN
                                 #println(boguspred)
                                 predres[view(pftpres_check, 1:nc)] = boguspred
                                 #println(it)
-    
+                                
                                 out_2[it, :, 1] = predres
-    
-    
+                                
+                                
                                 prederr .= NaN
-    
+                                
                                 prederr[view(pftpres_check, 1:nc)] = sqrt.(diag(sigma))
-    
-    
+                                
+                                
                                 out_2[it, :, 2] = prederr
-    
-    
+                                
+                                
                                 # prediction of varclim for the central pixel with its real pft combination
-    
+                                
                                 out_1[it, 3] = StatsModels.predict(ols)[half]
-    
+                                
                                 # Rsquare of the regression
-    
+                                
                                 out_1[it, 1] = StatsModels.r2(ols)
                                 # println(out_1)
                                 # println(r2(compreg))
-    
-                                  # and now for the transitions
+                                
+                                # and now for the transitions
                                 # only the PFTs identified in the pftlist are to be used
-    
+                                
                                 sigma1 .= NaN
                                 sigma1[view(pftpres_check, 1:nc), view(pftpres_check, 1:nc)] =
-                                    sigma
-    
+                                sigma
+                                
                                 # calculate the difference on climatevar caused by going from one pft to another.
-    
+                                
                                 diff_clim_pft_pred = round.((predres .- predres'), digits = 10)
-    
+                                
                                 diff_clim_pft_pred = diff_clim_pft_pred[tran_check]
-    
+                                
                                 # propagate the error (as variances) taking into account
                                 # the covariance terms
                                 # in the original implementation diffclim_pft_var = dZvar
-    
+                                
                                 diff_clim_pft_pred_var =
-                                    round.(
-                                        (diag(sigma1) .+ diag(sigma1)') .- 2 * sigma1,
-                                        digits = 10,
-                                    )
-    
+                                round.(
+                                (diag(sigma1) .+ diag(sigma1)') .- 2 * sigma1,
+                                digits = 10,
+                                )
+                                
                                 #print(diff_clim_pft_pred)
                                 # flag out those with zero error (may occur with identical compositions for 2 pfts)
-    
+                                
                                 diff_clim_pft_pred_var = diff_clim_pft_pred_var[tran_check]
-    
+                                
                                 #println(diff_clim_pft_pred)
-    
+                                
                                 # flag out those with zero error (may occur with identical compositions for 2 pfts)
-    
+                                
                                 if any(round.(diff_clim_pft_pred, digits = 8) .== 0.0)
                                     diff_clim_pft_pred[round.(
-                                        diff_clim_pft_pred,
-                                        digits = 8,
+                                    diff_clim_pft_pred,
+                                    digits = 8,
                                     ).==0] .= NaN
                                 end
-    
+                                
                                 if any(round.(diff_clim_pft_pred_var, digits = 8) .== 0.0)
                                     diff_clim_pft_pred_var[round.(
-                                        diff_clim_pft_pred_var;
-                                        digits = 8,
+                                    diff_clim_pft_pred_var;
+                                    digits = 8,
                                     ).==0] .= NaN
                                 end
-    
+                                
                                 # mask out low co-ocurrence ask to greg!!! This can be performed  masking the pixels
                                 # before all estimations
-    
+                                
                                 #println("inside loop")
                                 #println(diff_clim_pft_pred)
-    
+                                
                                 if length(diff_clim_pft_pred) == 1
-    
+                                    
                                     out_3[it, 1, 1] = diff_clim_pft_pred[1]
                                     #println(out1_delta)
                                     if diff_clim_pft_pred_var[1] .< 0
                                         out_3[it, 1, 2] = NaN
                                     else
                                         out_3[it, 1, 2] = sqrt.(diff_clim_pft_pred_var)[1]
-    
+                                        
                                     end
-    
-    
+                                    
+                                    
                                 else
-    
+                                    
                                     out_3[it, 1:transitions_n, 1] = diff_clim_pft_pred
                                     #println(out1_delta)
                                     #if diff_clim_pft_pred_var .< 0
                                     #out_3[it,1:transitions_n,2] .= NaN
-    
+                                    
                                     #else
                                     diff_clim_pft_pred_var[diff_clim_pft_pred_var.<0] .= NaN
                                     out_3[it, 1:transitions_n, 2] =
-                                        sqrt.(diff_clim_pft_pred_var)
-    
+                                    sqrt.(diff_clim_pft_pred_var)
+                                    
                                     #end
                                 end
                             end
@@ -823,7 +837,6 @@ function s4time(
                     end
                 end
             end
-            #println(it)
         end
     end
 end
@@ -981,141 +994,148 @@ function s4time_space(
     
     pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
     
-    # for debug from R -------
-    
-    # pftsvarmat = Matrix(CSV.read("/Net/Groups/BGI/people/dpabon/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
-    # pftsvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
-    # climvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_temperature_example_from_R.csv", DataFrame))
-    # check that there are not NaN values on pfts and at least one pft is present
-    # @show sum(pftsvarmat), sum(pftsvarmat)
-    #println(pftsvarmat)
-    
-    if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
-        #println("test")
-        #println(any(isnan.(pftsvarmat)))
-        # check if pftsvarmat is 0 to 1 or 0 to 100
-        #println(maximum(vec(pftsvarmat)))
+    if count(!isnan, climvarmat[:]) >= minpxl
         
-        # make sure compositions are really precisely right.
-        
-        #localcomp_fix_glob = mapslices(x->1-sum(x), pftsvarmat, dims = 2)
-        localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
-        #map!(x->1-sum(x), localcomp_fix_glob, eachslice(pftsvarmat, dims = 1))
-        #println(size(localcomp_fix_glob))
-        #println(localcomp_fix_glob)
-        pftsvarmat_f = [pftsvarmat localcomp_fix]
-        
-        map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
-        
-        # some PFTs might not be present in the 5*5 window
-        # these must be identified and removed, as they cannot be predicted
-        
-        #pftpres_check = vec(mapslices(sum, pftsvarmat, dims = 1) .> 0)
-        pftpres_check = vec(sum(pftsvarmat_f, dims = 1) .> 0)
-        
-        pftpres_check[nc+1] = 0
-        
-        # println(pftpres_check)
-        # @show typeof(pftpres_check)
-        # pftpos = pft_list[pftpres_check[1:length(pft_list)]]
-        
-        # check that at least XX percent of the pixels is different
-        
-        #uniquepixels_char = mapslices(x->string(x), pftsvarmat, dims = 2)
-        #uniquepixels_char = string(eachrow(pftsvarmat))
-        uniquepixels_char = unique(eachslice(pftsvarmat_f, dims = 1))
-        
-        uniquepixels = length(uniquepixels_char)
-        
-        # Sometimes there is only 1 PFT in all 25 gridcells,
-        # making the problem 0-dimensional
-        
-        if uniquepixels > minDiffPxls && sum(pftpres_check) > 1
-            # println("test")
-            # avoid divided by 0
-            #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
-            lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
-            lc1 = reduce(vcat, lc1')
-            # centre the columns (to be in the centre wrt new space)
+        if count(!isnan, climvarmat[:]) != 0
             
-            #lc2 = mapslices(x -> x .- mean(x), lc1, dims = 1)
-            lc2 = map(x -> x .- mean(x), eachslice(lc1, dims = 2))
-            lc2 = reduce(hcat, lc2)
-            # remember col means for the subsequent predictions
+            pftsvarmat = pftsvarmat[findall(!isnan, climvarmat[:]), :]
             
-            #lcm = mapslices(mean, lc2, dims = 1)
-            lCm = mean(lc2, dims = 1)
+            climvarmat = filter(!isnan, climvarmat)
+        end
+        
+        # for debug from R -------
+        
+        # pftsvarmat = Matrix(CSV.read("/Net/Groups/BGI/people/dpabon/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
+        # pftsvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
+        # climvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_temperature_example_from_R.csv", DataFrame))
+        # check that there are not NaN values on pfts and at least one pft is present
+        # @show sum(pftsvarmat), sum(pftsvarmat)
+        #println(pftsvarmat)
+        
+        if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
+            #println("test")
+            #println(any(isnan.(pftsvarmat)))
+            # check if pftsvarmat is 0 to 1 or 0 to 100
+            #println(maximum(vec(pftsvarmat)))
             
-            #@show size(lc2)
-            # decompose the resulting table
-            # println("before svd")
-            lcsvd = svd(lc2)
-            # println("after svd")
+            # make sure compositions are really precisely right.
             
-            # related to "enough PFTs", is there enough variability between observations?
-            # if all obs have exactly the same composition, the regression is not possible
-            # so only do the regression if there is some variability...
-            # println(sum(lcsvd.S))
-            if sum(lcsvd.S) > 0
-                # n. of dimmensions that explain 100 % of the variance
+            #localcomp_fix_glob = mapslices(x->1-sum(x), pftsvarmat, dims = 2)
+            localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
+            #map!(x->1-sum(x), localcomp_fix_glob, eachslice(pftsvarmat, dims = 1))
+            #println(size(localcomp_fix_glob))
+            #println(localcomp_fix_glob)
+            pftsvarmat_f = [pftsvarmat localcomp_fix]
+            
+            map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
+            
+            # some PFTs might not be present in the 5*5 window
+            # these must be identified and removed, as they cannot be predicted
+            
+            #pftpres_check = vec(mapslices(sum, pftsvarmat, dims = 1) .> 0)
+            pftpres_check = vec(sum(pftsvarmat_f, dims = 1) .> 0)
+            
+            pftpres_check[nc+1] = 0
+            
+            # println(pftpres_check)
+            # @show typeof(pftpres_check)
+            # pftpos = pft_list[pftpres_check[1:length(pft_list)]]
+            
+            # check that at least XX percent of the pixels is different
+            
+            #uniquepixels_char = mapslices(x->string(x), pftsvarmat, dims = 2)
+            #uniquepixels_char = string(eachrow(pftsvarmat))
+            uniquepixels_char = unique(eachslice(pftsvarmat_f, dims = 1))
+            
+            uniquepixels = length(uniquepixels_char)
+            
+            # Sometimes there is only 1 PFT in all 25 gridcells,
+            # making the problem 0-dimensional
+            
+            if uniquepixels > minDiffPxls && sum(pftpres_check) > 1
+                # println("test")
+                # avoid divided by 0
+                #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
+                lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
+                lc1 = reduce(vcat, lc1')
+                # centre the columns (to be in the centre wrt new space)
                 
-                # when there are only two pfts are in the matrix 
-                # cumsum(lcsvd.S) / sum(lcsvd.S.^2) sometimes can be lower than 1 in that case
+                #lc2 = mapslices(x -> x .- mean(x), lc1, dims = 1)
+                lc2 = map(x -> x .- mean(x), eachslice(lc1, dims = 2))
+                lc2 = reduce(hcat, lc2)
+                # remember col means for the subsequent predictions
                 
-                #println(cumsum(lcsvd.S) / sum(lcsvd.S.^2))
+                #lcm = mapslices(mean, lc2, dims = 1)
+                lCm = mean(lc2, dims = 1)
                 
-                temp = round.(cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2), digits = 8)
-                ndim = minimum(findall(temp .>= 1))
+                #@show size(lc2)
+                # decompose the resulting table
+                # println("before svd")
+                lcsvd = svd(lc2)
+                # println("after svd")
                 
-                # store results to output object
-                # cumulative variance
-                out_1[2] = sum(lcsvd.S)
-                
-                #println(out7_cumulated_variance)
-                
-                # dimmensions that explain 100 % of the variance
-                
-                lr = lc2 * lcsvd.V[:, 1:ndim]
-                
-                
-                # create bogus composition dataset
-                
-                #boguscomp = zeros(Float64, nc+1, nc+1)
-                #boguscomp[diagind(boguscomp)] .= 1
-                
-                boguscomp = I(nc + 1)
-                # println(boguscomp)
-                
-                # remove absent pfts from bogus predictor compositions and close compositions.
-                #
-                bogusc1 =
-                mapslices(
-                x -> x / sum(x),
-                boguscomp[pftpres_check, pftpres_check],
-                dims = 2,
-                )'
-                
-                #println(size(bogusc1))
-                #println(pftpres_check)
-                
-                # center the columns as the training data were centered
-                
-                bogusc2 = (I(sum(pftpres_check)) .- lCm[pftpres_check])
-                
-                bogusc2 = (bogusc1' .- lCm[pftpres_check])
-                
-                bogusc3 = bogusc2 * lcsvd.V[pftpres_check, 1:ndim]
-                #println(climvarmat[:,it])
-                
-                if sum(!isnan, climvarmat[:]) >= minpxl
+                # related to "enough PFTs", is there enough variability between observations?
+                # if all obs have exactly the same composition, the regression is not possible
+                # so only do the regression if there is some variability...
+                # println(sum(lcsvd.S))
+                if sum(lcsvd.S) > 0
+                    # n. of dimmensions that explain 100 % of the variance
+                    
+                    # when there are only two pfts are in the matrix 
+                    # cumsum(lcsvd.S) / sum(lcsvd.S.^2) sometimes can be lower than 1 in that case
+                    
+                    #println(cumsum(lcsvd.S) / sum(lcsvd.S.^2))
+                    
+                    temp = round.(cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2), digits = 8)
+                    ndim = minimum(findall(temp .>= 1))
+                    
+                    # store results to output object
+                    # cumulative variance
+                    out_1[2] = sum(lcsvd.S)
+                    
+                    #println(out7_cumulated_variance)
+                    
+                    # dimmensions that explain 100 % of the variance
+                    
+                    lr = lc2 * lcsvd.V[:, 1:ndim]
+                    
+                    
+                    # create bogus composition dataset
+                    
+                    #boguscomp = zeros(Float64, nc+1, nc+1)
+                    #boguscomp[diagind(boguscomp)] .= 1
+                    
+                    boguscomp = I(nc + 1)
+                    # println(boguscomp)
+                    
+                    # remove absent pfts from bogus predictor compositions and close compositions.
+                    #
+                    bogusc1 =
+                    mapslices(
+                    x -> x / sum(x),
+                    boguscomp[pftpres_check, pftpres_check],
+                    dims = 2,
+                    )'
+                    
+                    #println(size(bogusc1))
+                    #println(pftpres_check)
+                    
+                    # center the columns as the training data were centered
+                    
+                    bogusc2 = (I(sum(pftpres_check)) .- lCm[pftpres_check])
+                    
+                    bogusc2 = (bogusc1' .- lCm[pftpres_check])
+                    
+                    bogusc3 = bogusc2 * lcsvd.V[pftpres_check, 1:ndim]
+                    #println(climvarmat[:,it])
+                    
+                    
                     #println("test")
                     # data = hcat(DataFrame(lt = convert(Vector{Float64}, climvarmat[:,it])), DataFrame(lr, :auto))
                     
                     # compreg = GLM.lm(Term(:lt) ~ sum(Term.(Symbol.(names(data[:, Not(:lt)])))), data)
                     
                     #println("before fail")
-
-               
                     
                     ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                     
@@ -1265,11 +1285,11 @@ function s4time_space(
                             
                             #end
                         end
-                    end
+                    end                
                 end
             end
         end
-    end
+    end 
     GC.gc()
 end
 
