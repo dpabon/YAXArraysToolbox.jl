@@ -54,7 +54,7 @@ Compute the space for time analysis for a given climate variable.
     out1: Summary statistics. YAXARRAY cube where summary_stat axis contains: 
     * "rsquare": XXXX 
     * "cumulative_variance": XXXX
-    * "predicted": Prediction of Z for the central pixel with its real PFT combination.
+    * "predicted": Mean prediction of Z for moving window with the real combination of values.
     out2: 
     
 #Examples
@@ -399,7 +399,7 @@ function s4time(
                             
                             # prediction of varclim for the central pixel with its real pft combination
                             
-                            out_1[3] = StatsModels.predict(ols)[half]
+                            out_1[3] = mean(StatsModels.predict(ols))
                             
                             # Rsquare of the regression
                             
@@ -745,8 +745,10 @@ function s4time(
                                 
                                 
                                 # prediction of varclim for the central pixel with its real pft combination
+                                # It is possible that the center pixel correspond to an observation with NaN that was removed then
+                                # I redefined as just mean of the prediction
                                 
-                                out_1[it, 3] = StatsModels.predict(ols)[half]
+                                out_1[it, 3] = mean(StatsModels.predict(ols))
                                 
                                 # Rsquare of the regression
                                 
@@ -856,7 +858,7 @@ Compute the space for time analysis for a given climate variable.
     out1: Summary statistics. YAXARRAY cube where summary_stat axis contains: 
     * "rsquare": XXXX 
     * "cumulative_variance": XXXX
-    * "predicted": Prediction of Z for the central pixel with its real PFT combination.
+    * "predicted": Mean prediction of Z for moving window with the real combination of values.
     out2: 
     
 #Examples
@@ -1199,7 +1201,7 @@ function s4time_space(
                         
                         # prediction of varclim for the central pixel with its real pft combination
                         
-                        out_1[3] = StatsModels.predict(ols)[half]
+                        out_1[3] = mean(StatsModels.predict(ols))
                         
                         # Rsquare of the regression
                         
@@ -1328,12 +1330,13 @@ end
  - SummaryStats cube has one axis ```summary_stat```, and three variables:
     - ```rsquared```:  
     - ```cumulative_variance```:
-    - ```predicted```:
+    - ```predicted```: Mean prediction of Z for moving window with the real combination of values.
+
  - ```metrics_for_classes``` cube has one axis ```Values of Z for pure classes```, and two variables:
     - ```estimated```:
     - ```estimated_error```:
  - metrics_for_transitions has two axis ```transitions``` (all the transitions by pairs between the different classes), and ```Differences``` with three variables:
-    - ```delta```:
+    - ```delta```: delta of the biophysical produced of going from one class the another.
     - ```delta_error```:
     - ```coocurence```:
  """
