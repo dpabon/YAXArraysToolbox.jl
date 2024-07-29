@@ -548,7 +548,7 @@ function s4time(
                     
                     pftsvarmat = pftsvarmat[findall(!isnan, climvarmat[:, it]), :]
                     
-                    climvarmat[:,it] = filter(!isnan, climvarmat[:,it])
+                    climvarmat_it = filter(!isnan, climvarmat[:,it])
                 end
 
                 # for debug from R -------
@@ -687,7 +687,7 @@ function s4time(
                             
                             #println("before fail")
                             
-                            ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:, it]); method=:qr, dropcollinear = false)
+                            ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
                             
                             # continue only if there are no NA in the estimated coefficients
                             
