@@ -67,6 +67,7 @@ function s4time(
     out_3,
     clim_var_cube_in,
     pfts_cube_in,
+    altitude_cube_in,
     loopvars;
     pft_list::Vector{String},
     time_n,
@@ -200,14 +201,28 @@ function s4time(
         #println(size(pfts_cube_in_2))
         
         pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
-        
+
         if count(!isnan, climvarmat[:]) >= minpxl
+
+            # altitude processing
+            altitude_center_mean = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 1]
+            altitude_center_sd = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 2]
+
+            altitude_mean = altitude_center_mean .- reshape(altitude_cube_in[:,:,1], winsize^2)
+            altitude_sd = altitude_center_sd .- reshape(altitude_cube_in[:,:,2], winsize^2)
+
             
             if count(!isnan, climvarmat[:]) != 0
                 
                 pftsvarmat = pftsvarmat[findall(!isnan, climvarmat[:]), :]
                 
+                altitude_mean = altitude_mean[findall(!isnan, climvarmat[:])]
+
+                altitude_sd = altitude_sd[findall(!isnan, climvarmat[:])]
+
                 climvarmat = filter(!isnan, climvarmat)
+                
+
             end
             
             if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
@@ -339,7 +354,7 @@ function s4time(
                         
                         #println("before fail")
                         
-                        ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
+                        ols = lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                         
                         # continue only if there are no NA in the estimated coefficients
                         
@@ -353,7 +368,7 @@ function s4time(
                                 
                                 boguspred = predict(
                                 ols,
-                                [ones(length(bogusc3)) bogusc3],
+                                [ones(length(bogusc3)) bogusc3 0. 0.],
                                 )
                                 # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
                                 
@@ -361,13 +376,13 @@ function s4time(
                                 # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
                                 boguspred = predict(
                                 ols,
-                                [ones(size(bogusc3, 1)) bogusc3],
+                                [ones(size(bogusc3, 1)) bogusc3 0. 0.],
                                 )
                                 
                             end
                             
                             
-                            x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
+                            x2pred = [ones(size(bogusc3, 1), 1) bogusc3 0. 0.]
                             
                             vcv = GLM.vcov(ols)
                             # vcv = GLM.vcov(compreg)
@@ -404,6 +419,15 @@ function s4time(
                             # Rsquare of the regression
                             
                             out_1[1] = StatsModels.r2(ols)
+
+                            out_1[1] = StatsModels.r2(ols)
+
+                            # p-value altitude mean and sd
+
+                            out_1[4] = coeftable(ols).cols[4][end-1]
+                            out_1[5] = coeftable(ols).cols[4][end]
+
+
                             # println(out_1)
                             # println(r2(compreg))
                             
@@ -543,12 +567,25 @@ function s4time(
             
             
             if count(!isnan, climvarmat[:, it]) >= minpxl
+
+                # altitude processing
+                altitude_center_mean = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 1]
+                altitude_center_sd = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 2]
+
+                altitude_mean = altitude_center_mean .- reshape(altitude_cube_in[:,:,1], winsize^2)
+                altitude_sd = altitude_center_sd .- reshape(altitude_cube_in[:,:,2], winsize^2)
+
                 
                 if count(!isnan, climvarmat[:, it]) != 0
                     
                     pftsvarmat = pftsvarmat[findall(!isnan, climvarmat[:, it]), :]
                     
                     climvarmat_it = filter(!isnan, climvarmat[:,it])
+
+                    altitude_mean = altitude_mean[findall(!isnan, climvarmat[:, it])]
+
+                    altitude_sd = altitude_sd[findall(!isnan, climvarmat[:, it])]
+
                 end
 
                 # for debug from R -------
@@ -687,7 +724,7 @@ function s4time(
                             
                             #println("before fail")
                             
-                            ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                            ols = lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
                             
                             # continue only if there are no NA in the estimated coefficients
                             
@@ -753,6 +790,9 @@ function s4time(
                                 # Rsquare of the regression
                                 
                                 out_1[it, 1] = StatsModels.r2(ols)
+
+                                out_1[it, 4] = coeftable(ols).cols[4][end-1]
+                                out_1[it, 5] = coeftable(ols).cols[4][end]
                                 # println(out_1)
                                 # println(r2(compreg))
                                 
@@ -960,7 +1000,7 @@ function s4time_space(
     #println(local_pft1)
     #println(local_pft2)
     #pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.0)
-    fts_cube_in_1 = pfts_cube_in
+    pfts_cube_in_1 = pfts_cube_in
     #replace!(pfts_cube_in_1, missing => 0.0)
     #replace!(pfts_cube_in_1, NaN32 => 0.0)
     #replace!(pfts_cube_in_1, NaN16 => 0.0)
@@ -997,10 +1037,21 @@ function s4time_space(
     pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
     
     if count(!isnan, climvarmat[:]) >= minpxl
+
+        altitude_center_mean = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 1]
+        altitude_center_sd = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 2]
+
+        altitude_mean = altitude_center_mean .- reshape(altitude_cube_in[:,:,1], winsize^2)
+        altitude_sd = altitude_center_sd .- reshape(altitude_cube_in[:,:,2], winsize^2)
+
         
         if count(!isnan, climvarmat[:]) != 0
             
             pftsvarmat = pftsvarmat[findall(!isnan, climvarmat[:]), :]
+            
+            altitude_mean = altitude_mean[findall(!isnan, climvarmat[:])]
+
+            altitude_sd = altitude_sd[findall(!isnan, climvarmat[:])]
             
             climvarmat = filter(!isnan, climvarmat)
         end
@@ -1026,7 +1077,7 @@ function s4time_space(
             localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
             #map!(x->1-sum(x), localcomp_fix_glob, eachslice(pftsvarmat, dims = 1))
             #println(size(localcomp_fix_glob))
-            #println(localcomp_fix_glob)
+
             pftsvarmat_f = [pftsvarmat localcomp_fix]
             
             map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
@@ -1342,11 +1393,13 @@ end
  """
 function space4time_proc(
     cube_con,
-    cube_classes;
+    cube_classes,
+    cube_altitude;
     time_axis_name = :Ti,
     lon_axis_name = :lon,
     lat_axis_name = :lat,
     classes_var_name = :classes,
+    altitude_var_name = :variable,
     winsize = 5,
     minDiffPxlspercentage = 40,
     classes_vec = NaN,
@@ -1453,9 +1506,19 @@ function space4time_proc(
             window_oob_value = NaN,
         )
 
+        indims_altitude = InDims(
+            time_axis_name,
+            MovingWindow(lon_axis_name, pre_step, after_step),
+            MovingWindow(lat_axis_name, pre_step, after_step),
+            altitude_var_name,
+            window_oob_value = NaN,
+        
+        )
+        
+
         out_1_dims = OutDims(
             Dim{time_axis_name}(time_seq),
-            Dim{:summary_stat}(["rsquared", "cumulative_variance", "predicted"]),
+            Dim{:summary_stat}(["rsquared", "cumulative_variance", "predicted", "p-val_alt_mean", "p-val_alt_sd"]),
         )
 
         # Values of clim_var (z) for pure PFTs
@@ -1486,8 +1549,16 @@ function space4time_proc(
             window_oob_value = NaN,
         )
 
+        indims_altitude = InDims(
+            MovingWindow(lon_axis_name, pre_step, after_step),
+            MovingWindow(lat_axis_name, pre_step, after_step),
+            cube_altitude,
+            window_oob_value = NaN,
+        
+        )
+
         out_1_dims = OutDims(
-            Dim{:summary_stat}(["rsquared", "cumulative_variance", "predicted"]),
+            Dim{:summary_stat}(["rsquared", "cumulative_variance", "predicted", "p-val_alt_mean", "p-val_alt_sd"]),
         )
 
         # Values of clim_var (z) for pure PFTs
@@ -1510,8 +1581,8 @@ function space4time_proc(
 
     out_1, out_2, out_3 = mapCube(
         s4time,
-        (cube_con, cube_classes),
-        indims = (indims, indims_classes),
+        (cube_con, cube_classes, cube_altitude),
+        indims = (indims, indims_classes, indims_altitude),
         outdims = outdims,
         max_cache = max_cache,
         showprog = showprog,
