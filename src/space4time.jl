@@ -205,8 +205,8 @@ function s4time(
         if count(!isnan, climvarmat[:]) >= minpxl
 
             # altitude processing
-            altitude_center_mean = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 1]
-            altitude_center_sd = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 2]
+            altitude_center_mean = altitude_cube_in[Int(round(winsize/2)+1), Int(round(winsize/2)+1), 1]
+            altitude_center_sd = altitude_cube_in[Int(round(winsize/2)+1), Int(round(winsize/2)+1), 2]
 
             altitude_mean = altitude_center_mean .- reshape(altitude_cube_in[:,:,1], winsize^2)
             altitude_sd = altitude_center_sd .- reshape(altitude_cube_in[:,:,2], winsize^2)
