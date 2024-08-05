@@ -1552,7 +1552,7 @@ function space4time_proc(
         indims_altitude = InDims(
             MovingWindow(lon_axis_name, pre_step, after_step),
             MovingWindow(lat_axis_name, pre_step, after_step),
-            cube_altitude,
+            altitude_var_name,
             window_oob_value = NaN,
         
         )
