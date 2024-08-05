@@ -368,7 +368,7 @@ function s4time(
                                 
                                 boguspred = predict(
                                 ols,
-                                [ones(length(bogusc3)) bogusc3 0. 0.],
+                                [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3)) zeros(length(bogusc3))],
                                 )
                                 # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
                                 
@@ -376,13 +376,13 @@ function s4time(
                                 # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
                                 boguspred = predict(
                                 ols,
-                                [ones(size(bogusc3, 1)) bogusc3 0. 0.],
+                                [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1)) zeros(size(bogusc3, 1))],
                                 )
                                 
                             end
                             
                             
-                            x2pred = [ones(size(bogusc3, 1), 1) bogusc3 0. 0.]
+                            x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1) zeros(size(bogusc3, 1), 1)]
                             
                             vcv = GLM.vcov(ols)
                             # vcv = GLM.vcov(compreg)
@@ -738,7 +738,7 @@ function s4time(
                                     
                                     boguspred = predict(
                                     ols,
-                                    [ones(length(bogusc3)) bogusc3],
+                                    [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3)) zeros(length(bogusc3))],
                                     )
                                     # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
                                     
@@ -746,13 +746,13 @@ function s4time(
                                     # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
                                     boguspred = predict(
                                     ols,
-                                    [ones(size(bogusc3, 1)) bogusc3],
+                                    [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1)) zeros(size(bogusc3, 1))],
                                     )
                                     
                                 end
                                 
                                 
-                                x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
+                                x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1) zeros(size(bogusc3, 1), 1)]
                                 
                                 vcv = GLM.vcov(ols)
                                 # vcv = GLM.vcov(compreg)
