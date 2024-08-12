@@ -376,7 +376,7 @@ function s4time(
                                 lm([ones(size(lr, 1)) lr altitude_mean], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                                 1
                             catch
-                                ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
+                                lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                                 0
                             end
                         end
@@ -799,16 +799,29 @@ function s4time(
                             
                             #println("before fail")
 
-                            try
-                                ols = lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                n_altitude = 2
+                            ols = try
+                                lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                                
+                            catch
+                                try
+                                    lm([ones(size(lr, 1)) lr altitude_mean], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                                    
+                                catch
+                                    lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                                    
+                                end
+                            end
+
+                            n_altitude = try
+                                lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                                2
                             catch
                                 try
                                     ols = lm([ones(size(lr, 1)) lr altitude_mean], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                    n_altitude = 1
+                                    1
                                 catch
                                     ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                    n_altitude = 0
+                                    0
                                 end
                             end
                             
