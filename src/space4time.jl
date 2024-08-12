@@ -1497,7 +1497,7 @@ end
  
 - ```minpxl``` : Minimum number of pixels in the moving window. By default minpxl = 25. Change accordindly to your ```winsize``` parameter.
  
-- ```minDiffPxlspercentage```: Percentage of minimum number pixels in the moving window that must have different compositions. Must be any value in the interval 30-100. By default minDiffPxlspercentage = 40
+- ```minDiffPxls```: Minimum number pixels in the moving window that must have different compositions. Must be any value in the interval 1 to winsize^2. By default minDiffPxlspercentage = 15.
  
 - ```classes_vec```: A string vector with the names of the classes on ```cube_classes``` to be used. e.g. from MPI-BGC internal structure ```classes_vec = ["Evergreen_Needleleaf_Forests", "Evergreen_Broadleaf_Forests", "Deciduous_Needleleaf_Forests", "Deciduous_Broadleaf_Forests", "Mixed_Forests", "Closed_Shrublands", "Open_Shrublands", "Woody_Savannas", "Savannas", "Grasslands", "Permanent_Wetlands", "Croplands", "Urban_and_Built-up_Lands", "Cropland/Natural_Vegetation_Mosaics", "Permanent_Snow_and_Ice", "Barren", "Water_Bodies"]```
 
@@ -1509,7 +1509,7 @@ end
 
  ## Output:
  The ```space4time_proc``` produces a YAXARRAY.Dataset with three cubes:
- - SummaryStats cube has one axis ```summary_stat```, and three variables:
+ - summary_mov_window cube has one axis ```summary_stat```, and three variables:
     - ```rsquared```:  
     - ```cumulative_variance```:
     - ```predicted```: Mean prediction of Z for moving window with the real combination of values.
@@ -1532,7 +1532,7 @@ function space4time_proc(
     classes_var_name = :classes,
     altitude_var_name = :variable,
     winsize = 5,
-    minDiffPxlspercentage = 40,
+    minDiffPxls = 15,
     classes_vec = NaN,
     max_value = 1,
     minpxl = 25,
@@ -1610,8 +1610,6 @@ function space4time_proc(
     denom = sum(sqrt.(sum.(eachrow([p1_static p2_static] .^ 2))))
 
     half = floor(Int, ceil((winsize^2) / 2))
-
-    minDiffPxls = (winsize^2 * minDiffPxlspercentage / 100)
 
     #localcomp_fix_glob = [rand(winsize^2) for i = 1:Threads.nthreads()]
 
