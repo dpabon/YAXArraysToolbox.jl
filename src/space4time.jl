@@ -1497,7 +1497,7 @@ end
  
 - ```minpxl``` : Minimum number of pixels in the moving window. By default minpxl = 25. Change accordindly to your ```winsize``` parameter.
  
-- ```minDiffPxls```: Minimum number pixels in the moving window that must have different compositions. Must be any value in the interval 1 to winsize^2. By default minDiffPxlspercentage = 15.
+- ```minDiffPxls```: Minimum number pixels in the moving window that must have different compositions. Must be any value in the interval 1 to winsize^2. By default minDiffPxls = 15.
  
 - ```classes_vec```: A string vector with the names of the classes on ```cube_classes``` to be used. e.g. from MPI-BGC internal structure ```classes_vec = ["Evergreen_Needleleaf_Forests", "Evergreen_Broadleaf_Forests", "Deciduous_Needleleaf_Forests", "Deciduous_Broadleaf_Forests", "Mixed_Forests", "Closed_Shrublands", "Open_Shrublands", "Woody_Savannas", "Savannas", "Grasslands", "Permanent_Wetlands", "Croplands", "Urban_and_Built-up_Lands", "Cropland/Natural_Vegetation_Mosaics", "Permanent_Snow_and_Ice", "Barren", "Water_Bodies"]```
 
