@@ -2025,44 +2025,6 @@ end
 
 
 
-function coocufun(out, q1, q2, p1, p2, denom)
-    #replace!(q1, NaN => missing)
-    #replace!(q2, NaN => missing)
-    # Where q1 and q2 are the ratio of presence of pft1 and pft2 in the moving window.
-    #@show typeof(out) 
-    #@show typeof(q1), typeof(q2), typeof(out)
-    #println(q1, q2)
-    # To write unit test ....
-
-    #@show length(q1) == length(q2) && (!any(isnan.(q1))) && !any(isnan.(q2))
-
-    #println("here coo")
-    vecq1 = vec(q1)
-    vecq2 = vec(q2)
-    #p1 = range(0, 1, length = length(vecq1))
-    #p2 = reverse(p1)
-    if length(vecq1) == length(vecq2) && isfinite(sum(vecq1)) && isfinite(sum(vecq2)) && sum(vecq1)> 0. && sum(vecq2) > 0.
-        #@show typeof(vecq1)
-        #@show typeof(vecq2)
-        #@show size(vecq1) size(vecq2)
-        pmindist = minimum(([i - j for i in vecq1, j in p1]).^2 + ([i - j for i in vecq2, j in p2]).^2, dims = 1)
-        #out_pmindist = minimum(([i - j for i in vecq1, j in p1]) .^ 2 + ([i - j for i in vecq2, j in p2]) .^ 2)
-
-        out[1] = 1 - (sum(sqrt.(pmindist)) / denom)
-
-        #return 1 - (sum(sqrt.(pmindist)) / denom)
-    else
-        out[1] = 0.0 # 0 because assume not enough data on the moving window.
-        #return 0
-
-    end
-end
-
-
-
-
-
-
 """
 space4time(climate_cube, pfts_cube, pft_list::Vector{String}, winsize = 5, minpxl = 100, minDiffPxlspercentage = 40)
 
