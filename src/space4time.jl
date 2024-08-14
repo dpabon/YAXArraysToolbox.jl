@@ -354,11 +354,13 @@ function s4time(
                         
                         #println("before fail")
 
-                        uniquepixels_char_altitude = unique(eachslice(round.([altitude_mean altitude_sd], digits = 6), dims = 1))
+                        uniquepixels_char_altitude_1 = unique(round.(altitude_mean, digits = 6))
+                        uniquepixels_char_altitude_2 = unique(round.(altitude_sd, digits = 6))
                 
-                        uniquepixels_altitude = length(uniquepixels_char_altitude)
+                        uniquepixels_altitude_1 = length(uniquepixels_char_altitude_1)
+                        uniquepixels_altitude_2 = length(uniquepixels_char_altitude_2)
 
-                        if uniquepixels_altitude >= minDiffPxls_alt
+                        if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
                             ols = lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                             n_altitude = 2
                             out_1[4] = coeftable(ols).cols[4][end-1]
@@ -761,11 +763,13 @@ function s4time(
                             
                             #println("before fail")
 
-                            uniquepixels_char_altitude = unique(eachslice(round.([altitude_mean altitude_sd], digits = 6), dims = 1))
+                            uniquepixels_char_altitude_1 = unique(round.(altitude_mean, digits = 6))
+                            uniquepixels_char_altitude_2 = unique(round.(altitude_sd, digits = 6))
                 
-                            uniquepixels_altitude = length(uniquepixels_char_altitude)
+                            uniquepixels_altitude_1 = length(uniquepixels_char_altitude_1)
+                            uniquepixels_altitude_2 = length(uniquepixels_char_altitude_2)
 
-                            if uniquepixels_altitude >= minDiffPxls_alt
+                            if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
                                 ols = lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
                                 n_altitude = 2
                                 out_1[4] = coeftable(ols).cols[4][end-1]
