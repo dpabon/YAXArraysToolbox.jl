@@ -89,7 +89,7 @@ function s4time(
     #out_pmindist_global,
     denom,
     minpxl,
-    
+    minDiffPxls_alt,
     )
     #println(size(clim_var_cube_in))
     #println(size(pfts_cube_in))
@@ -265,7 +265,7 @@ function s4time(
                 # Sometimes there is only 1 PFT in all 25 gridcells,
                 # making the problem 0-dimensional
                 
-                if uniquepixels > minDiffPxls && sum(pftpres_check) > 1
+                if uniquepixels >= minDiffPxls && sum(pftpres_check) > 1
                     # println("test")
                     # avoid divided by 0
                     #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
@@ -354,33 +354,24 @@ function s4time(
                         
                         #println("before fail")
 
-                        
-                        ols = try
-                            lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                            
-                        catch
-                            try
-                                lm([ones(size(lr, 1)) lr altitude_mean], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                                
-                            catch
-                                lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                                
-                            end
+                        uniquepixels_char_altitude = unique(eachslice(round.([altitude_mean altitude_sd], digits = 6), dims = 1))
+                
+                        uniquepixels_altitude = length(uniquepixels_char_altitude)
+
+                        if uniquepixels_altitude >= minDiffPxls_alt
+                            ols = lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
+                            n_altitude = 2
+                            out_1[4] = coeftable(ols).cols[4][end-1]
+                            out_1[5] = coeftable(ols).cols[4][end]
+                            out_1[8] = 2
+                        else
+                            ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
+                            n_altitude = 0
+                            out_1[4] = NaN
+                            out_1[5] = NaN
+                            out_1[8] = 0
                         end
 
-                        n_altitude = try
-                            lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                            2
-                        catch
-                            try
-                                lm([ones(size(lr, 1)) lr altitude_mean], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                                1
-                            catch
-                                lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                                0
-                            end
-                        end
-                        
                         
                         # continue only if there are no NA in the estimated coefficients
                         
@@ -395,11 +386,6 @@ function s4time(
                                     boguspred = predict(
                                     ols,
                                     [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3)) zeros(length(bogusc3))],
-                                    )
-                                elseif n_altitude == 1
-                                    boguspred = predict(
-                                    ols,
-                                    [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3))],
                                     )
                                 elseif n_altitude == 0
                                     boguspred = predict(
@@ -419,12 +405,6 @@ function s4time(
                                 [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1)) zeros(size(bogusc3, 1))],
                                 )
 
-                                elseif n_altitude == 1
-                                    boguspred = predict(
-                                ols,
-                                [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1))],
-                                )
-
                                 elseif n_altitude == 0
                                     boguspred = predict(
                                 ols,
@@ -437,9 +417,6 @@ function s4time(
                             
                             if n_altitude == 2
                                 x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1) zeros(size(bogusc3, 1), 1)]
-
-                            elseif n_altitude == 1
-                                x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1)]
 
                             elseif n_altitude  == 0
                                 x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
@@ -487,22 +464,7 @@ function s4time(
                             out_1[6] = aic(ols)
                             out_1[7] = aic(ols)
 
-                            # p-value altitude mean and sd
-
-                            if n_altitude == 2
-                                out_1[4] = coeftable(ols).cols[4][end-1]
-                                out_1[5] = coeftable(ols).cols[4][end]
-
-                            elseif n_altitude == 1
-                                out_1[4] = coeftable(ols).cols[4][end-1]
-                                out_1[5] = -999.0
                             
-                            elseif n_altitude  == 0
-                                out_1[4] = -999.0
-                                out_1[5] = -999.0
-                                                            
-                            end
-
                             # println(out_1)
                             # println(r2(compreg))
                             
@@ -715,7 +677,7 @@ function s4time(
                     # Sometimes there is only 1 PFT in all 25 gridcells,
                     # making the problem 0-dimensional
                     
-                    if uniquepixels > minDiffPxls && sum(pftpres_check) > 1
+                    if uniquepixels >= minDiffPxls && sum(pftpres_check) > 1
                         #println("test")
                         # avoid divided by 0
                         #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
@@ -799,32 +761,23 @@ function s4time(
                             
                             #println("before fail")
 
-                            ols = try
-                                lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                
-                            catch
-                                try
-                                    lm([ones(size(lr, 1)) lr altitude_mean], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                    
-                                catch
-                                    lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                    
-                                end
-                            end
+                            uniquepixels_char_altitude = unique(eachslice(round.([altitude_mean altitude_sd], digits = 6), dims = 1))
+                
+                            uniquepixels_altitude = length(uniquepixels_char_altitude)
 
-                            n_altitude = try
-                                lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                2
-                            catch
-                                try
-                                    ols = lm([ones(size(lr, 1)) lr altitude_mean], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                    1
-                                catch
-                                    ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                    0
-                                end
-                            end
-                            
+                            if uniquepixels_altitude >= minDiffPxls_alt
+                                ols = lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                                n_altitude = 2
+                                out_1[4] = coeftable(ols).cols[4][end-1]
+                                out_1[5] = coeftable(ols).cols[4][end]
+                                out_1[8] = 2
+                            else
+                                ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                                n_altitude = 0
+                                out_1[4] = NaN
+                                out_1[5] = NaN
+                                out_1[8] = 0
+                            end                            
                             # continue only if there are no NA in the estimated coefficients
                             
                             coef_reg = GLM.coef(ols)
@@ -839,12 +792,6 @@ function s4time(
                                         boguspred = predict(
                                         ols,
                                         [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3)) zeros(length(bogusc3))],
-                                        )
-
-                                    elseif n_altitude == 1
-                                        boguspred = predict(
-                                        ols,
-                                        [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3))],
                                         )
                                     
                                     elseif n_altitude  == 0
@@ -865,12 +812,6 @@ function s4time(
                                         [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1)) zeros(size(bogusc3, 1))],
                                         )
 
-                                    elseif n_altitude == 1
-                                        boguspred = predict(
-                                        ols,
-                                        [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1))],
-                                        )
-                                    
                                     elseif n_altitude  == 0
                                         boguspred = predict(
                                         ols,
@@ -885,9 +826,6 @@ function s4time(
                                 if n_altitude == 2
                                     x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1) zeros(size(bogusc3, 1), 1)]
 
-                                elseif n_altitude == 1
-                                    x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1)]
-                                
                                 elseif n_altitude  == 0
                                     x2pred = [ones(size(bogusc3, 1), 1) bogusc3]                               
                                 end
@@ -932,22 +870,7 @@ function s4time(
                                 
                                 out_1[it, 6] = aic(ols)
                                 out_1[it, 7] = aicc(ols)
-
-                                if n_altitude == 2
-
-                                    out_1[it, 4] = coeftable(ols).cols[4][end-1]
-                                    out_1[it, 5] = coeftable(ols).cols[4][end]
-
-                                elseif n_altitude == 1
-                                    out_1[it, 4] = coeftable(ols).cols[4][end-1]
-                                    out_1[it, 5] = -999.0
-                                
-                                elseif n_altitude  == 0
-
-                                    out_1[it, 4] = -999.0
-                                    out_1[it, 5] = -999.0
-                                                                
-                                end           
+         
                                 # println(out_1)
                                 # println(r2(compreg))
                                 
@@ -1039,471 +962,6 @@ function s4time(
 end
 
 """
-space4time_space(climate_cube, pfts_cube, pft_list::Vector{String}, winsize = 5, minpxl = 100, minDiffPxlspercentage = 40)
-
-Compute the space for time analysis for a given climate variable.
-    ...
-# Arguments
-    
-    climate_cube: YAXARRAY cube with dimenssions: lon, lat, time.
-    pfts_cube: YAXARRAY cube with dimenssions: pfts, lat,lon, time.
-    ...
-# Output
-    Three output cubes are generated.
-    out1: Summary statistics. YAXARRAY cube where summary_stat axis contains: 
-    * "rsquare": XXXX 
-    * "cumulative_variance": XXXX
-    * "predicted": Mean prediction of Z for moving window with the real combination of values.
-    out2: 
-    
-#Examples
-    
-    
-"""
-function s4time_space(
-    out_1,
-    out_2,
-    out_3,
-    clim_var_cube_in,
-    pfts_cube_in,
-    loopvars;
-    pft_list::Vector{String},
-    max_value::Int,
-    p1_static,
-    p2_static,
-    #sigma1_glob,
-    #prederr_glob,
-    #predres_glob,
-    minDiffPxls,
-    tran_check,
-    half,
-    #localcomp_fix_glob,
-    #pftsvarmat_f_glob,
-    winsize = 5,
-    transitions_n,
-    pftstrans_comb_names,
-    nc,
-    #out_pmindist_global,
-    denom,
-    minpxl,
-    )
-    GC.gc()
-    #println(size(clim_var_cube_in))
-    #println(size(pfts_cube_in))
-    #println(size(out_3))
-    #sigma1 = sigma1_glob[Threads.threadid()]
-    sigma1 = fill(NaN, (nc, nc))
-    #prederr = prederr_glob[Threads.threadid()]
-    prederr = fill(NaN, nc)
-    #predres = predres_glob[Threads.threadid()]
-    predres = fill(NaN, nc)
-    #localcomp_fix = localcomp_fix_glob[Threads.threadid()]
-    #pftsvarmat_f = pftsvarmat_f_glob[Threads.threadid()]
-    #out_pmindist = out_pmindist_global[Threads.threadid()]
-    #out_pmindist = zeros(1, winsize^2)
-    #println(Threads.threadid())
-    #println(loopvars)
-    
-    if max_value == 100
-        pfts_cube_in = pfts_cube_in ./ 100
-    end
-    
-    
-    
-    #@show typeof(pfts_cube_in), typeof(clim_var_cube_in)    
-    #println(size(pfts_cube_in))
-    #println(size(clim_var_cube_in))
-    
-    #@show typeof(out_1) typeof(out_2) typeof(out_3)
-    #println(size(out_1), size(out_2), size(out_3))
-    out_1 .= NaN
-    out_2 .= NaN
-    out_3 .= NaN
-    
-    #replace!(pfts_cube_in, missing => NaN)
-    #replace!(clim_var_cube_in, missing => NaN)
-    
-    # be sure that values are really NaN
-    #=
-    There are two possible cases:
-    1. When pfts_cube is time dimension less, or when
-    time is present as an axis.!!! The first case is as implemented in the original code
-    
-    the second one here
-    =#
-    
-    #clim_var_cube_2 = permutedims(clim_var_cube_in, (3,2,1))
-    
-    
-    climvarmat = reshape(clim_var_cube_in, (winsize^2))
-    climvarmat = convert(Array{Float64}, climvarmat)
-    
-    
-    climvarmat = replace!(climvarmat, missing => NaN)
-    
-    
-    local_pft1 =
-    [findall(pft_list .== pftstrans_comb_names[comp][1]) for comp = 1:transitions_n]
-    local_pft1 = reduce(vcat, local_pft1)
-    local_pft2 =
-    [findall(pft_list .== pftstrans_comb_names[comp][2]) for comp = 1:transitions_n]
-    local_pft2 = reduce(vcat, local_pft2)
-    
-    #println("before if")
-    #println(out_3[1,1,1])
-    
-    #println(local_pft1)
-    #println(local_pft2)
-    #pfts_cube_in_1 = replace!(pfts_cube_in, NaN => 0.0)
-    pfts_cube_in_1 = pfts_cube_in
-    #replace!(pfts_cube_in_1, missing => 0.0)
-    #replace!(pfts_cube_in_1, NaN32 => 0.0)
-    #replace!(pfts_cube_in_1, NaN16 => 0.0)
-    pfts_cube_in_1 = convert(Array{Float64}, pfts_cube_in_1)
-    
-    #pfts_cube_in_1 =
-    #permutedims(reshape(pfts_cube_in_1, (winsize, winsize, nc, 1)), (4, 1, 2, 3))
-    
-    for comp in eachindex(local_pft1)
-        #println(comp)
-        #println(size(pfts_cube_in))
-        #println("I'm here")
-        #println(pfts_cube_in[it,:,:,local_pft1[comp]])
-        #println(pfts_cube_in[it,:,:,local_pft2[comp]])
-        # define the pfts to be processed
-        out_3[comp, 3] = coocufun(
-        [0.0],
-        pfts_cube_in_1[:, :, local_pft1[comp]],
-        pfts_cube_in_1[:, :, local_pft2[comp]],
-        p1_static,
-        p2_static,
-        denom,
-        )
-        #println("all good")
-    end
-    
-    
-    
-    pfts_cube_in_2 = pfts_cube_in_1[:, :, :]
-    #println(all(isnan, pfts_cube_in_2))
-    
-    #println(size(pfts_cube_in_2))
-    
-    pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
-    
-    if count(!isnan, climvarmat[:]) >= minpxl
-
-        altitude_center_mean = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 1]
-        altitude_center_sd = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 2]
-
-        altitude_mean = altitude_center_mean .- reshape(altitude_cube_in[:,:,1], winsize^2)
-        altitude_sd = altitude_center_sd .- reshape(altitude_cube_in[:,:,2], winsize^2)
-
-        
-        if count(!isnan, climvarmat[:]) != 0
-            
-            pftsvarmat = pftsvarmat[findall(!isnan, climvarmat[:]), :]
-            
-            altitude_mean = altitude_mean[findall(!isnan, climvarmat[:])]
-
-            altitude_sd = altitude_sd[findall(!isnan, climvarmat[:])]
-            
-            climvarmat = filter(!isnan, climvarmat)
-        end
-        
-        # for debug from R -------
-        
-        # pftsvarmat = Matrix(CSV.read("/Net/Groups/BGI/people/dpabon/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
-        # pftsvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_composition_example_from_R.csv", DataFrame))
-        # climvarmat = Matrix(CSV.read("/home/dpabon/Nextcloud/nfdi4earth_oemc/data/local_temperature_example_from_R.csv", DataFrame))
-        # check that there are not NaN values on pfts and at least one pft is present
-        # @show sum(pftsvarmat), sum(pftsvarmat)
-        #println(pftsvarmat)
-        
-        if isfinite(sum(pftsvarmat)) && sum(sum(pftsvarmat, dims = 1) .> 0.) > 1
-            #println("test")
-            #println(any(isnan.(pftsvarmat)))
-            # check if pftsvarmat is 0 to 1 or 0 to 100
-            #println(maximum(vec(pftsvarmat)))
-            
-            # make sure compositions are really precisely right.
-            
-            #localcomp_fix_glob = mapslices(x->1-sum(x), pftsvarmat, dims = 2)
-            localcomp_fix = map(x -> 1 - sum(x), eachslice(pftsvarmat, dims = 1))
-            #map!(x->1-sum(x), localcomp_fix_glob, eachslice(pftsvarmat, dims = 1))
-            #println(size(localcomp_fix_glob))
-
-            pftsvarmat_f = [pftsvarmat localcomp_fix]
-            
-            map!((x) -> round(x, digits = 4), pftsvarmat_f, pftsvarmat_f)
-            
-            # some PFTs might not be present in the 5*5 window
-            # these must be identified and removed, as they cannot be predicted
-            
-            #pftpres_check = vec(mapslices(sum, pftsvarmat, dims = 1) .> 0)
-            pftpres_check = vec(sum(pftsvarmat_f, dims = 1) .> 0)
-            
-            pftpres_check[nc+1] = 0
-            
-            # println(pftpres_check)
-            # @show typeof(pftpres_check)
-            # pftpos = pft_list[pftpres_check[1:length(pft_list)]]
-            
-            # check that at least XX percent of the pixels is different
-            
-            #uniquepixels_char = mapslices(x->string(x), pftsvarmat, dims = 2)
-            #uniquepixels_char = string(eachrow(pftsvarmat))
-            uniquepixels_char = unique(eachslice(pftsvarmat_f, dims = 1))
-            
-            uniquepixels = length(uniquepixels_char)
-            
-            # Sometimes there is only 1 PFT in all 25 gridcells,
-            # making the problem 0-dimensional
-            
-            if uniquepixels > minDiffPxls && sum(pftpres_check) > 1
-                # println("test")
-                # avoid divided by 0
-                #lc1 = mapslices(x -p1_static, p2_static> x ./ (sum(x) + 0.000001), pftsvarmat, dims=2)
-                lc1 = map(x -> x / (sum(x) + 0.000001), eachslice(pftsvarmat_f, dims = 1))
-                lc1 = reduce(vcat, lc1')
-                # centre the columns (to be in the centre wrt new space)
-                
-                #lc2 = mapslices(x -> x .- mean(x), lc1, dims = 1)
-                lc2 = map(x -> x .- mean(x), eachslice(lc1, dims = 2))
-                lc2 = reduce(hcat, lc2)
-                # remember col means for the subsequent predictions
-                
-                #lcm = mapslices(mean, lc2, dims = 1)
-                lCm = mean(lc2, dims = 1)
-                
-                #@show size(lc2)
-                # decompose the resulting table
-                # println("before svd")
-                lcsvd = svd(lc2)
-                # println("after svd")
-                
-                # related to "enough PFTs", is there enough variability between observations?
-                # if all obs have exactly the same composition, the regression is not possible
-                # so only do the regression if there is some variability...
-                # println(sum(lcsvd.S))
-                if sum(lcsvd.S) > 0
-                    # n. of dimmensions that explain 100 % of the variance
-                    
-                    # when there are only two pfts are in the matrix 
-                    # cumsum(lcsvd.S) / sum(lcsvd.S.^2) sometimes can be lower than 1 in that case
-                    
-                    #println(cumsum(lcsvd.S) / sum(lcsvd.S.^2))
-                    
-                    temp = round.(cumsum(lcsvd.S .^ 2) ./ sum(lcsvd.S .^ 2), digits = 8)
-                    ndim = minimum(findall(temp .>= 1))
-                    
-                    # store results to output object
-                    # cumulative variance
-                    out_1[2] = sum(lcsvd.S)
-                    
-                    #println(out7_cumulated_variance)
-                    
-                    # dimmensions that explain 100 % of the variance
-                    
-                    lr = lc2 * lcsvd.V[:, 1:ndim]
-                    
-                    
-                    # create bogus composition dataset
-                    
-                    #boguscomp = zeros(Float64, nc+1, nc+1)
-                    #boguscomp[diagind(boguscomp)] .= 1
-                    
-                    boguscomp = I(nc + 1)
-                    # println(boguscomp)
-                    
-                    # remove absent pfts from bogus predictor compositions and close compositions.
-                    #
-                    bogusc1 =
-                    mapslices(
-                    x -> x / sum(x),
-                    boguscomp[pftpres_check, pftpres_check],
-                    dims = 2,
-                    )'
-                    
-                    #println(size(bogusc1))
-                    #println(pftpres_check)
-                    
-                    # center the columns as the training data were centered
-                    
-                    bogusc2 = (I(sum(pftpres_check)) .- lCm[pftpres_check])
-                    
-                    bogusc2 = (bogusc1' .- lCm[pftpres_check])
-                    
-                    bogusc3 = bogusc2 * lcsvd.V[pftpres_check, 1:ndim]
-                    #println(climvarmat[:,it])
-                    
-                    
-                    #println("test")
-                    # data = hcat(DataFrame(lt = convert(Vector{Float64}, climvarmat[:,it])), DataFrame(lr, :auto))
-                    
-                    # compreg = GLM.lm(Term(:lt) ~ sum(Term.(Symbol.(names(data[:, Not(:lt)])))), data)
-                    
-                    #println("before fail")
-                    
-                    ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                    
-                    
-                    
-                    # continue only if there are no NA in the estimated coefficients
-                    
-                    coef_reg = GLM.coef(ols)
-                    #println("original coef $coef_reg")
-                    #println("second estimation coef $(lr\climvarmat[:,it])")
-                    
-                    if isfinite(sum(coef_reg))
-                        # then do predictions for the log-normal approach
-                        if isa(bogusc2, Vector)
-                            
-                            boguspred = predict(
-                            ols,
-                            [ones(length(bogusc3)) bogusc3],
-                            )
-                            # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
-                            
-                        else
-                            # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))
-                            boguspred = predict(
-                            ols,
-                            [ones(size(bogusc3, 1)) bogusc3],
-                            )
-                            
-                        end
-                        
-                        
-                        x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
-                        
-                        vcv = GLM.vcov(ols)
-                        # vcv = GLM.vcov(compreg)
-                        
-                        sigma = x2pred * vcv * x2pred'
-                        
-                        # now store the target variables
-                        # but make sure appropiate temperatures go back to appropiate
-                        # pfts (as absent pfts were removed)
-                        
-                        # value of climatevar for pure ptfs
-                        
-                        predres .= NaN
-                        #println(boguspred)
-                        predres[view(pftpres_check, 1:nc)] = boguspred
-                        #println(it)
-                        
-                        
-                        out_2[:, 1] = predres
-                        
-                        
-                        prederr .= NaN
-                        
-                        prederr[view(pftpres_check, 1:nc)] = sqrt.(diag(sigma))
-                        
-                        
-                        out_2[:, 2] = prederr
-                        
-                        
-                        # prediction of varclim for the central pixel with its real pft combination
-                        
-                        out_1[3] = mean(StatsModels.predict(ols))
-                        
-                        # Rsquare of the regression
-                        
-                        out_1[1] = adjr2(ols)
-                        out_1[4] = aic(ols)
-                        out_1[5] = aicc(ols)
-                        # println(out_1)
-                        # println(r2(compreg))
-                        
-                        # and now for the transitions
-                        # only the PFTs identified in the pftlist are to be used
-                        
-                        sigma1 .= NaN
-                        sigma1[view(pftpres_check, 1:nc), view(pftpres_check, 1:nc)] =
-                        sigma
-                        
-                        # calculate the difference on climatevar caused by going from one pft to another.
-                        
-                        diff_clim_pft_pred = round.((predres .- predres'), digits = 10)
-                        
-                        diff_clim_pft_pred = diff_clim_pft_pred[tran_check]
-                        
-                        # propagate the error (as variances) taking into account
-                        # the covariance terms
-                        # in the original implementation diffclim_pft_var = dZvar
-                        
-                        diff_clim_pft_pred_var =
-                        round.(
-                        (diag(sigma1) .+ diag(sigma1)') .- 2 * sigma1,
-                        digits = 10,
-                        )
-                        
-                        #print(diff_clim_pft_pred)
-                        # flag out those with zero error (may occur with identical compositions for 2 pfts)
-                        
-                        diff_clim_pft_pred_var = diff_clim_pft_pred_var[tran_check]
-                        
-                        #println(diff_clim_pft_pred)
-                        
-                        # flag out those with zero error (may occur with identical compositions for 2 pfts)
-                        
-                        if any(round.(diff_clim_pft_pred, digits = 8) .== 0.0)
-                            diff_clim_pft_pred[round.(
-                            diff_clim_pft_pred,
-                            digits = 8,
-                            ).==0] .= NaN
-                        end
-                        
-                        if any(round.(diff_clim_pft_pred_var, digits = 8) .== 0.0)
-                            diff_clim_pft_pred_var[round.(
-                            diff_clim_pft_pred_var;
-                            digits = 8,
-                            ).==0] .= NaN
-                        end
-                        
-                        # mask out low co-ocurrence ask to greg!!! This can be performed  masking the pixels
-                        # before all estimations
-                        
-                        #println("inside loop")
-                        #println(diff_clim_pft_pred)
-                        
-                        if length(diff_clim_pft_pred) == 1
-                            
-                            out_3[it, 1, 1] = diff_clim_pft_pred[1]
-                            #println(out1_delta)
-                            if diff_clim_pft_pred_var[1] .< 0
-                                out_3[it, 1, 2] = NaN
-                            else
-                                out_3[it, 1, 2] = sqrt.(diff_clim_pft_pred_var)[1]
-                                
-                            end
-                            
-                            
-                        else
-                            
-                            out_3[1:transitions_n, 1] = diff_clim_pft_pred
-                            #println(out1_delta)
-                            #if diff_clim_pft_pred_var .< 0
-                            #out_3[it,1:transitions_n,2] .= NaN
-                            
-                            #else
-                            diff_clim_pft_pred_var[diff_clim_pft_pred_var.<0] .= NaN
-                            out_3[1:transitions_n, 2] =
-                            sqrt.(diff_clim_pft_pred_var)
-                            
-                            #end
-                        end
-                    end                
-                end
-            end
-        end
-    end 
-    GC.gc()
-end
-
-"""
  # Space for time processor
  
  ## Arguments:
@@ -1560,6 +1018,8 @@ function space4time_proc(
     winsize = 5,
     minDiffPxls = 15,
     classes_vec = NaN,
+    altitude_vec = NaN,
+    minDiffPxls_alt = 15,
     max_value = 1,
     minpxl = 25,
     showprog = true,
@@ -1673,7 +1133,7 @@ function space4time_proc(
 
         out_1_dims = OutDims(
             Dim{time_axis_name}(time_seq),
-            Dim{:summary_stat}(["rsquared_adjusted", "cumulative_variance", "predicted", "p-val_alt_mean", "p-val_alt_sd", "aic", "aicc"]),
+            Dim{:summary_stat}(["rsquared_adjusted", "cumulative_variance", "predicted", "p-val_alt_"*altitude_vec[1], "p-val_alt_"*altitude_vec[2], "aic", "aicc", "model_used"]),
         )
 
         # Values of clim_var (z) for pure PFTs
@@ -1762,6 +1222,7 @@ function space4time_proc(
         #out_pmindist_global = out_pmindist_global,
         denom = denom,
         minpxl = minpxl,
+        minDiffPxls_alt = minDiffPxls_alt,
     )
 
     return Dataset(;
