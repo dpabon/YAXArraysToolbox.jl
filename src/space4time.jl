@@ -378,7 +378,7 @@ function s4time(
                             out_1[4] = NaN
                             out_1[5] = coeftable(ols).cols[4][end]
                             out_1[8] = 3
-                        else
+                        elseif uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
                             ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                             n_altitude = 1
                             out_1[4] = NaN
@@ -814,7 +814,7 @@ function s4time(
                                 out_1[4] = NaN
                                 out_1[5] = coeftable(ols).cols[4][end]
                                 out_1[8] = 3
-                            else
+                            elseif uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
                                 ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
                                 n_altitude = 1
                                 out_1[4] = NaN
