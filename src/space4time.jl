@@ -389,6 +389,8 @@ function s4time(
                             end
                         end
 
+                        println("n_altitude =" *string(n_altitude))
+
                         println(ols)
                         # continue only if there are no NA in the estimated coefficients
                         
