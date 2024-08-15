@@ -366,27 +366,30 @@ function s4time(
                             out_1[4] = coeftable(ols).cols[4][end-1]
                             out_1[5] = coeftable(ols).cols[4][end]
                             out_1[8] = 4
-                        elseif uniquepixels_altitude_1 >= minDiffPxls_alt
+                        else
+                            if uniquepixels_altitude_1 >= minDiffPxls_alt
                             ols = lm([ones(size(lr, 1)) lr altitude_mean], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                             n_altitude = 2
                             out_1[4] = coeftable(ols).cols[4][end]
                             out_1[5] = NaN
                             out_1[8] = 2
-                        elseif uniquepixels_altitude_2 >= minDiffPxls_alt
+                            elseif uniquepixels_altitude_2 >= minDiffPxls_alt
                             ols = lm([ones(size(lr, 1)) lr altitude_sd], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                             n_altitude = 3
                             out_1[4] = NaN
                             out_1[5] = coeftable(ols).cols[4][end]
                             out_1[8] = 3
-                        elseif uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
-                            ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                            n_altitude = 1
-                            out_1[4] = NaN
-                            out_1[5] = NaN
-                            out_1[8] = 1
+                            else 
+                                #uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
+                                ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
+                                n_altitude = 1
+                                out_1[4] = NaN
+                                out_1[5] = NaN
+                                out_1[8] = 1
+                            end
                         end
 
-                        
+                        println(ols)
                         # continue only if there are no NA in the estimated coefficients
                         
                         coef_reg = GLM.coef(ols)
@@ -444,7 +447,7 @@ function s4time(
 
                             elseif n_altitude == 2 || n_altitude == 3
                                 x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1)]
-                                println("n_altitude = " * string(n_altitude))
+                                println("n_altitude = " * string(x2pred))
 
                             elseif n_altitude  == 1
                                 x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
