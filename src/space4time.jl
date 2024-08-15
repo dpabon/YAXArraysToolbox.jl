@@ -360,6 +360,8 @@ function s4time(
                         uniquepixels_altitude_1 = length(uniquepixels_char_altitude_1)
                         uniquepixels_altitude_2 = length(uniquepixels_char_altitude_2)
 
+                        n_altitude = NaN
+
                         if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
                             ols = lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                             n_altitude = 4
