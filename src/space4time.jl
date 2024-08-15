@@ -447,8 +447,8 @@ function s4time(
 
                             elseif n_altitude  == 1
                                 x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
-                                
                             end
+                            println('n_altitude = '*string(n_altitude))
                             #x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1) zeros(size(bogusc3, 1), 1)]
                             
                             vcv = GLM.vcov(ols)
