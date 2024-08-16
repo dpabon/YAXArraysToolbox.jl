@@ -105,7 +105,7 @@ function s4time(
     #out_pmindist = out_pmindist_global[Threads.threadid()]
     #out_pmindist = zeros(1, winsize^2)
     #println(Threads.threadid())
-    #println(loopvars)
+    println(loopvars)
     
     if max_value == 100
         pfts_cube_in = pfts_cube_in ./ 100
@@ -363,7 +363,7 @@ function s4time(
 
                         n_altitude = NaN
 
-                        if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
+                        if uniquepixels_altitude_1 >= minDiffPxls_alt && uniquepixels_altitude_2 >= minDiffPxls_alt
                             ols = lm([ones(size(lr, 1)) lr altitude_1 altitude_2], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                             n_altitude = 4
                             out_1[4] = coeftable(ols).cols[4][end-1]
