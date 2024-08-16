@@ -395,9 +395,9 @@ function s4time(
                             end
                         end
 
-                        #println("n_altitude =" *string(n_altitude))
+                        println("n_altitude =" *string(n_altitude))
 
-                        #println(ols)
+                        println(ols)
                         # continue only if there are no NA in the estimated coefficients
                         
                         coef_reg = GLM.coef(ols)
