@@ -370,6 +370,7 @@ function s4time(
                             out_1[4] = coeftable(ols).cols[4][end-1]
                             out_1[5] = coeftable(ols).cols[4][end]
                             out_1[8] = 4
+                            coef_reg = GLM.coef(ols)
                         else
                             if uniquepixels_altitude_1 >= minDiffPxls_alt
                                 ols = lm([ones(size(lr, 1)) lr altitude_1], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
@@ -377,6 +378,7 @@ function s4time(
                                 out_1[4] = coeftable(ols).cols[4][end]
                                 out_1[5] = NaN
                                 out_1[8] = 2
+                                coef_reg = GLM.coef(ols)
                             else
                                 if uniquepixels_altitude_2 >= minDiffPxls_alt
                                     ols = lm([ones(size(lr, 1)) lr altitude_2], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
@@ -384,6 +386,7 @@ function s4time(
                                     out_1[4] = NaN
                                     out_1[5] = coeftable(ols).cols[4][end]
                                     out_1[8] = 3
+                                    coef_reg = GLM.coef(ols)
                                 else 
                                     if uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
                                         ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
@@ -391,6 +394,7 @@ function s4time(
                                         out_1[4] = NaN
                                         out_1[5] = NaN
                                         out_1[8] = 1
+                                        coef_reg = GLM.coef(ols)
                                     end
                                 end
                             end
@@ -413,7 +417,7 @@ function s4time(
                         println("alt_2_var = ")
                         println(altitude_2)
                         
-                        coef_reg = GLM.coef(ols)
+                        
                         #println("original coef $coef_reg")
                         #println("second estimation coef $(lr\climvarmat[:,it])")
                         
