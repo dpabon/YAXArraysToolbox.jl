@@ -203,6 +203,7 @@ function s4time(
         pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
 
         if count(!isnan, climvarmat[:]) >= minpxl
+            println(climvarmat[:])
 
             # altitude processing
             altitude_center_1 = altitude_cube_in[Int(round(winsize/2)+1), Int(round(winsize/2)+1), 1]
