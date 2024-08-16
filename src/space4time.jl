@@ -892,7 +892,7 @@ function s4time(
                                         )
                                     
                                     else
-                                        if n_altitude == 2 | n_altitude == 3
+                                        if n_altitude == 2 || n_altitude == 3
                                             boguspred = predict(
                                             ols,
                                             [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3))],
@@ -916,7 +916,7 @@ function s4time(
                                         )
 
                                     else
-                                        if n_altitude == 2 | n_altitude == 3
+                                        if n_altitude == 2 || n_altitude == 3
                                         boguspred = predict(
                                         ols,
                                         [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1))],
@@ -940,7 +940,7 @@ function s4time(
                                     x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1) zeros(size(bogusc3, 1), 1)]
 
                                 else
-                                    if n_altitude == 2 | n_altitude == 3
+                                    if n_altitude == 2 || n_altitude == 3
                                         x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1)]
 
                                     else
