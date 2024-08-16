@@ -214,7 +214,7 @@ function s4time(
             altitude_2 = altitude_center_2 .- reshape(altitude_cube_in[:,:,2], winsize^2)
 
             
-            if count(!isnan, climvarmat[:]) != 0
+            if count(isnan, climvarmat[:]) != 0
                 
                 pftsvarmat = pftsvarmat[findall(!isnan, climvarmat[:]), :]
                 
