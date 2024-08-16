@@ -368,10 +368,10 @@ function s4time(
                         n_altitude = NaN
 
                         println("unique altitude 2 = ")
-                        uniquepixels_char_altitude_1
+                        println(uniquepixels_char_altitude_1)
 
                         println("unique altitude 2 = ")
-                        uniquepixels_char_altitude_2
+                        println(uniquepixels_char_altitude_2)
 
                         if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
                             ols = lm([ones(size(lr, 1)) lr altitude_1 altitude_2], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
