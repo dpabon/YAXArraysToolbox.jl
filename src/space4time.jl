@@ -1288,7 +1288,7 @@ function space4time_proc(
         )
 
         out_1_dims = OutDims(
-            Dim{:summary_stat}(["rsquared_adjusted", "cumulative_variance", "predicted", "p-val_alt_mean", "p-val_alt_sd", "aic", "aicc","model_used"]),
+            Dim{:summary_stat}(["rsquared_adjusted", "cumulative_variance", "predicted", "p-val_"*altitude_vec[1], "p-val_"*altitude_vec[2], "aic", "aicc","model_used"]),
         )
 
         # Values of clim_var (z) for pure PFTs
