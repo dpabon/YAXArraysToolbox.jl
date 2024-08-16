@@ -203,7 +203,7 @@ function s4time(
         pftsvarmat = reshape(pfts_cube_in_2, (winsize^2, nc))
 
         if count(!isnan, climvarmat[:]) >= minpxl
-            println(climvarmat[:])
+            
 
             # altitude processing
             altitude_center_1 = altitude_cube_in[Int(round(winsize/2)+1), Int(round(winsize/2)+1), 1]
@@ -364,7 +364,7 @@ function s4time(
 
                         n_altitude = NaN
 
-                        if uniquepixels_altitude_1 >= minDiffPxls_alt && uniquepixels_altitude_2 >= minDiffPxls_alt
+                        if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
                             ols = lm([ones(size(lr, 1)) lr altitude_1 altitude_2], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                             n_altitude = 4
                             out_1[4] = coeftable(ols).cols[4][end-1]
@@ -398,8 +398,20 @@ function s4time(
 
                         println("n_altitude =" *string(n_altitude))
 
-                        println(ols)
+                        #println(ols)
                         # continue only if there are no NA in the estimated coefficients
+                        println("climate_var = ")
+
+                        println(climvarmat[:])
+
+                        println("PFTs_var = ")
+                        println(lr)
+
+                        println("alt_1_var = ")
+                        println(altitude_1)
+
+                        println("alt_2_var = ")
+                        println(altitude_2)
                         
                         coef_reg = GLM.coef(ols)
                         #println("original coef $coef_reg")
