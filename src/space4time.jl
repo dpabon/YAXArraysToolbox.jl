@@ -209,9 +209,12 @@ function s4time(
             altitude_center_1 = altitude_cube_in[Int(round(winsize/2)+1), Int(round(winsize/2)+1), 1]
             altitude_center_2 = altitude_cube_in[Int(round(winsize/2)+1), Int(round(winsize/2)+1), 2]
 
-            altitude_1 = altitude_center_1 .- reshape(altitude_cube_in[:,:,1], winsize^2)
+            altitude_1 = reshape(altitude_cube_in[:,:,1], winsize^2) .- altitude_center_1
 
-            altitude_2 = altitude_center_2 .- reshape(altitude_cube_in[:,:,2], winsize^2)
+            altitude_2 = reshape(altitude_cube_in[:,:,2], winsize^2) .- altitude_center_2
+
+            altitude_1 = Float64.(altitude_1)
+            altitude_2 = Float64.(altitude_2)
 
             
             if count(isnan, climvarmat[:]) != 0
