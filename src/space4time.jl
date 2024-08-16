@@ -105,7 +105,7 @@ function s4time(
     #out_pmindist = out_pmindist_global[Threads.threadid()]
     #out_pmindist = zeros(1, winsize^2)
     #println(Threads.threadid())
-    println(loopvars)
+    #println(loopvars)
     
     if max_value == 100
         pfts_cube_in = pfts_cube_in ./ 100
