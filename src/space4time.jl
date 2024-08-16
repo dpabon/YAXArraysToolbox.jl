@@ -205,20 +205,21 @@ function s4time(
         if count(!isnan, climvarmat[:]) >= minpxl
 
             # altitude processing
-            altitude_center_mean = altitude_cube_in[Int(round(winsize/2)+1), Int(round(winsize/2)+1), 1]
-            altitude_center_sd = altitude_cube_in[Int(round(winsize/2)+1), Int(round(winsize/2)+1), 2]
+            altitude_center_1 = altitude_cube_in[Int(round(winsize/2)+1), Int(round(winsize/2)+1), 1]
+            altitude_center_2 = altitude_cube_in[Int(round(winsize/2)+1), Int(round(winsize/2)+1), 2]
 
-            altitude_mean = altitude_center_mean .- reshape(altitude_cube_in[:,:,1], winsize^2)
-            altitude_sd = altitude_center_sd .- reshape(altitude_cube_in[:,:,2], winsize^2)
+            altitude_1 = altitude_center_1 .- reshape(altitude_cube_in[:,:,1], winsize^2)
+
+            altitude_2 = altitude_center_2 .- reshape(altitude_cube_in[:,:,2], winsize^2)
 
             
             if count(!isnan, climvarmat[:]) != 0
                 
                 pftsvarmat = pftsvarmat[findall(!isnan, climvarmat[:]), :]
                 
-                altitude_mean = altitude_mean[findall(!isnan, climvarmat[:])]
+                altitude_1 = altitude_1[findall(!isnan, climvarmat[:])]
 
-                altitude_sd = altitude_sd[findall(!isnan, climvarmat[:])]
+                altitude_2 = altitude_2[findall(!isnan, climvarmat[:])]
 
                 climvarmat = filter(!isnan, climvarmat)
                 
@@ -354,8 +355,8 @@ function s4time(
                         
                         #println("before fail")
 
-                        uniquepixels_char_altitude_1 = unique(round.(altitude_mean, digits = 6))
-                        uniquepixels_char_altitude_2 = unique(round.(altitude_sd, digits = 6))
+                        uniquepixels_char_altitude_1 = unique(round.(altitude_1, digits = 6))
+                        uniquepixels_char_altitude_2 = unique(round.(altitude_2, digits = 6))
                 
                         uniquepixels_altitude_1 = length(uniquepixels_char_altitude_1)
                         uniquepixels_altitude_2 = length(uniquepixels_char_altitude_2)
@@ -363,31 +364,34 @@ function s4time(
                         n_altitude = NaN
 
                         if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
-                            ols = lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
+                            ols = lm([ones(size(lr, 1)) lr altitude_1 altitude_2], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                             n_altitude = 4
                             out_1[4] = coeftable(ols).cols[4][end-1]
                             out_1[5] = coeftable(ols).cols[4][end]
                             out_1[8] = 4
                         else
                             if uniquepixels_altitude_1 >= minDiffPxls_alt
-                                ols = lm([ones(size(lr, 1)) lr altitude_mean], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
+                                ols = lm([ones(size(lr, 1)) lr altitude_1], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                                 n_altitude = 2
                                 out_1[4] = coeftable(ols).cols[4][end]
                                 out_1[5] = NaN
                                 out_1[8] = 2
-                            elseif uniquepixels_altitude_2 >= minDiffPxls_alt
-                                ols = lm([ones(size(lr, 1)) lr altitude_sd], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                                n_altitude = 3
-                                out_1[4] = NaN
-                                out_1[5] = coeftable(ols).cols[4][end]
-                                out_1[8] = 3
-                            else 
-                                #uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
-                                ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                                n_altitude = 1
-                                out_1[4] = NaN
-                                out_1[5] = NaN
-                                out_1[8] = 1
+                            else
+                                if uniquepixels_altitude_2 >= minDiffPxls_alt
+                                    ols = lm([ones(size(lr, 1)) lr altitude_2], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
+                                    n_altitude = 3
+                                    out_1[4] = NaN
+                                    out_1[5] = coeftable(ols).cols[4][end]
+                                    out_1[8] = 3
+                                else 
+                                    if uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
+                                        ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
+                                        n_altitude = 1
+                                        out_1[4] = NaN
+                                        out_1[5] = NaN
+                                        out_1[8] = 1
+                                    end
+                                end
                             end
                         end
 
@@ -408,17 +412,20 @@ function s4time(
                                     ols,
                                     [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3)) zeros(length(bogusc3))],
                                     )
-                                elseif n_altitude == 2 || n_altitude == 3
-                                    boguspred = predict(
-                                    ols,
-                                    [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3))],
-                                    )
-                                elseif n_altitude == 1
-                                    boguspred = predict(
-                                    ols,
-                                    [ones(length(bogusc3)) bogusc3],
-                                    )
-                                    
+                                else
+                                    if n_altitude == 2 || n_altitude == 3
+                                        boguspred = predict(
+                                        ols,
+                                        [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3))],
+                                        )
+                                    else
+                                        if n_altitude == 1
+                                            boguspred = predict(
+                                            ols,
+                                            [ones(length(bogusc3)) bogusc3],
+                                            )
+                                        end
+                                    end
                                 end
                                 
                                 # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
@@ -430,29 +437,36 @@ function s4time(
                                     ols,
                                     [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1)) zeros(size(bogusc3, 1))],
                                     )
-                                elseif n_altitude == 2 || n_altitude == 3
-                                    boguspred = predict(
-                                    ols,
-                                    [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1))],
-                                    )
-                                elseif n_altitude == 1
-                                    boguspred = predict(
-                                    ols,
-                                    [ones(size(bogusc3, 1)) bogusc3],
-                                    )
+                                else
+                                    if n_altitude == 2 || n_altitude == 3
+                                        boguspred = predict(
+                                        ols,
+                                        [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1))],
+                                        )
+                                    else
+                                        if n_altitude == 1
+                                            boguspred = predict(
+                                            ols,
+                                            [ones(size(bogusc3, 1)) bogusc3],
+                                            )
+                                        end
+                                    end
                                 end
-                                
                             end
                             
                             if n_altitude == 4
                                 x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1) zeros(size(bogusc3, 1), 1)]
 
-                            elseif n_altitude == 2 || n_altitude == 3
-                                x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1)]
-                                # println("n_altitude = " * string(x2pred))
+                            else
+                                if n_altitude == 2 || n_altitude == 3
+                                    x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1)]
+                                    # println("n_altitude = " * string(x2pred))
 
-                            elseif n_altitude  == 1
-                                x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
+                                else
+                                    if n_altitude  == 1
+                                        x2pred = [ones(size(bogusc3, 1), 1) bogusc3]
+                                    end
+                                end
                             end
                             # println("n_altitude = " * string(n_altitude))
                             # x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1) zeros(size(bogusc3, 1), 1)]
@@ -639,11 +653,11 @@ function s4time(
             if count(!isnan, climvarmat[:, it]) >= minpxl
 
                 # altitude processing
-                altitude_center_mean = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 1]
-                altitude_center_sd = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 2]
+                altitude_center_1 = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 1]
+                altitude_center_2 = altitude_cube_in[round(winsize/2)+1, round(winsize/2)+1, 2]
 
-                altitude_mean = altitude_center_mean .- reshape(altitude_cube_in[:,:,1], winsize^2)
-                altitude_sd = altitude_center_sd .- reshape(altitude_cube_in[:,:,2], winsize^2)
+                altitude_1 = altitude_center_1 .- reshape(altitude_cube_in[:,:,1], winsize^2)
+                altitude_2 = altitude_center_2 .- reshape(altitude_cube_in[:,:,2], winsize^2)
 
                 
                 if count(!isnan, climvarmat[:, it]) != 0
@@ -652,9 +666,9 @@ function s4time(
                     
                     climvarmat_it = filter(!isnan, climvarmat[:,it])
 
-                    altitude_mean = altitude_mean[findall(!isnan, climvarmat[:, it])]
+                    altitude_1 = altitude_1[findall(!isnan, climvarmat[:, it])]
 
-                    altitude_sd = altitude_sd[findall(!isnan, climvarmat[:, it])]
+                    altitude_2 = altitude_2[findall(!isnan, climvarmat[:, it])]
 
                 end
 
@@ -794,8 +808,8 @@ function s4time(
                             
                             #println("before fail")
 
-                            uniquepixels_char_altitude_1 = unique(round.(altitude_mean, digits = 6))
-                            uniquepixels_char_altitude_2 = unique(round.(altitude_sd, digits = 6))
+                            uniquepixels_char_altitude_1 = unique(round.(altitude_1, digits = 6))
+                            uniquepixels_char_altitude_2 = unique(round.(altitude_2, digits = 6))
                 
                             uniquepixels_altitude_1 = length(uniquepixels_char_altitude_1)
                             uniquepixels_altitude_2 = length(uniquepixels_char_altitude_2)
@@ -803,7 +817,7 @@ function s4time(
                             n_altitude = NaN
 
                             if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
-                                ols = lm([ones(size(lr, 1)) lr altitude_mean altitude_sd], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                                ols = lm([ones(size(lr, 1)) lr altitude_1 altitude_2], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
                                 n_altitude = 4
                                 out_1[4] = coeftable(ols).cols[4][end-1]
                                 out_1[5] = coeftable(ols).cols[4][end]
@@ -811,25 +825,28 @@ function s4time(
 
                             else
                                 if uniquepixels_altitude_1 >= minDiffPxls_alt
-                                    ols = lm([ones(size(lr, 1)) lr altitude_mean], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                                    ols = lm([ones(size(lr, 1)) lr altitude_1], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
                                     n_altitude = 2
                                     out_1[4] = coeftable(ols).cols[4][end]
                                     out_1[5] = NaN
                                     out_1[8] = 2
 
-                                elseif uniquepixels_altitude_2 >= minDiffPxls_alt
-                                ols = lm([ones(size(lr, 1)) lr altitude_sd], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                n_altitude = 3
-                                out_1[4] = NaN
-                                out_1[5] = coeftable(ols).cols[4][end]
-                                out_1[8] = 3
-                                else 
-                                #uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
-                                    ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
-                                    n_altitude = 1
-                                    out_1[4] = NaN
-                                    out_1[5] = NaN
-                                    out_1[8] = 1
+                                else
+                                    if uniquepixels_altitude_2 >= minDiffPxls_alt
+                                        ols = lm([ones(size(lr, 1)) lr altitude_2], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                                        n_altitude = 3
+                                        out_1[4] = NaN
+                                        out_1[5] = coeftable(ols).cols[4][end]
+                                        out_1[8] = 3
+                                    else 
+                                        if uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
+                                            ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
+                                            n_altitude = 1
+                                            out_1[4] = NaN
+                                            out_1[5] = NaN
+                                            out_1[8] = 1
+                                        end
+                                    end
                                 end
                             end                            
                             # continue only if there are no NA in the estimated coefficients
@@ -848,17 +865,20 @@ function s4time(
                                         [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3)) zeros(length(bogusc3))],
                                         )
                                     
-                                    elseif n_altitude == 2 | n_altitude == 3
-                                        boguspred = predict(
-                                        ols,
-                                        [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3))],
-                                        )
-                                    elseif n_altitude  == 1
-                                        boguspred = predict(
-                                        ols,
-                                        [ones(length(bogusc3)) bogusc3],
-                                        )
-                                                                    
+                                    else
+                                        if n_altitude == 2 | n_altitude == 3
+                                            boguspred = predict(
+                                            ols,
+                                            [ones(length(bogusc3)) bogusc3 zeros(length(bogusc3))],
+                                            )
+                                        else
+                                            if n_altitude  == 1
+                                            boguspred = predict(
+                                            ols,
+                                            [ones(length(bogusc3)) bogusc3],
+                                            )
+                                            end
+                                        end                            
                                     end
                                     # boguspred = GLM.predict(compreg, DataFrame( x1 = bogusc3))
                                     
@@ -869,18 +889,22 @@ function s4time(
                                         [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1)) zeros(size(bogusc3, 1))],
                                         )
 
-                                    elseif n_altitude == 2 | n_altitude == 3
+                                    else
+                                        if n_altitude == 2 | n_altitude == 3
                                         boguspred = predict(
                                         ols,
                                         [ones(size(bogusc3, 1)) bogusc3 zeros(size(bogusc3, 1))],
                                         )
 
-                                    elseif n_altitude  == 1
-                                        boguspred = predict(
-                                        ols,
-                                        [ones(size(bogusc3, 1)) bogusc3],
-                                        )
+                                        else
+                                            if n_altitude  == 1
+                                                boguspred = predict(
+                                                ols,
+                                                [ones(size(bogusc3, 1)) bogusc3],
+                                                )
                                                                     
+                                            end
+                                        end
                                     end
                                     # boguspred = GLM.predict(compreg, DataFrame(bogusc3, :auto))   
                                 
@@ -889,11 +913,15 @@ function s4time(
                                 if n_altitude == 4
                                     x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1) zeros(size(bogusc3, 1), 1)]
 
-                                elseif n_altitude == 2 | n_altitude == 3
-                                    x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1)]
+                                else
+                                    if n_altitude == 2 | n_altitude == 3
+                                        x2pred = [ones(size(bogusc3, 1), 1) bogusc3 zeros(size(bogusc3, 1), 1)]
 
-                                elseif n_altitude  == 0
-                                    x2pred = [ones(size(bogusc3, 1), 1) bogusc3]     
+                                    else
+                                        if n_altitude  == 0
+                                            x2pred = [ones(size(bogusc3, 1), 1) bogusc3]     
+                                        end
+                                    end
                                 end
                                 
                                 vcv = GLM.vcov(ols)
