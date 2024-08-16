@@ -373,13 +373,13 @@ function s4time(
                         #println("unique altitude 2 = ")
                         #println(uniquepixels_char_altitude_2)
 
-                        if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
+                        if uniquepixels_altitude_1 >= minDiffPxls_alt && uniquepixels_altitude_2 >= minDiffPxls_alt
                             ols = lm([ones(size(lr, 1)) lr altitude_1 altitude_2], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                             n_altitude = 4
                             out_1[4] = coeftable(ols).cols[4][end-1]
                             out_1[5] = coeftable(ols).cols[4][end]
                             out_1[8] = 4
-                            coef_reg = GLM.coef(ols)
+                            
                         else
                             if uniquepixels_altitude_1 >= minDiffPxls_alt
                                 ols = lm([ones(size(lr, 1)) lr altitude_1], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
@@ -387,7 +387,7 @@ function s4time(
                                 out_1[4] = coeftable(ols).cols[4][end]
                                 out_1[5] = NaN
                                 out_1[8] = 2
-                                coef_reg = GLM.coef(ols)
+                                
                             else
                                 if uniquepixels_altitude_2 >= minDiffPxls_alt
                                     ols = lm([ones(size(lr, 1)) lr altitude_2], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
@@ -395,19 +395,19 @@ function s4time(
                                     out_1[4] = NaN
                                     out_1[5] = coeftable(ols).cols[4][end]
                                     out_1[8] = 3
-                                    coef_reg = GLM.coef(ols)
+                                    
                                 else 
-                                    if uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
+                                    if uniquepixels_altitude_1 < minDiffPxls_alt && uniquepixels_altitude_2 < minDiffPxls_alt
                                         ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
                                         n_altitude = 1
                                         out_1[4] = NaN
                                         out_1[5] = NaN
                                         out_1[8] = 1
-                                        coef_reg = GLM.coef(ols)
                                     end
                                 end
                             end
                         end
+                        coef_reg = GLM.coef(ols)
 
                         #println("n_altitude =" *string(n_altitude))
 
@@ -842,7 +842,7 @@ function s4time(
 
                             n_altitude = NaN
 
-                            if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
+                            if uniquepixels_altitude_1 >= minDiffPxls_alt && uniquepixels_altitude_2 >= minDiffPxls_alt
                                 ols = lm([ones(size(lr, 1)) lr altitude_1 altitude_2], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
                                 n_altitude = 4
                                 out_1[4] = coeftable(ols).cols[4][end-1]
@@ -865,7 +865,7 @@ function s4time(
                                         out_1[5] = coeftable(ols).cols[4][end]
                                         out_1[8] = 3
                                     else 
-                                        if uniquepixels_altitude_1 < minDiffPxls_alt & uniquepixels_altitude_2 < minDiffPxls_alt
+                                        if uniquepixels_altitude_1 < minDiffPxls_alt && uniquepixels_altitude_2 < minDiffPxls_alt
                                             ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
                                             n_altitude = 1
                                             out_1[4] = NaN
