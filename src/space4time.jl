@@ -367,11 +367,11 @@ function s4time(
 
                         n_altitude = NaN
 
-                        println("unique altitude 1 = ")
-                        println(uniquepixels_char_altitude_1)
+                        #println("unique altitude 1 = ")
+                        #println(uniquepixels_char_altitude_1)
 
-                        println("unique altitude 2 = ")
-                        println(uniquepixels_char_altitude_2)
+                        #println("unique altitude 2 = ")
+                        #println(uniquepixels_char_altitude_2)
 
                         if uniquepixels_altitude_1 >= minDiffPxls_alt & uniquepixels_altitude_2 >= minDiffPxls_alt
                             ols = lm([ones(size(lr, 1)) lr altitude_1 altitude_2], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
@@ -409,22 +409,22 @@ function s4time(
                             end
                         end
 
-                        println("n_altitude =" *string(n_altitude))
+                        #println("n_altitude =" *string(n_altitude))
 
                         #println(ols)
                         # continue only if there are no NA in the estimated coefficients
-                        println("climate_var = ")
+                        #println("climate_var = ")
 
-                        println(climvarmat[:])
+                        #println(climvarmat[:])
 
-                        println("PFTs_var = ")
-                        println(lr)
+                        #println("PFTs_var = ")
+                        #println(lr)
 
-                        println("alt_1_var = ")
-                        println(altitude_1)
+                        #println("alt_1_var = ")
+                        #println(altitude_1)
 
-                        println("alt_2_var = ")
-                        println(altitude_2)
+                        #println("alt_2_var = ")
+                        #println(altitude_2)
                         
                         
                         #println("original coef $coef_reg")
