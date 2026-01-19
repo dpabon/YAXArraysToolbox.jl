@@ -1,6 +1,4 @@
-using YAXArrays, StatsBase
-
-
+using YAXArrays, StatsBase, DimensionalData
 
 
 function masking_stats(cube_out, cube_in_to_mask, cube_summary_stats; rsquared_thr)
@@ -126,14 +124,19 @@ function masking_proc(
     co_occurence_thr = nothing,
     cube_delta = nothing,
     minmax_delta = nothing,
-    time_dim = "time",
+    time_dim = :Ti,
     showprog = true,
 )
 
     if !isnothing(time_dim)
 
         indims = (InDims(time_dim), InDims(time_dim))
-        outdims = OutDims(time_dim)
+        outdims = try
+            OutDims(Dim{time_dim}(lookup(cube_in_to_mask, Dim{time_dim}).data))
+        catch e
+            OutDims(Dim{time_dim}(lookup(cube_in_to_mask, time_dim).data))
+        end
+        
 
     else
         indims = (InDims(), InDims())
