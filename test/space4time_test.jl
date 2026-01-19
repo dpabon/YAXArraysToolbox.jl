@@ -6,7 +6,12 @@ using Zarr
 using Random
 using TiledViews
 using Statistics
-
+using LinearAlgebra
+using NamedArrays
+using Combinatorics
+using GLM
+using DimensionalData
+using Dates
 @testset "space4time" begin
     # using CairoMakie
 
@@ -108,11 +113,11 @@ using Statistics
     # Land Cover classes
 
     # axis
-    axlist = [
-        RangeAxis("x", 1:size(new_res_array_classes)[1]),
-        RangeAxis("y", 1:size(new_res_array_classes)[2]),
-        CategoricalAxis("Classes", ["class" * string(i) for i = 1:n_classes]),
-    ]
+    axlist = (
+        Dim{:x}(1:size(new_res_array_classes)[1]),
+        Dim{:y}(1:size(new_res_array_classes)[2]),
+        Dim{:classes}(["class" * string(i) for i = 1:n_classes]),
+    )
     # YAXArray Cube
     lcc_cube = YAXArray(axlist, new_res_array_classes)
 
@@ -127,10 +132,10 @@ using Statistics
     # LST cube
 
     # axis
-    axlist = [
-        RangeAxis("x", 1:size(new_res_array_classes)[1]),
-        RangeAxis("y", 1:size(new_res_array_classes)[2]),
-    ]
+    axlist = (
+        Dim{:x}(1:size(new_res_array_classes)[1]),
+        Dim{:y}(1:size(new_res_array_classes)[2]),
+    )
 
     # YAXArray Cube
     lst_cube = YAXArray(axlist, new_res_array_lst)
@@ -147,9 +152,9 @@ using Statistics
         lst_cube,
         lcc_cube;
         time_axis_name = nothing,
-        lon_axis_name = "x",
-        lat_axis_name = "y",
-        classes_var_name = "Classes",
+        lon_axis_name = :x,
+        lat_axis_name = :y,
+        classes_var_name = :classes,
         winsize = 5,
         minpxl = 25,
         minDiffPxlspercentage = 0.0,
@@ -163,26 +168,113 @@ using Statistics
 
     masking_without_delta = masking_proc(
         results_space4time.metrics_for_transitions;
-        cube_rsquared = results_space4time.SummaryStats[summary_stat = "rsquared"],
+        cube_rsquared = results_space4time.summary_stats[summary_stat = At("rsquared")],
         rsquared_thr = 0.2,
-        cube_co_occurrence = results_space4time.metrics_for_transitions[Differences = "coocurence"],
+        cube_co_occurrence = results_space4time.metrics_for_transitions[Differences = At("coocurence")],
         co_occurence_thr = 0.5,
         cube_delta = nothing,
-        time_dim = "time",
+        time_dim = nothing,
         showprog = true,
     )
 
-    transitions = getAxis("transitions", masking_without_delta)
-
-
     results_delta_space4time = [
-        mean(filter(!isnan, masking_without_delta.data[1, i, 1, :, :])) for
-        i in eachindex(transitions)
+        mean(filter(!isnan, masking_without_delta.data[i, 1, :, :])) for
+        i in eachindex(lookup(masking_without_delta, :transitions).data)
     ]
 
 
     # Testing space4time results
 
     @test round.(results_delta_space4time; digits = 3) == round.(delta_original; digits = 3)
+
+    # testing space4time with Time dim
+
+    time_n = 30
+
+    # we will create an array with the new resolution to save the results
+    new_res_array_classes = fill(0.0, (size_new_edge, size_new_edge, n_classes, time_n))
+
+    for i = 1:size_new_edge
+        for j = 1:size_new_edge
+            for c = 1:n_classes
+                new_res_array_classes[i, j, c,:] .=
+                    count(==(c), a[:, :, i, j]) / (size_new_pixel^2)
+            end
+        end
+    end
+
+    # axis
+    axlist = (
+        Dim{:x}(1:size(new_res_array_classes)[1]),
+        Dim{:y}(1:size(new_res_array_classes)[2]),
+        Dim{:classes}(["class" * string(i) for i = 1:n_classes]),
+        Dim{:Ti}(Date("2022-01-01"):Day(1):Date("2022-01-30")),
+    )
+    # YAXArray Cube
+
+    lcc_cube = YAXArray(axlist, new_res_array_classes)
+
+    # LST cube
+
+    new_res_array_lst = fill(NaN, (size_new_edge, size_new_edge, time_n))
+
+    for i = 1:size_new_edge
+        for j = 1:size_new_edge
+            new_res_array_lst[i, j, :] .= mean(a[:, :, i, j])
+        end
+    end
+
+    # axis
+    axlist = (
+        Dim{:x}(1:size(new_res_array_classes)[1]),
+        Dim{:y}(1:size(new_res_array_classes)[2]),
+        Dim{:Ti}(Date("2022-01-01"):Day(1):Date("2022-01-30")),
+    )
+
+    # YAXArray Cube
+    lst_cube = YAXArray(axlist, new_res_array_lst)
+
+    
+    results_space4time = space4time_proc(
+        lst_cube,
+        lcc_cube;
+        time_axis_name = :Ti,
+        lon_axis_name = :x,
+        lat_axis_name = :y,
+        classes_var_name = :classes,
+        winsize = 5,
+        minpxl = 25,
+        minDiffPxlspercentage = 0.0,
+        classes_vec = ["class" * string(i) for i = 1:n_classes],
+        max_value = 1,
+        showprog = true,
+        max_cache = 1e8,
+    )
+
+
+
+    metrics_transitions_cube = results_space4time.metrics_for_transitions
+
+    all(isnan, metrics_transitions_cube[differences = At("delta")].data)
+
+    all(iszero, metrics_transitions_cube[differences = At("coocurence")].data)
+
+
+
+    masking_without_delta = masking_proc(
+        results_space4time.metrics_for_transitions;
+        cube_rsquared = results_space4time.summary_stats[summary_stat = At("rsquared")],
+        rsquared_thr = 0.2,
+        cube_co_occurrence = results_space4time.metrics_for_transitions[Differences = At("coocurence")],
+        co_occurence_thr = 0.5,
+        cube_delta = nothing,
+        time_dim = :Ti,
+        showprog = true,
+    )
+
+    transitions = getAxis("transitions", masking_without_delta)
+
+    @test all(isnan, masking_without_delta.data) == true
+
 
 end

@@ -1,4 +1,4 @@
-using Dates, YAXArrays, Zarr, Statistics
+using Dates, YAXArrays, Zarr, Statistics, DimensionalData
 
 function dates_builder_month(x)
     out = DateTime[]
@@ -463,19 +463,22 @@ end
 
 ```julia
 
+using YAXArrays, Zarr, DimensionalData, YAXArraysToolbox
+
 esds = open_dataset("https://s3.bgc-jena.mpg.de:9000/esdl-esdc-v2.1.1/esdc-8d-0.25deg-184x90x90-2.1.1.zarr")
 esdc = Cube(esds)
 
 # Estimating the monthly LAI
 
-lai_month = aggregate_time(esdc[Variable = "leaf_area_index"]; time_axis = "time", new_resolution = "month", new_time_step=1, fun="mean", p=nothing, skipMissing=true, skipnan=true, showprog=true, max_cache="1GB")
+lai_month = aggregate_time(esdc[Variable = At("leaf_area_index")]; time_axis = :Ti, new_resolution = "month", new_time_step=1, fun="mean", p=nothing, skipMissing=true, skipnan=true, showprog=true, max_cache="1GB")
+
 
 ```
 
 """
 function aggregate_time(
     cube_in;
-    time_axis = "time",
+    time_axis = :Ti,
     new_resolution = "month",
     new_time_step = 1,
     fun = "median",
@@ -504,7 +507,7 @@ function aggregate_time(
         )
     end
 
-    time_org = getAxis(time_axis, cube_in).values
+    time_org = collect(lookup(cube_in, time_axis))
 
     if new_resolution == "year"
         time_index = year.(time_org)
@@ -537,13 +540,13 @@ function aggregate_time(
         # OutDims definition
 
         outdims =
-            OutDims(RangeAxis(time_axis, new_dates_axis[new_time_step:new_time_step:end]))
+            OutDims(Dim{Symbol("Ti")}(new_dates_axis[new_time_step:new_time_step:end]))
 
         # indicies in the cube to be aggregated
         index_in_cube_temp = [findall(==(i), time_index) for i in new_dates]
         count = 1
         index_in_cube = Vector{Int64}[]
-        for i = 1:(Int(length(index_in_cube_temp) / new_time_step))
+        for i in 1:(Int(length(index_in_cube_temp) / new_time_step))
             #println(count)
             push!(
                 index_in_cube,
@@ -554,7 +557,8 @@ function aggregate_time(
     else
         # outdims definition
 
-        outdims = OutDims(RangeAxis(time_axis, new_dates_axis))
+        outdims =
+            OutDims(Dim{Symbol("Ti")}(new_dates_axis))
 
         # indices in the cube to be aggregated
         index_in_cube = [findall(==(i), time_index) for i in new_dates]
