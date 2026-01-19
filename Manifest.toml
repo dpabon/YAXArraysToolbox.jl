@@ -2,7 +2,7 @@
 
 julia_version = "1.12.4"
 manifest_format = "2.0"
-project_hash = "4c8466fd27dc2dc384a419b60f7df4c04d8e5cdf"
+project_hash = "9301842bf8c565d4862c35b3a8d2d713c3d676e5"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "f7304359109c768cf32dc5fa2d371565bb63b68a"
@@ -830,6 +830,12 @@ git-tree-sha1 = "b37458ae37d8bdb643d763451585cd8d0e5b4a9e"
 uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 version = "1.16.1"
 
+[[deps.DocumenterTools]]
+deps = ["AbstractTrees", "Base64", "DocStringExtensions", "Documenter", "FileWatching", "Git", "Gumbo", "LibGit2", "OpenSSH_jll", "Sass"]
+git-tree-sha1 = "253294b1d77e4d3d1d16670b8c7ee9d80524c9cb"
+uuid = "35a29f4d-8980-5a13-9543-d66fff28ecb8"
+version = "0.1.21"
+
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
@@ -1308,6 +1314,18 @@ version = "0.11.2"
 git-tree-sha1 = "53bb909d1151e57e2484c3d1b53e19552b887fb2"
 uuid = "42e2da0e-8278-4e71-bc24-59509adca0fe"
 version = "1.0.2"
+
+[[deps.Gumbo]]
+deps = ["AbstractTrees", "Gumbo_jll", "Libdl"]
+git-tree-sha1 = "eab9e02310eb2c3e618343c859a12b51e7577f5e"
+uuid = "708ec375-b3d6-5a57-a7ce-8257bf98657a"
+version = "0.8.3"
+
+[[deps.Gumbo_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
+git-tree-sha1 = "29070dee9df18d9565276d68a596854b1764aa38"
+uuid = "528830af-5a63-567c-a44a-034ed33b8444"
+version = "0.10.2+0"
 
 [[deps.HDF4_jll]]
 deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Zlib_jll", "libaec_jll"]
@@ -2867,6 +2885,12 @@ git-tree-sha1 = "0b5f220f90642566b65ba86549d1ee4118ab2579"
 uuid = "76ed43ae-9a5d-5a62-8c75-30186b810ce8"
 version = "3.51.2+0"
 
+[[deps.Sass]]
+deps = ["libsass_jll"]
+git-tree-sha1 = "aa841c3738cec78b5dbccd56dda332710f35f6a5"
+uuid = "322a6be2-4ae8-5d68-aaf1-3e960788d1d9"
+version = "0.2.0"
+
 [[deps.SciMLBase]]
 deps = ["ADTypes", "Accessors", "Adapt", "ArrayInterface", "CommonSolve", "ConstructionBase", "Distributed", "DocStringExtensions", "EnumX", "FunctionWrappersWrappers", "IteratorInterfaceExtensions", "LinearAlgebra", "Logging", "Markdown", "Moshi", "PreallocationTools", "PrecompileTools", "Preferences", "Printf", "RecipesBase", "RecursiveArrayTools", "Reexport", "RuntimeGeneratedFunctions", "SciMLLogging", "SciMLOperators", "SciMLPublic", "SciMLStructures", "StaticArraysCore", "Statistics", "SymbolicIndexingInterface"]
 git-tree-sha1 = "9923adc7defeba6a52a99eb493ec317ac6c65942"
@@ -3741,7 +3765,7 @@ uuid = "c21b50f5-aa40-41ea-b809-c0f5e47bfa5c"
 version = "0.7.1"
 
 [[deps.YAXArraysToolbox]]
-deps = ["BenchmarkTools", "CSV", "ColorSchemes", "Combinatorics", "DataFrames", "Dates", "DelimitedFiles", "DimensionalData", "DiskArrayTools", "DiskArrays", "Distributed", "Distributions", "Documenter", "Flatten", "GDAL", "GLM", "GeoMakie", "Glob", "HaltonSequences", "Interpolations", "JLD2", "JuliaFormatter", "LanguageServer", "LinearAlgebra", "MLBase", "MLJ", "MLUtils", "Makie", "NamedArrays", "NearestNeighbors", "NetCDF", "NeutralLandscapes", "Plots", "Primes", "ProgressMeter", "RDatasets", "Random", "Revise", "Skipper", "SlurmClusterManager", "StableRNGs", "Statistics", "StatsBase", "Test", "Thrift_jll", "TickTock", "TiledViews", "TimeSeries", "XLSX", "YAXArrayBase", "YAXArrays", "Zarr"]
+deps = ["BenchmarkTools", "CSV", "CairoMakie", "ColorSchemes", "Combinatorics", "DataFrames", "Dates", "DelimitedFiles", "DimensionalData", "DiskArrayTools", "DiskArrays", "Distributed", "Distributions", "Documenter", "Flatten", "GDAL", "GLM", "GeoMakie", "Glob", "HaltonSequences", "Interpolations", "JLD2", "JuliaFormatter", "LanguageServer", "LinearAlgebra", "MLBase", "MLJ", "MLUtils", "Makie", "NamedArrays", "NearestNeighbors", "NetCDF", "NeutralLandscapes", "Plots", "Primes", "ProgressMeter", "RDatasets", "Random", "Revise", "Skipper", "SlurmClusterManager", "StableRNGs", "Statistics", "StatsBase", "Test", "Thrift_jll", "TickTock", "TiledViews", "TimeSeries", "XLSX", "YAXArrayBase", "YAXArrays", "Zarr"]
 path = "."
 uuid = "fe326ce2-c736-437b-b94b-0bdf007dd2e5"
 version = "1.0.0-DEV"
@@ -3869,6 +3893,12 @@ deps = ["Artifacts", "JLLWrappers", "Libdl", "Zlib_jll"]
 git-tree-sha1 = "6ab498eaf50e0495f89e7a5b582816e2efb95f64"
 uuid = "b53b4c65-9356-5827-b1ea-8c7a1a84506f"
 version = "1.6.54+0"
+
+[[deps.libsass_jll]]
+deps = ["Artifacts", "JLLWrappers", "Libdl"]
+git-tree-sha1 = "6044ffe7e7bf0602e2039dc747c3332a097ac74b"
+uuid = "47bcb7c8-5119-555a-9eeb-0afcc36cd728"
+version = "3.6.6+0"
 
 [[deps.libsixel_jll]]
 deps = ["Artifacts", "JLLWrappers", "JpegTurbo_jll", "Libdl", "libpng_jll"]
