@@ -1,12 +1,12 @@
 using YAXArrays, CairoMakie, Zarr, Statistics, Dates, TimeSeries, DimensionalData
 
 function collapse_space_mean(cube_out, cube_in)
-    
+
     cube_out .= NaN
     if !all(isnan, cube_in) || !all(ismissing, cube_in)
         cube_out .= mean(filter(!isnan, skipmissing(cube_in)))
     end
-    
+
 end
 
 
@@ -15,7 +15,7 @@ function collapse_space_median(cube_out, cube_in)
     if !all(isnan, cube_in) || !all(ismissing, cube_in)
         cube_out .= median(filter(!isnan, skipmissing(cube_in)))
     end
-    
+
 end
 
 function collapse_space_std(cube_out, cube_in)
@@ -200,55 +200,55 @@ The function allow to plot the time series of a given variables in a cube or all
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "median"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "median"
+
+            temp_cube = mapCube(
                 collapse_space_median,
                 cube_in,
                 indims = indims,
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "std"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "std"
+
+            temp_cube = mapCube(
                 collapse_space_std,
                 cube_in,
                 indims = indims,
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "var"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "var"
+
+            temp_cube = mapCube(
                 collapse_space_var,
                 cube_in,
                 indims = indims,
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "sum"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "sum"
+
+            temp_cube = mapCube(
                 collapse_space_sum,
                 cube_in,
                 indims = indims,
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "quant"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "quant"
+
+            temp_cube = mapCube(
                 collapse_space_quant,
                 cube_in,
                 indims = indims,
@@ -256,22 +256,22 @@ The function allow to plot the time series of a given variables in a cube or all
                 p = p,
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "min"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "min"
+
+            temp_cube = mapCube(
                 collapse_space_min,
                 cube_in,
                 indims = indims,
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "max"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "max"
+
+            temp_cube = mapCube(
                 collapse_space_max,
                 cube_in,
                 indims = indims,
@@ -329,55 +329,55 @@ The function allow to plot the time series of a given variables in a cube or all
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "median"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "median"
+
+            temp_cube = mapCube(
                 collapse_space_median,
                 cube_in,
                 indims = indims,
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "std"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "std"
+
+            temp_cube = mapCube(
                 collapse_space_std,
                 cube_in,
                 indims = indims,
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "var"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "var"
+
+            temp_cube = mapCube(
                 collapse_space_var,
                 cube_in,
                 indims = indims,
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "sum"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "sum"
+
+            temp_cube = mapCube(
                 collapse_space_sum,
                 cube_in,
                 indims = indims,
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "quant"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "quant"
+
+            temp_cube = mapCube(
                 collapse_space_quant,
                 cube_in,
                 indims = indims,
@@ -385,22 +385,22 @@ The function allow to plot the time series of a given variables in a cube or all
                 p = p,
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "min"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "min"
+
+            temp_cube = mapCube(
                 collapse_space_min,
                 cube_in,
                 indims = indims,
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
-                )
-                
-            elseif fun == "max"
-                
-                temp_cube = mapCube(
+            )
+
+        elseif fun == "max"
+
+            temp_cube = mapCube(
                 collapse_space_max,
                 cube_in,
                 indims = indims,
@@ -442,52 +442,23 @@ The function allow to plot the time series of a given variables in a cube or all
                         
                         ax =
                         Axis(fig[j, 1], xlabel = "Date", ylabel = fun, title = variables_loc[j])
-                        
-                        kwarg = (; Symbol(var_axis) => variables_loc[j])
-                        
-                        temp_cube2 = getindex(temp_cube; kwarg...)
-                        vals = temp_cube2.data
-                        
-                        line1 = lines!(ax, 1:lentime, vals; color = :black, linewidth = 0.85)
-                        ax.xticks = (slice_dates, tempo[slice_dates])
-                        ax.xticklabelrotation = π / 4
-                        ax.xticklabelalign = (:right, :center)
-                        
-                    end
-                    return fig
-                    
-                    
-                elseif plot_type == "scatter"
-                    
-                    if ncol == 1 && (nrow * ncol) < length(variables_loc)
-                        
-                        nrow = length(variables_loc)
-                        
-                        
-                        for j = 1:nrow
-                            
-                            ax =
-                            Axis(fig[j, 1], xlabel = "Date", ylabel = fun, title = variables_loc[j])
-                            
-                            kwarg = (; Symbol(var_axis) => variables_loc[j])
-                            
-                            temp_cube2 = getindex(temp_cube; kwarg...)
-                            vals = temp_cube2.data
-                            
-                            line1 = scatter!(ax, 1:lentime, vals; color = :black)
-                            ax.xticks = (slice_dates, tempo[slice_dates])
-                            ax.xticklabelrotation = π / 4
-                            ax.xticklabelalign = (:right, :center)
-                            
-                        end
-                        return fig
-                        
-                    else
-                        error("wrong value for plot_type")
-                    end
-                    
-                elseif ncol != 1 && (nrow * ncol) < length(variables_loc)
-                    error(
+    
+                    kwarg = (; Symbol(var_axis) => variables_loc[j])
+    
+                    temp_cube2 = getindex(temp_cube; kwarg...)
+                    vals = temp_cube2.data
+    
+                    line1 = lines!(ax, 1:lentime, vals; color = :black, linewidth = 0.85)
+                    ax.xticks = (slice_dates, tempo[slice_dates])
+                    ax.xticklabelrotation = π / 4
+                    ax.xticklabelalign = (:right, :center)
+    
+                end
+                return fig
+    
+    
+            elseif ncol != 1 && (nrow * ncol) < length(variables_loc)
+                error(
                     "Number of rows and columns is less than the number of variables to be plotted.",
                     )
                 else
