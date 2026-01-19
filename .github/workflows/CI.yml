@@ -26,6 +26,9 @@ jobs:
           - "1.12.4"
         os:
           - ubuntu-latest
+          - macOS-latest
+          - windows-latest
+          
         arch:
           - x64
     steps:
