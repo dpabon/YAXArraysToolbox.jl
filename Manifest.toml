@@ -2,7 +2,7 @@
 
 julia_version = "1.12.4"
 manifest_format = "2.0"
-project_hash = "76eed0a7323510b5b37a021921b1f1735a2f4d75"
+project_hash = "4c8466fd27dc2dc384a419b60f7df4c04d8e5cdf"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "f7304359109c768cf32dc5fa2d371565bb63b68a"
@@ -3741,7 +3741,7 @@ uuid = "c21b50f5-aa40-41ea-b809-c0f5e47bfa5c"
 version = "0.7.1"
 
 [[deps.YAXArraysToolbox]]
-deps = ["BenchmarkTools", "CSV", "CairoMakie", "ColorSchemes", "Combinatorics", "DataFrames", "Dates", "DelimitedFiles", "DimensionalData", "DiskArrayTools", "DiskArrays", "Distributed", "Distributions", "Documenter", "Flatten", "GDAL", "GLM", "GeoMakie", "Glob", "HaltonSequences", "Interpolations", "JLD2", "JuliaFormatter", "LanguageServer", "LinearAlgebra", "MLBase", "MLJ", "MLUtils", "NamedArrays", "NearestNeighbors", "NetCDF", "NeutralLandscapes", "Plots", "Primes", "ProgressMeter", "RDatasets", "Random", "Revise", "Skipper", "SlurmClusterManager", "StableRNGs", "Statistics", "StatsBase", "Test", "Thrift_jll", "TickTock", "TiledViews", "TimeSeries", "XLSX", "YAXArrayBase", "YAXArrays", "Zarr"]
+deps = ["BenchmarkTools", "CSV", "ColorSchemes", "Combinatorics", "DataFrames", "Dates", "DelimitedFiles", "DimensionalData", "DiskArrayTools", "DiskArrays", "Distributed", "Distributions", "Documenter", "Flatten", "GDAL", "GLM", "GeoMakie", "Glob", "HaltonSequences", "Interpolations", "JLD2", "JuliaFormatter", "LanguageServer", "LinearAlgebra", "MLBase", "MLJ", "MLUtils", "Makie", "NamedArrays", "NearestNeighbors", "NetCDF", "NeutralLandscapes", "Plots", "Primes", "ProgressMeter", "RDatasets", "Random", "Revise", "Skipper", "SlurmClusterManager", "StableRNGs", "Statistics", "StatsBase", "Test", "Thrift_jll", "TickTock", "TiledViews", "TimeSeries", "XLSX", "YAXArrayBase", "YAXArrays", "Zarr"]
 path = "."
 uuid = "fe326ce2-c736-437b-b94b-0bdf007dd2e5"
 version = "1.0.0-DEV"
