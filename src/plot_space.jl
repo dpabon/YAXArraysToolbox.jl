@@ -181,8 +181,8 @@ function plot_space(
     colormap_local = Reverse(:batlow),
     coastlines = false,
     resolution = (800, 300),
-    xticklabel_pad=20,
-    yticklabel_pad=20,
+    xticklabel_pad = 20,
+    yticklabel_pad = 20,
     ncol = 1,
     nrow = 1,
     showprog = true,
@@ -190,31 +190,31 @@ function plot_space(
 )
 
     if last(max_cache, 2) == "MB"
-        max_cache = parse(Float64, max_cache[begin:end-2]) / (10^-6)
+        max_cache = parse(Float64, max_cache[begin:(end-2)]) / (10^-6)
 
     elseif last(max_cache, 2) == "GB"
 
-        max_cache = parse(Float64, max_cache[begin:end-2]) / (10^-9)
+        max_cache = parse(Float64, max_cache[begin:(end-2)]) / (10^-9)
 
     else
         error("only MB or GB values are accepted for max_cache")
     end
 
-    time_vec = try 
+    time_vec = try
         lookup(cube_in, time_axis).data
     catch e
         lookup(cube_in, Dim{time_axis}).data
     end
 
     if length(time_vec) == 1
-        title_tmp = " \n " *
-        string(time_vec[1])
+        title_tmp = " \n " * string(time_vec[1])
     else
-        title_tmp = " \n " *
-        string(first(lookup(cube_in, time_axis).data)) *
-        " / " *
-        string(last(lookup(cube_in, time_axis).data))
-        
+        title_tmp =
+            " \n " *
+            string(first(lookup(cube_in, time_axis).data)) *
+            " / " *
+            string(last(lookup(cube_in, time_axis).data))
+
     end
 
     if typeof(var) != Nothing
@@ -330,10 +330,17 @@ function plot_space(
             coastlines = coastlines,
             lonlims = (minimum(lon), maximum(lon)),
             latlims = (minimum(lat), maximum(lat)),
-            xticklabelpad=xticklabel_pad,
-            yticklabelpad=yticklabel_pad,
-            title = var * title_tmp)
-        map1 = CairoMakie.heatmap!(ga, lon, lat, temp_cube[:, :].data, colormap = colormap_local)
+            xticklabelpad = xticklabel_pad,
+            yticklabelpad = yticklabel_pad,
+            title = var * title_tmp,
+        )
+        map1 = CairoMakie.heatmap!(
+            ga,
+            lon,
+            lat,
+            temp_cube[:, :].data,
+            colormap = colormap_local,
+        )
         cbar1 = Colorbar(
             fig[1, 2],
             map1,
@@ -449,27 +456,33 @@ function plot_space(
             lat = lookup(temp_cube, lat_axis).data
 
             ga = GeoAxis(
-                    fig[1, 1],
-                    source = "+proj=longlat +datum=WGS84",
-                    dest = "+proj=longlat",
-                    coastlines = coastlines,
-                    lonlims = (minimum(lon), maximum(lon)),
-                    latlims = (minimum(lat), maximum(lat)),
-                    xticklabelpad=xticklabel_pad,
-                    yticklabelpad=yticklabel_pad,
-                    title = title_op * title_tmp)
+                fig[1, 1],
+                source = "+proj=longlat +datum=WGS84",
+                dest = "+proj=longlat",
+                coastlines = coastlines,
+                lonlims = (minimum(lon), maximum(lon)),
+                latlims = (minimum(lat), maximum(lat)),
+                xticklabelpad = xticklabel_pad,
+                yticklabelpad = yticklabel_pad,
+                title = title_op * title_tmp,
+            )
 
-                map1 =
-                    CairoMakie.heatmap!(ga, lon, lat, temp_cube[:, :].data, colormap = colormap_local)
+            map1 = CairoMakie.heatmap!(
+                ga,
+                lon,
+                lat,
+                temp_cube[:, :].data,
+                colormap = colormap_local,
+            )
 
-                cbar1 = Colorbar(
-                    fig[1, 2],
-                    map1,
-                    label = fun,
-                    ticklabelsize = 18,
-                    labelpadding = 5,
-                    width = 10,
-                )
+            cbar1 = Colorbar(
+                fig[1, 2],
+                map1,
+                label = fun,
+                ticklabelsize = 18,
+                labelpadding = 5,
+                width = 10,
+            )
 
             return fig
         end
@@ -479,7 +492,7 @@ function plot_space(
             lookup(cube_in, var_axis).data
         catch e
             lookup(cube_in, Dim{var_axis}).data
-        end 
+        end
 
 
         if length(variables_loc) > 6
@@ -514,12 +527,18 @@ function plot_space(
                     coastlines = coastlines,
                     lonlims = (minimum(lon), maximum(lon)),
                     latlims = (minimum(lat), maximum(lat)),
-                    xticklabelpad=xticklabel_pad,
-                    yticklabelpad=yticklabel_pad,
-                    title = variables_loc[j] * title_tmp)
+                    xticklabelpad = xticklabel_pad,
+                    yticklabelpad = yticklabel_pad,
+                    title = variables_loc[j] * title_tmp,
+                )
 
-                map1 =
-                    CairoMakie.heatmap!(ga, lon, lat, temp_cube2[:, :].data, colormap = colormap_local)
+                map1 = CairoMakie.heatmap!(
+                    ga,
+                    lon,
+                    lat,
+                    temp_cube2[:, :].data,
+                    colormap = colormap_local,
+                )
 
                 cbar1 = Colorbar(
                     fig[j, 2],
@@ -554,9 +573,10 @@ function plot_space(
                         coastlines = coastlines,
                         lonlims = (minimum(lon), maximum(lon)),
                         latlims = (minimum(lat), maximum(lat)),
-                        xticklabelpad=xticklabel_pad,
-                        yticklabelpad=yticklabel_pad,
-                        title = variables_loc[init_row] * title_tmp)
+                        xticklabelpad = xticklabel_pad,
+                        yticklabelpad = yticklabel_pad,
+                        title = variables_loc[init_row] * title_tmp,
+                    )
                     map1 = CairoMakie.heatmap!(
                         ga,
                         lon,

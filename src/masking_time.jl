@@ -248,11 +248,11 @@ function masking_time(
     end
 
     if last(max_cache, 2) == "MB"
-        max_cache = parse(Float64, max_cache[begin:end-2]) / (10^-6)
+        max_cache = parse(Float64, max_cache[begin:(end-2)]) / (10^-6)
 
     elseif last(max_cache, 2) == "GB"
 
-        max_cache = parse(Float64, max_cache[begin:end-2]) / (10^-9)
+        max_cache = parse(Float64, max_cache[begin:(end-2)]) / (10^-9)
 
     else
         error("only MB or GB values are accepted for max_cache")

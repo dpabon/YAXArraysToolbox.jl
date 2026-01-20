@@ -14,13 +14,22 @@ cube_in = Cube(cube_in)
 
 
 cube_in = cube_in[
-    lon = (-9.0 .. 0.0),
-    lat = (35 .. 40),
-    Ti = (Date(2010) .. Date(2014)),
-    Variable = At(["leaf_area_index", "sensible_heat"]),
+    lon=(-9.0..0.0),
+    lat=(35..40),
+    Ti=(Date(2010)..Date(2014)),
+    Variable=At(["leaf_area_index", "sensible_heat"]),
 ]
 
-plot_space(cube_in; time_axis = :Ti, resolution = (900, 500), xticklabel_pad = 25, yticklabel_pad = 25, var_axis = :Variable, var = "leaf_area_index", fun = "median")
+plot_space(
+    cube_in;
+    time_axis = :Ti,
+    resolution = (900, 500),
+    xticklabel_pad = 25,
+    yticklabel_pad = 25,
+    var_axis = :Variable,
+    var = "leaf_area_index",
+    fun = "median",
+)
 
 
 metric = ["median", "mean", "std", "var", "sum", "quant", "min", "max"]

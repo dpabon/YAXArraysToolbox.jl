@@ -302,8 +302,7 @@ function altitude_mask_results2(cube_out, cube_in; center_coord)
 
         # v2
         cube_out[2] = abs(
-            cube_in[center_coord, center_coord] -
-            mean(filter(!isnan, vec(cube_in[:, :]))),
+            cube_in[center_coord, center_coord] - mean(filter(!isnan, vec(cube_in[:, :]))),
         )
     end
 end
