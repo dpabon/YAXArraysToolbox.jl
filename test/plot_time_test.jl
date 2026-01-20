@@ -11,10 +11,10 @@ cube_in = Cube(cube_in)
 cube_in.Variable
 
 cube_in = cube_in[
-    lon = (-9.0 .. 0.0),
-    lat = (35 .. 40),
-    Ti = (Date(2010) .. Date(2014)),
-    Variable = At(["leaf_area_index", "sensible_heat"]),
+    lon=(-9.0..0.0),
+    lat=(35..40),
+    Ti=(Date(2010)..Date(2014)),
+    Variable=At(["leaf_area_index", "sensible_heat"]),
 ]
 
 

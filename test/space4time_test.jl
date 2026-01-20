@@ -168,9 +168,11 @@ using Dates
 
     masking_without_delta = masking_proc(
         results_space4time.metrics_for_transitions;
-        cube_rsquared = results_space4time.summary_stats[summary_stat = At("rsquared")],
+        cube_rsquared = results_space4time.summary_stats[summary_stat=At("rsquared")],
         rsquared_thr = 0.2,
-        cube_co_occurrence = results_space4time.metrics_for_transitions[Differences = At("coocurence")],
+        cube_co_occurrence = results_space4time.metrics_for_transitions[Differences=At(
+            "coocurence",
+        )],
         co_occurence_thr = 0.5,
         cube_delta = nothing,
         time_dim = nothing,
@@ -197,7 +199,7 @@ using Dates
     for i = 1:size_new_edge
         for j = 1:size_new_edge
             for c = 1:n_classes
-                new_res_array_classes[i, j, c,:] .=
+                new_res_array_classes[i, j, c, :] .=
                     count(==(c), a[:, :, i, j]) / (size_new_pixel^2)
             end
         end
@@ -234,7 +236,7 @@ using Dates
     # YAXArray Cube
     lst_cube = YAXArray(axlist, new_res_array_lst)
 
-    
+
     results_space4time = space4time_proc(
         lst_cube,
         lcc_cube;
@@ -255,17 +257,19 @@ using Dates
 
     metrics_transitions_cube = results_space4time.metrics_for_transitions
 
-    all(isnan, metrics_transitions_cube[differences = At("delta")].data)
+    all(isnan, metrics_transitions_cube[differences=At("delta")].data)
 
-    all(iszero, metrics_transitions_cube[differences = At("coocurence")].data)
+    all(iszero, metrics_transitions_cube[differences=At("coocurence")].data)
 
 
 
     masking_without_delta = masking_proc(
         results_space4time.metrics_for_transitions;
-        cube_rsquared = results_space4time.summary_stats[summary_stat = At("rsquared")],
+        cube_rsquared = results_space4time.summary_stats[summary_stat=At("rsquared")],
         rsquared_thr = 0.2,
-        cube_co_occurrence = results_space4time.metrics_for_transitions[Differences = At("coocurence")],
+        cube_co_occurrence = results_space4time.metrics_for_transitions[Differences=At(
+            "coocurence",
+        )],
         co_occurence_thr = 0.5,
         cube_delta = nothing,
         time_dim = :Ti,
