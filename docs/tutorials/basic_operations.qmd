@@ -86,7 +86,7 @@ By default, `plot_time` plots all variables in the cube:
 plot_time(
     cube_to_plot;
     time_axis = :time,
-    var_axis = :Variable,
+    var_axis = :Variables,
     lon_axis = :lon,
     lat_axis = :lat,
     var = nothing,
@@ -108,7 +108,7 @@ You can also plot a specific variable:
 plot_time(
     cube_to_plot;
     time_axis = :time,
-    var_axis = :Variables,
+    var_axis = :Variable,
     lon_axis = :lon,
     lat_axis = :lat,
     var = "sensible_heat",
