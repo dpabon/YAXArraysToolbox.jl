@@ -7,7 +7,9 @@ import StatsBase,
     Combinatorics,
     YAXArrays,
     TimeSeries,
-    Dates
+    Dates,
+    CairoMakie,
+    GeoMakie
 
 using YAXArrays: YAXArray
 
