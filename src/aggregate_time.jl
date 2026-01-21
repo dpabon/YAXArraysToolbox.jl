@@ -1,4 +1,4 @@
-using Dates, YAXArrays, Zarr, Statistics, DimensionalData
+using Dates, YAXArrays, Statistics, DimensionalData
 
 function dates_builder_month(x)
     out = DateTime[]
