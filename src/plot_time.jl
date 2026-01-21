@@ -291,7 +291,7 @@ The function allow to plot the time series of a given variables in a cube or all
             slice_dates = range(1, lentime, step = lentime ÷ 8)
             
             if plot_type == "lines"
-                fig = Figure(resolution = resolution)
+                fig = Figure(;resolution = resolution)
                 ax = Axis(fig[1, 1], xlabel = "Date", ylabel = fun, title = var)
                 line1 = lines!(ax, 1:lentime, vals; color = :black, linewidth = 0.85)
                 ax.xticks = (slice_dates, tempo[slice_dates])
@@ -301,7 +301,7 @@ The function allow to plot the time series of a given variables in a cube or all
                 
             elseif plot_type == "scatter"
                 
-                fig = Figure(resolution = resolution)
+                fig = Figure(;resolution = resolution)
                 ax = Axis(fig[1, 1], xlabel = "Date", ylabel = fun, title = var)
                 line1 = scatter!(ax, 1:lentime, vals; color = :black)
                 ax.xticks = (slice_dates, tempo[slice_dates])
@@ -429,7 +429,7 @@ The function allow to plot the time series of a given variables in a cube or all
                 
             end
             
-            fig = Figure(resolution = resolution)
+            fig = Figure(;resolution = resolution)
             
             if plot_type == "lines"
                 
