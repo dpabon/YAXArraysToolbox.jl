@@ -1,4 +1,4 @@
-
+using YAXArrays, Statistics
 #=
 axlist = [
     RangeAxis("time", range(1, 20, length = 20)),
