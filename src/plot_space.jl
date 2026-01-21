@@ -320,7 +320,7 @@ function plot_space(
         lon = lookup(temp_cube, lon_axis).data
         lat = lookup(temp_cube, lat_axis).data
 
-        fig = Figure(resolution = resolution)
+        fig = Figure(;resolution = resolution)
 
         ga = GeoAxis(
             fig[1, 1];
@@ -442,7 +442,7 @@ function plot_space(
 
         if isnothing(var_axis)
 
-            fig = Figure(resolution = resolution)
+            fig = Figure(;resolution = resolution)
 
             lon = lookup(temp_cube, lon_axis).data
             lat = lookup(temp_cube, lat_axis).data
@@ -487,7 +487,7 @@ function plot_space(
 
         end
 
-        fig = Figure(resolution = resolution)
+        fig = Figure(;resolution = resolution)
 
         lon = lookup(temp_cube, lon_axis).data
         lat = lookup(temp_cube, lat_axis).data
