@@ -9,7 +9,8 @@ import StatsBase,
     TimeSeries,
     Dates,
     CairoMakie,
-    GeoMakie
+    GeoMakie,
+    DimensionalData
 
 using YAXArrays: YAXArray
 
