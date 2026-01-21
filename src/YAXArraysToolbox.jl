@@ -1,21 +1,15 @@
 module YAXArraysToolbox
 
 import StatsBase,
-    Distributions,
-    Test,
     LinearAlgebra,
     GLM,
     NamedArrays,
     Combinatorics,
     YAXArrays,
-    YAXArrayBase,
     TimeSeries,
-    Dates,
-    DataFrames,
-    CSV,
-    Random,
-    MLUtils
+    Dates
 
+using YAXArrays: YAXArray
 
 include("aggregate_time.jl")
 
@@ -57,6 +51,5 @@ export space4time_proc
 export space4time_proc_space
 
 export space4time_proc_old
-
 
 end
