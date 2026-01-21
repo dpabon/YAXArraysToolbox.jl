@@ -34,7 +34,6 @@ using GeoMakie
 using Statistics
 using Zarr
 using Dates
-import DimensionalData as dd
 ```
 
 ## Loading Data
@@ -86,10 +85,10 @@ By default, `plot_time` plots all variables in the cube:
 ```{julia}
 plot_time(
     cube_to_plot;
-    time_axis = "time",
-    var_axis = "Variable",
-    lon_axis = "lon",
-    lat_axis = "lat",
+    time_axis = :time,
+    var_axis = :Variable,
+    lon_axis = :lon,
+    lat_axis = :lat,
     var = nothing,
     fun = "std",
     resolution = (900, 600),
