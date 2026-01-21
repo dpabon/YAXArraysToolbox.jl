@@ -50,7 +50,7 @@ cube = esdc[
     lon = -10 .. 0,
     lat = 35 .. 45,
     time = Date(2010) .. Date(2012),
-    Variable = "leaf_area_index"
+    Variable = At("leaf_area_index")
 ]
 
 # Plot time series (spatial mean)
