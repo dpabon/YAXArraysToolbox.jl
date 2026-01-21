@@ -326,13 +326,13 @@ function plot_space(
             fig[1, 1];
             source = "+proj=longlat +datum=WGS84",
             dest = "+proj=longlat",
-            coastlines = coastlines,
-            lonlims = (minimum(lon), maximum(lon)),
-            latlims = (minimum(lat), maximum(lat)),
+            #coastlines = coastlines,
+            limits = ((minimum(lon), maximum(lon)),(minimum(lat), maximum(lat))),
             xticklabelpad=xticklabel_pad,
             yticklabelpad=yticklabel_pad,
             title = var * title_tmp)
         map1 = CairoMakie.heatmap!(ga, lon, lat, temp_cube[:, :].data, colormap = colormap_local)
+        coastline_plot = lines!(ga, GeoMakie.coastlines())
         cbar1 = Colorbar(
             fig[1, 2],
             map1,
@@ -550,9 +550,7 @@ function plot_space(
                         fig[i, init_col],
                         source = "+proj=longlat +datum=WGS84",
                         dest = "+proj=longlat",
-                        coastlines = coastlines,
-                        lonlims = (minimum(lon), maximum(lon)),
-                        latlims = (minimum(lat), maximum(lat)),
+                        limits = ((minimum(lon), maximum(lon)),(minimum(lat), maximum(lat))),
                         xticklabelpad=xticklabel_pad,
                         yticklabelpad=yticklabel_pad,
                         title = variables_loc[init_row] * title_tmp)
@@ -563,6 +561,7 @@ function plot_space(
                         temp_cube2[:, :].data,
                         colormap = colormap_local,
                     )
+                    coastline_plot = lines!(ga, GeoMakie.coastlines())
                     init_row += 1
                     init_col += 1
                     cbar1 = Colorbar(
