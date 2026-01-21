@@ -1,6 +1,7 @@
 ---
 title: "YAXArraysToolbox.jl"
 subtitle: "High-performance spatio-temporal analysis for Earth System data cubes"
+engine: julia
 ---
 
 ## Overview
@@ -46,9 +47,9 @@ esdc = Cube(open_dataset(
 
 # Select region and variables
 cube = esdc[
-    lon = (-10, 0),
-    lat = (35, 45),
-    time = (Date(2010), Date(2012)),
+    lon = -10 .. 0,
+    lat = 35 .. 45,
+    time = Date(2010) .. Date(2012),
     Variable = "leaf_area_index"
 ]
 

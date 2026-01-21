@@ -132,10 +132,10 @@ metrics = ["median", "mean", "std", "var", "sum", "quant", "min", "max"]
 for metric in metrics
     fig = plot_time(
         cube_to_plot;
-        time_axis = "time",
-        var_axis = "Variable",
-        lon_axis = "lon",
-        lat_axis = "lat",
+        time_axis = :time,
+        var_axis = :Variable,
+        lon_axis = :lon,
+        lat_axis = :lat,
         var = "sensible_heat",
         fun = metric,
         resolution = (900, 600),
