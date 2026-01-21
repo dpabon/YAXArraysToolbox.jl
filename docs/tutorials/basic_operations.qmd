@@ -108,7 +108,7 @@ You can also plot a specific variable:
 plot_time(
     cube_to_plot;
     time_axis = :time,
-    var_axis = "Variable",
+    var_axis = :Variables,
     lon_axis = :lon,
     lat_axis = :lat,
     var = "sensible_heat",
@@ -120,6 +120,10 @@ plot_time(
     ncol = 1,
     nrow = 2
 )
+```
+
+```{julia}
+lookup(cube_to_plot, :Variables)
 ```
 
 #### Available Statistics
