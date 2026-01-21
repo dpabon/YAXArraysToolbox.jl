@@ -1,0 +1,21 @@
+/* Custom styles for YAXArraysToolbox documentation */
+
+/* Code blocks */
+pre.sourceCode {
+  border-radius: 8px;
+}
+
+/* Tables */
+table {
+  margin: 1em 0;
+}
+
+/* Callouts */
+.callout {
+  margin: 1.5em 0;
+}
+
+/* Footer logos */
+.page-footer img {
+  max-height: 40px;
+}

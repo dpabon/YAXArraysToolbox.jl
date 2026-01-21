@@ -1,0 +1,270 @@
+---
+title: "Space-for-Time Method"
+engine: julia
+subtitle: "Proof of Concept"
+author: "Daniel E. Pabon-Moreno"
+date: last-modified
+format:
+  html:
+    code-fold: false
+    toc: true
+    toc-depth: 3
+execute:
+  eval: false
+  echo: true
+---
+
+## Introduction
+
+Land use changes have significant consequences on the Earth system's energy budget. For example, deforestation of tropical rainforests to expand agricultural areas profoundly impacts carbon and water cycles at local, regional, and global scales.
+
+Assessing the impact of land use changes on climate biophysical variables is increasingly important in the context of global warming and climate change. The **space-for-time method** uses local vegetation contrasts to disentangle the effects of land use changes on biophysical variables.
+
+This notebook explains the theoretical approach and demonstrates the technical implementation.
+
+## Setup
+
+```{julia}
+using YAXArrays
+using DataFrames
+using Zarr
+using CairoMakie
+using GeoMakie
+using Statistics
+using LinearAlgebra
+using NamedArrays
+using Combinatorics
+using GLM
+using Random
+using NeutralLandscapes
+using TiledViews
+using YAXArraysToolbox
+```
+
+```{julia}
+# Set temporary directory for YAXArrays
+YAXArrays.YAXdir("/tmp/YAXA_tmp")
+
+# Activate CairoMakie for plotting
+CairoMakie.activate!()
+```
+
+## The Space-for-Time Method
+
+### Concept
+
+The space-for-time method relies on the assumption that **spatial variability** in land cover within a local area can serve as a proxy for **temporal changes** in land cover. By analyzing how biophysical variables (like Land Surface Temperature) vary across different land cover types within a moving window, we can estimate the impact of land cover transitions.
+
+### Key Steps
+
+1. Define a moving window over the study area
+2. Within each window, analyze the relationship between land cover composition and the target variable
+3. Use regression to estimate the contribution of each land cover type
+4. Calculate the expected change when transitioning between land cover types
+
+```{mermaid}
+flowchart TD
+    A[Land Cover Map] --> B[Moving Window]
+    C[Biophysical Variable] --> B
+    B --> D[Local Regression]
+    D --> E[Land Cover Coefficients]
+    E --> F[Transition Effects]
+```
+
+## Generating Synthetic Data
+
+To demonstrate the method, we'll create synthetic land cover and temperature data.
+
+### Create a Land Cover Map
+
+We'll generate a 10 km × 10 km land cover map where 1 pixel = 1 meter:
+
+```{julia}
+edge = 10000
+size_tile = (edge, edge)
+```
+
+Generate spatially autocorrelated patterns:
+
+```{julia}
+Random.seed!(232323)
+spatial_auto = 0.7
+midpoint_sim = rand(MidpointDisplacement(spatial_auto), size_tile)
+heatmap(midpoint_sim)
+```
+
+Classify into 3 land cover classes:
+
+```{julia}
+n_classes = 3
+classes_dist = NeutralLandscapes.classify(midpoint_sim, ones(n_classes))
+```
+
+```{julia}
+heatmap(classes_dist)
+```
+
+### Assign LST Values per Class
+
+We define a constant Land Surface Temperature (LST) for each class:
+
+```{julia}
+# LST values per class (°C)
+class_1_lst = 20.0  # e.g., Forest
+class_2_lst = 22.0  # e.g., Grassland  
+class_3_lst = 23.8  # e.g., Cropland
+
+all_lst = (class_1_lst, class_2_lst, class_3_lst)
+
+# Create LST map
+lst = fill(NaN, size_tile)
+
+for i in eachindex(all_lst)
+    lst[findall(==(i), classes_dist)] .= all_lst[i]
+end
+```
+
+## Spatial Resampling
+
+Land cover maps typically have coarser resolution than 1 meter. We'll aggregate to a new spatial resolution and estimate the frequency of each class per pixel.
+
+### Resample Land Cover Classes
+
+```{julia}
+# New spatial resolution (100m pixels)
+size_pixel_new = 100 
+
+# Each new pixel contains 100×100 = 10,000 original pixels
+# Use TiledView to create views of each new pixel
+a = TiledView(classes_dist, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
+
+# Array for resampled class frequencies
+new_res_array_classes = fill(0.0, (size_pixel_new, size_pixel_new, n_classes))
+
+for i in 1:size_pixel_new
+    for j in 1:size_pixel_new
+        for c in 1:n_classes
+            new_res_array_classes[i, j, c] = count(==(c), a[:, :, i, j]) / (size_pixel_new^2)
+        end
+    end
+end
+```
+
+Visualize the class frequencies:
+
+```{julia}
+for i in 1:n_classes
+    fig = Figure()
+    ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Class $i")
+    temp = heatmap!(new_res_array_classes[:, :, i], colormap = Reverse(:bamako))
+    Colorbar(fig[1, 2], temp, label = "Occurrence")
+    display(fig)
+end
+```
+
+### Resample LST
+
+```{julia}
+a = TiledView(lst, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
+
+new_res_array_lst = fill(NaN, (size_pixel_new, size_pixel_new))
+
+for i in 1:size_pixel_new
+    for j in 1:size_pixel_new
+        new_res_array_lst[i, j] = mean(a[:, :, i, j])
+    end
+end
+```
+
+```{julia}
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "LST Resampled")
+temp = heatmap!(new_res_array_lst[:, :], colormap = :lajolla)
+Colorbar(fig[1, 2], temp, label = "LST (°C)")
+fig
+```
+
+## Organizing Data as YAXArrays
+
+### Land Cover Cube
+
+```{julia}
+axlist = [
+    Dim{:x}(1:size(new_res_array_classes, 1)),
+    Dim{:y}(1:size(new_res_array_classes, 2)),
+    Dim{:Classes}(["class$i" for i in 1:n_classes])
+]
+
+lcc_cube = YAXArray(axlist, new_res_array_classes)
+```
+
+### LST Cube
+
+```{julia}
+axlist_lst = [
+    Dim{:x}(1:size(new_res_array_lst, 1)),
+    Dim{:y}(1:size(new_res_array_lst, 2))
+]
+
+lst_cube = YAXArray(axlist_lst, new_res_array_lst)
+```
+
+## Running Space4Time Analysis
+
+Now we can use the `space4time_proc` function from YAXArraysToolbox:
+
+```{julia}
+# Define parameters
+pft_list = ["class1", "class2", "class3"]
+winsize = 5      # Moving window size
+minpxl = 10      # Minimum pixels required
+minDiffPxls = 0.4  # Minimum difference in pixel percentages
+
+# Run the analysis
+results = space4time_proc(
+    lst_cube,
+    lcc_cube,
+    pft_list;
+    winsize = winsize,
+    minpxl = minpxl,
+    minDiffPxlspercentage = minDiffPxls
+)
+```
+
+## Interpreting Results
+
+The space4time analysis returns:
+
+1. **Coefficients**: The estimated effect of each land cover class on the target variable
+2. **R²**: Goodness of fit for each moving window
+3. **Transition effects**: Expected change when converting from one class to another
+
+### Expected Results
+
+Given our synthetic data:
+
+| Transition | Expected ΔT (°C) |
+|------------|------------------|
+| Class 1 → Class 2 | +2.0 |
+| Class 1 → Class 3 | +3.8 |
+| Class 2 → Class 3 | +1.8 |
+
+These values represent the warming effect of converting from cooler (forested) to warmer (agricultural) land cover types.
+
+## Summary
+
+The space-for-time method provides a powerful approach to:
+
+- Estimate land cover change impacts without long time series
+- Leverage spatial variability as a proxy for temporal change
+- Quantify biophysical effects of land use transitions
+
+## Next Steps
+
+- Apply to real data: [LST Changes in Africa](lst_changes_africa.qmd)
+- Learn about cross-validation: [Spatio-temporal Folds](spacetime_folds.qmd)
+
+## References
+
+- Duveiller, G., et al. (2018). The mark of vegetation change on Earth's surface energy balance. *Nature Communications*.
+- Li, Y., et al. (2015). Local cooling and warming effects of forests based on satellite observations. *Nature Communications*.
