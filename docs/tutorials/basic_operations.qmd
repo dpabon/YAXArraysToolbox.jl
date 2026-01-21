@@ -122,10 +122,6 @@ plot_time(
 )
 ```
 
-```{julia}
-lookup(cube_to_plot, :Variables)
-```
-
 #### Available Statistics
 
 The `fun` parameter supports multiple statistics:
