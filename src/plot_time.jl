@@ -155,174 +155,45 @@ The function allow to plot the time series of a given variables in a cube or all
 
     ```
     """
-function plot_time(
-    cube_in::YAXArray;
-    time_axis = :Ti,
-    var_axis = :Variable,
-    var = nothing,
-    lat_axis = :lat,
-    lon_axis = :lon,
-    fun = "mean",
-    plot_type = "lines",
-    p = nothing,
-    resolution = (600, 400),
-    ncol = 1,
-    nrow = 1,
-    showprog = true,
-    max_cache = "100MB",
-)
-
-    if last(max_cache, 2) == "MB"
-        max_cache = parse(Float64, max_cache[begin:(end-2)]) / (10^-6)
-
-    elseif last(max_cache, 2) == "GB"
-
-        max_cache = parse(Float64, max_cache[begin:(end-2)]) / (10^-9)
-
-    else
-        error("only MB or GB values are accepted for max_cache")
-    end
-
-    if typeof(var) != Nothing
-        kwarg = (; Symbol(var_axis) => At(var))
-
-        cube_in = getindex(cube_in; kwarg...)
-
-        indims = InDims(lat_axis, lon_axis)
-        outdims = OutDims()
-
-        if fun == "mean"
-
-            temp_cube = mapCube(
-                collapse_space_mean,
-                cube_in,
-                indims = indims,
-                outdims = outdims;
-                showprog = showprog,
-                max_cache = max_cache,
-            )
-
-        elseif fun == "median"
-
-            temp_cube = mapCube(
-                collapse_space_median,
-                cube_in,
-                indims = indims,
-                outdims = outdims;
-                showprog = showprog,
-                max_cache = max_cache,
-            )
-
-        elseif fun == "std"
-
-            temp_cube = mapCube(
-                collapse_space_std,
-                cube_in,
-                indims = indims,
-                outdims = outdims;
-                showprog = showprog,
-                max_cache = max_cache,
-            )
-
-        elseif fun == "var"
-
-            temp_cube = mapCube(
-                collapse_space_var,
-                cube_in,
-                indims = indims,
-                outdims = outdims;
-                showprog = showprog,
-                max_cache = max_cache,
-            )
-
-        elseif fun == "sum"
-
-            temp_cube = mapCube(
-                collapse_space_sum,
-                cube_in,
-                indims = indims,
-                outdims = outdims;
-                showprog = showprog,
-                max_cache = max_cache,
-            )
-
-        elseif fun == "quant"
-
-            temp_cube = mapCube(
-                collapse_space_quant,
-                cube_in,
-                indims = indims,
-                outdims = outdims;
-                p = p,
-                showprog = showprog,
-                max_cache = max_cache,
-            )
-
-        elseif fun == "min"
-
-            temp_cube = mapCube(
-                collapse_space_min,
-                cube_in,
-                indims = indims,
-                outdims = outdims;
-                showprog = showprog,
-                max_cache = max_cache,
-            )
-
-        elseif fun == "max"
-
-            temp_cube = mapCube(
-                collapse_space_max,
-                cube_in,
-                indims = indims,
-                outdims = outdims;
-                showprog = showprog,
-                max_cache = max_cache,
-            )
-
-        end
-        dates = lookup(temp_cube, time_axis).data
-        vals = temp_cube.data[:]
-
-        ta = TimeArray(dates, rand(length(dates)))
-
-        tempo = string.(timestamp(ta))
-        lentime = length(tempo)
-        slice_dates = range(1, lentime, step = lentime ÷ 8)
-
-        if plot_type == "lines"
-            fig = Figure(resolution = resolution)
-            ax = Axis(fig[1, 1], xlabel = "Date", ylabel = fun, title = var)
-            line1 = lines!(ax, 1:lentime, vals; color = :black, linewidth = 0.85)
-            ax.xticks = (slice_dates, tempo[slice_dates])
-            ax.xticklabelrotation = π / 4
-            ax.xticklabelalign = (:right, :center)
-            return fig
-
-        elseif plot_type == "scatter"
-
-            fig = Figure(resolution = resolution)
-            ax = Axis(fig[1, 1], xlabel = "Date", ylabel = fun, title = var)
-            line1 = scatter!(ax, 1:lentime, vals; color = :black)
-            ax.xticks = (slice_dates, tempo[slice_dates])
-            ax.xticklabelrotation = π / 4
-            ax.xticklabelalign = (:right, :center)
-            return fig
-
+    function plot_time(
+        cube_in::YAXArray;
+        time_axis = :Ti,
+        var_axis = :Variable,
+        var = nothing,
+        lat_axis = :lat,
+        lon_axis = :lon,
+        fun = "mean",
+        plot_type = "lines",
+        p = nothing,
+        resolution = (600, 400),
+        ncol = 1,
+        nrow = 1,
+        showprog = true,
+        max_cache = "100MB",
+        )
+        
+        if last(max_cache, 2) == "MB"
+            max_cache = parse(Float64, max_cache[begin:end-2]) / (10^-6)
+            
+        elseif last(max_cache, 2) == "GB"
+            
+            max_cache = parse(Float64, max_cache[begin:end-2]) / (10^-9)
+            
         else
-            error("wrong value for plot_type")
-
+            error("only MB or GB values are accepted for max_cache")
         end
-
-
-    else
-
-        indims = InDims(lat_axis, lon_axis)
-        outdims = OutDims()
-
-        if fun == "mean"
-
-            temp_cube = mapCube(
+        
+        if typeof(var) != Nothing
+            kwarg = (; Symbol(var_axis) => At(var))
+            
+            cube_in = getindex(cube_in; kwarg...)
+            
+            indims = InDims(lat_axis, lon_axis)
+            outdims = OutDims()
+            
+            if fun == "mean"
+                
+                temp_cube = mapCube(
                 collapse_space_mean,
                 cube_in,
                 indims = indims,
@@ -407,149 +278,268 @@ function plot_time(
                 outdims = outdims;
                 showprog = showprog,
                 max_cache = max_cache,
+                )
+                
+            end
+            dates = lookup(temp_cube, time_axis).data
+            vals = temp_cube.data[:]
+            
+            ta = TimeArray(dates, rand(length(dates)))
+            
+            tempo = string.(timestamp(ta))
+            lentime = length(tempo)
+            slice_dates = range(1, lentime, step = lentime ÷ 8)
+            
+            if plot_type == "lines"
+                fig = Figure(resolution = resolution)
+                ax = Axis(fig[1, 1], xlabel = "Date", ylabel = fun, title = var)
+                line1 = lines!(ax, 1:lentime, vals; color = :black, linewidth = 0.85)
+                ax.xticks = (slice_dates, tempo[slice_dates])
+                ax.xticklabelrotation = π / 4
+                ax.xticklabelalign = (:right, :center)
+                return fig
+                
+            elseif plot_type == "scatter"
+                
+                fig = Figure(resolution = resolution)
+                ax = Axis(fig[1, 1], xlabel = "Date", ylabel = fun, title = var)
+                line1 = scatter!(ax, 1:lentime, vals; color = :black)
+                ax.xticks = (slice_dates, tempo[slice_dates])
+                ax.xticklabelrotation = π / 4
+                ax.xticklabelalign = (:right, :center)
+                return fig
+                
+            else
+                error("wrong value for plot_type")
+                
+            end
+            
+            
+        else
+            
+            indims = InDims(lat_axis, lon_axis)
+            outdims = OutDims()
+            
+            if fun == "mean"
+                
+                temp_cube = mapCube(
+                collapse_space_mean,
+                cube_in,
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
             )
 
-        end
+        elseif fun == "median"
 
-        dates = lookup(temp_cube, time_axis).data
+            temp_cube = mapCube(
+                collapse_space_median,
+                cube_in,
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
+            )
 
-        ta = TimeArray(dates, rand(length(dates)))
+        elseif fun == "std"
 
-        tempo = string.(timestamp(ta))
-        lentime = length(tempo)
-        slice_dates = range(1, lentime, step = lentime ÷ 8)
-        variables_loc = lookup(cube_in, var_axis).data
+            temp_cube = mapCube(
+                collapse_space_std,
+                cube_in,
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
+            )
 
+        elseif fun == "var"
 
+            temp_cube = mapCube(
+                collapse_space_var,
+                cube_in,
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
+            )
 
+        elseif fun == "sum"
 
-        if length(variables_loc) > 6
+            temp_cube = mapCube(
+                collapse_space_sum,
+                cube_in,
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
+            )
 
-            @warn "There are more than 6 variables to be plotted. Consider using nrow and ncol accordingly."
+        elseif fun == "quant"
 
-        end
+            temp_cube = mapCube(
+                collapse_space_quant,
+                cube_in,
+                indims = indims,
+                outdims = outdims;
+                p = p,
+                showprog = showprog,
+                max_cache = max_cache,
+            )
 
-        fig = Figure(resolution = resolution)
+        elseif fun == "min"
 
-        if plot_type == "lines"
+            temp_cube = mapCube(
+                collapse_space_min,
+                cube_in,
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
+            )
 
-            if ncol == 1 && (nrow * ncol) < length(variables_loc)
+        elseif fun == "max"
 
-                nrow = length(variables_loc)
-
-
-                for j = 1:nrow
-
-                    ax = Axis(
-                        fig[j, 1],
-                        xlabel = "Date",
-                        ylabel = fun,
-                        title = variables_loc[j],
-                    )
-
+            temp_cube = mapCube(
+                collapse_space_max,
+                cube_in,
+                indims = indims,
+                outdims = outdims;
+                showprog = showprog,
+                max_cache = max_cache,
+                )
+                
+            end
+            
+            dates = lookup(temp_cube, time_axis).data
+            
+            ta = TimeArray(dates, rand(length(dates)))
+            
+            tempo = string.(timestamp(ta))
+            lentime = length(tempo)
+            slice_dates = range(1, lentime, step = lentime ÷ 8)
+            variables_loc = lookup(cube_in, var_axis).data
+            
+            
+            
+            
+            if length(variables_loc) > 6
+                
+                @warn "There are more than 6 variables to be plotted. Consider using nrow and ncol accordingly."
+                
+            end
+            
+            fig = Figure(resolution = resolution)
+            
+            if plot_type == "lines"
+                
+                if ncol == 1 && (nrow * ncol) < length(variables_loc)
+                    
+                    nrow = length(variables_loc)
+                    
+                    
+                    for j = 1:nrow
+                        
+                        ax =
+                        Axis(fig[j, 1], xlabel = "Date", ylabel = fun, title = variables_loc[j])
+    
                     kwarg = (; Symbol(var_axis) => variables_loc[j])
-
+    
                     temp_cube2 = getindex(temp_cube; kwarg...)
                     vals = temp_cube2.data
-
+    
                     line1 = lines!(ax, 1:lentime, vals; color = :black, linewidth = 0.85)
                     ax.xticks = (slice_dates, tempo[slice_dates])
                     ax.xticklabelrotation = π / 4
                     ax.xticklabelalign = (:right, :center)
-
+    
                 end
                 return fig
-
-
+    
+    
             elseif ncol != 1 && (nrow * ncol) < length(variables_loc)
                 error(
                     "Number of rows and columns is less than the number of variables to be plotted.",
-                )
-            else
-
-                if plot_type == "lines"
-
-                    counter = 1
-
-                    for i = 1:ncol
-                        for j = 1:nrow
-
-                            ax = Axis(
-                                fig[j, i],
-                                xlabel = "Date",
-                                ylabel = fun,
-                                title = variables_loc[counter],
-                            )
-
-                            kwarg = (; Symbol(var_axis) => At(variables_loc[counter]))
-
-                            temp_cube2 = getindex(temp_cube; kwarg...)
-
-                            vals = temp_cube2.data
-
-                            line1 = lines!(
-                                ax,
-                                1:lentime,
-                                vals;
-                                color = :black,
-                                linewidth = 0.85,
-                            )
-                            ax.xticks = (slice_dates, tempo[slice_dates])
-                            ax.xticklabelrotation = π / 4
-                            ax.xticklabelalign = (:right, :center)
-
-                            counter += 1
-                            if counter > length(variables_loc)
-                                break
-                            end
-
-                        end
-
-                    end
-                    return fig
-
-                elseif plot_type == "scatter"
-
-                    counter = 1
-
-                    for i = 1:ncol
-                        for j = 1:nrow
-
-                            ax = Axis(
-                                fig[j, i],
-                                xlabel = "Date",
-                                ylabel = fun,
-                                title = variables_loc[counter],
-                            )
-
-                            kwarg = (; Symbol(var_axis) => variables_loc[counter])
-
-                            temp_cube2 = getindex(temp_cube; kwarg...)
-
-                            vals = temp_cube2.data
-
-                            line1 = scatter!(ax, 1:lentime, vals; color = :black)
-                            ax.xticks = (slice_dates, tempo[slice_dates])
-                            ax.xticklabelrotation = π / 4
-                            ax.xticklabelalign = (:right, :center)
-
-                            counter += 1
-                            if counter > length(variables_loc)
-                                break
-                            end
-
-                        end
-
-                    end
-                    return fig
-
+                    )
                 else
-                    error("wrong value for plot_type")
-
+                    
+                    if plot_type == "lines"
+                        
+                        counter = 1
+                        
+                        for i = 1:ncol
+                            for j = 1:nrow
+                                
+                                ax = Axis(
+                                fig[j, i],
+                                xlabel = "Date",
+                                ylabel = fun,
+                                title = variables_loc[counter],
+                                )
+                                
+                                kwarg = (; Symbol(var_axis) => At(variables_loc[counter]))
+                                
+                                temp_cube2 = getindex(temp_cube; kwarg...)
+                                
+                                vals = temp_cube2.data
+                                
+                                line1 = lines!(ax, 1:lentime, vals; color = :black, linewidth = 0.85)
+                                ax.xticks = (slice_dates, tempo[slice_dates])
+                                ax.xticklabelrotation = π / 4
+                                ax.xticklabelalign = (:right, :center)
+                                
+                                counter += 1
+                                if counter > length(variables_loc)
+                                    break
+                                end
+                                
+                            end
+                            
+                        end
+                        return fig
+                        
+                    elseif plot_type == "scatter"
+                        
+                        counter = 1
+                        
+                        for i = 1:ncol
+                            for j = 1:nrow
+                                
+                                ax = Axis(
+                                fig[j, i],
+                                xlabel = "Date",
+                                ylabel = fun,
+                                title = variables_loc[counter],
+                                )
+                                
+                                kwarg = (; Symbol(var_axis) => variables_loc[counter])
+                                
+                                temp_cube2 = getindex(temp_cube; kwarg...)
+                                
+                                vals = temp_cube2.data
+                                
+                                line1 = scatter!(ax, 1:lentime, vals; color = :black)
+                                ax.xticks = (slice_dates, tempo[slice_dates])
+                                ax.xticklabelrotation = π / 4
+                                ax.xticklabelalign = (:right, :center)
+                                
+                                counter += 1
+                                if counter > length(variables_loc)
+                                    break
+                                end
+                                
+                            end
+                            
+                        end
+                        return fig
+                        
+                    else
+                        error("wrong value for plot_type")
+                        
+                    end 
+                    
                 end
-
+                
             end
-
         end
     end
-end
