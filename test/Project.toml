@@ -1,0 +1,9 @@
+[deps]
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
+NeutralLandscapes = "71847384-8354-4223-ac08-659a5128069f"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
