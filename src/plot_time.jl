@@ -188,7 +188,7 @@ The function allow to plot the time series of a given variables in a cube or all
             
             cube_in = getindex(cube_in; kwarg...)
             
-            indims = (InDims(lat_axis), InDims(lon_axis))
+            indims = InDims(lat_axis, lon_axis)
             outdims = OutDims()
             
             if fun == "mean"
@@ -317,7 +317,7 @@ The function allow to plot the time series of a given variables in a cube or all
             
         else
             
-            indims = (InDims(lat_axis), InDims(lon_axis))
+            indims = InDims(lat_axis, lon_axis)
             outdims = OutDims()
             
             if fun == "mean"
