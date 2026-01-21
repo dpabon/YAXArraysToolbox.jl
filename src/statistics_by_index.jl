@@ -1,4 +1,4 @@
-using Statistics
+
 
 function median_by_index(xout, xin; index_list = time_to_index)
     #@show size(xin)

@@ -1,4 +1,4 @@
-using YAXArrays, CairoMakie, Zarr, Statistics, Dates, TimeSeries, DimensionalData
+
 
 function collapse_space_mean(cube_out, cube_in)
 
@@ -156,7 +156,7 @@ The function allow to plot the time series of a given variables in a cube or all
     ```
     """
     function plot_time(
-        cube_in::YAXArray;
+        cube_in;
         time_axis = :Ti,
         var_axis = :Variable,
         var = nothing,

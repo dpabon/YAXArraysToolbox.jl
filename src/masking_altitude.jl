@@ -1,14 +1,3 @@
-using StatsBase,
-    Distributions,
-    Test,
-    LinearAlgebra,
-    GLM,
-    NamedArrays,
-    Combinatorics,
-    YAXArrays,
-    YAXArrayBase,
-    DimensionalData
-
 
 
 function altitude_mask_results(cube_out, cube_in; center_coord)

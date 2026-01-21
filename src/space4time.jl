@@ -1,6 +1,3 @@
-
-
-
 function coocufun(out, q1, q2, p1, p2, denom)
     #replace!(q1, NaN => missing)
     #replace!(q2, NaN => missing)

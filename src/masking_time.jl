@@ -1,4 +1,3 @@
-using YAXArrays, Statistics, Zarr, NetCDF
 
 #=
 axlist = [

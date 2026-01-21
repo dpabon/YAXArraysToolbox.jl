@@ -1,5 +1,3 @@
-using YAXArrays, Zarr, CairoMakie, GeoMakie, Statistics
-
 
 function collapse_time_mean(cube_out, cube_in)
 
