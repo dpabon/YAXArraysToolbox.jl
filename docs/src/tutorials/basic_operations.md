@@ -17,7 +17,7 @@ This tutorial demonstrates the core functionality of YAXArraysToolbox.jl for wor
 
 First, load the required packages:
 
-```julia
+```@example basic_ops
 using Pkg
 Pkg.instantiate()
 using YAXArrays
@@ -36,7 +36,7 @@ using DimensionalData
 
 We'll use the [Earth System Data Cube (ESDC)](https://www.earthsystemdatalab.net/), a analysis-ready data cube containing many climate and Earth observation variables.
 
-```julia
+```@example basic_ops
 esdc = open_dataset("https://s3.bgc-jena.mpg.de:9000/esdl-esdc-v2.1.1/esdc-8d-0.25deg-184x90x90-2.1.1.zarr")
 esdc = Cube(esdc)
 esdc
@@ -54,7 +54,7 @@ The `plot_time` function creates time series plots by collapsing spatial dimensi
 
 Let's select a region (South America) and time period:
 
-```julia
+```@example basic_ops
 cube_to_plot = esdc[
     lon = -86 .. -35,
     lat = -56 .. 14,
@@ -68,7 +68,7 @@ cube_to_plot
 
 By default, `plot_time` plots all variables in the cube:
 
-```julia
+```@example basic_ops
 plot_time(
     cube_to_plot;
     time_axis = :time,
@@ -90,7 +90,7 @@ plot_time(
 
 You can also plot a specific variable:
 
-```julia
+```@example basic_ops
 plot_time(
     cube_to_plot;
     time_axis = :time,
@@ -112,7 +112,7 @@ plot_time(
 
 The `fun` parameter supports multiple statistics:
 
-```julia
+```@example basic_ops
 metrics = ["median", "mean", "std", "var", "sum", "quant", "min", "max"]
 
 for metric in metrics
@@ -139,14 +139,14 @@ end
 
 The `plot_space` function creates spatial maps by collapsing the time dimension.
 
-```julia
+```@example basic_ops
 #| output: false
 @doc plot_space
 ```
 
 #### Single Variable Map
 
-```julia
+```@example basic_ops
 cube_to_plot = esdc[
     lon = -86 .. -34,
     lat = -56 .. 14,
@@ -168,7 +168,7 @@ plot_space(
 
 Set `var = nothing` to plot all variables:
 
-```julia
+```@example basic_ops
 plot_space(
     cube_to_plot;
     time_axis = :time,
@@ -183,7 +183,7 @@ plot_space(
 
 #### All Statistics for a Variable
 
-```julia
+```@example basic_ops
 metrics = ["median", "mean", "std", "var", "sum", "quant", "min", "max"]
 
 for metric in metrics
@@ -207,7 +207,7 @@ end
 
 The `aggregate_time` function allows you to aggregate data to different temporal resolutions (e.g., daily → monthly).
 
-```julia
+```@example basic_ops
 #| output: false
 @doc aggregate_time
 ```
@@ -216,7 +216,7 @@ The `aggregate_time` function allows you to aggregate data to different temporal
 
 Let's compute the monthly mean of the Leaf Area Index:
 
-```julia
+```@example basic_ops
 lai_month = aggregate_time(
     esdc[Variable = At("leaf_area_index")];
     time_axis = :time,
@@ -234,7 +234,7 @@ lai_month
 
 Check the new time axis:
 
-```julia
+```@example basic_ops
 lookup(lai_month, :Ti)
 ```
 
