@@ -36,15 +36,6 @@ masking_time
 masking_space
 ```
 
-### Altitude Masking
-
-```@docs
-altitude_mask_results_proc
-altitude_masking_proc
-altitude_mask_results_proc2
-altitude_mask_results2
-```
-
 ### General Masking
 
 ```@docs
