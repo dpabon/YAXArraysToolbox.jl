@@ -17,8 +17,6 @@ website:
             text: Basic Operations
           - href: tutorials/space4time_proof_of_concept.qmd
             text: Space4Time Method
-          - href: tutorials/spacetime_folds.qmd
-            text: Spatio-temporal Folds
     right:
       - icon: github
         href: https://github.com/dpabon/YAXArraysToolbox.jl
@@ -34,7 +32,6 @@ website:
         contents:
           - tutorials/basic_operations.qmd
           - tutorials/space4time_proof_of_concept.qmd
-          - tutorials/spacetime_folds.qmd
       - section: "API Reference"
         contents:
           - text: "Documentation"
