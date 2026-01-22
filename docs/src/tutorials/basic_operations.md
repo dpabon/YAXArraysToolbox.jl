@@ -1,17 +1,8 @@
----
-title: "Basic Operations"
-engine: julia
-subtitle: "Getting started with YAXArraysToolbox.jl"
-author: "Daniel E. Pabon-Moreno"
-date: last-modified
-format:
-  html:
-    code-fold: false
-    toc: true
-    toc-depth: 3
-    css: styles.css
-toc-title: Contents
----
+# [Basic Operations](@id basic_operations)
+
+*Getting started with YAXArraysToolbox.jl*
+
+**Author:** Daniel E. Pabon-Moreno
 
 ## Introduction
 
@@ -26,7 +17,7 @@ This tutorial demonstrates the core functionality of YAXArraysToolbox.jl for wor
 
 First, load the required packages:
 
-```{julia}
+```julia
 using Pkg
 Pkg.instantiate()
 using YAXArrays
@@ -38,13 +29,14 @@ using Statistics
 using Zarr
 using Dates
 using PythonCall
+using DimensionalData
 ```
 
 ## Loading Data
 
 We'll use the [Earth System Data Cube (ESDC)](https://www.earthsystemdatalab.net/), a analysis-ready data cube containing many climate and Earth observation variables.
 
-```{julia}
+```julia
 esdc = open_dataset("https://s3.bgc-jena.mpg.de:9000/esdl-esdc-v2.1.1/esdc-8d-0.25deg-184x90x90-2.1.1.zarr")
 esdc = Cube(esdc)
 esdc
@@ -62,7 +54,7 @@ The `plot_time` function creates time series plots by collapsing spatial dimensi
 
 Let's select a region (South America) and time period:
 
-```{julia}
+```julia
 cube_to_plot = esdc[
     lon = -86 .. -35,
     lat = -56 .. 14,
@@ -76,7 +68,7 @@ cube_to_plot
 
 By default, `plot_time` plots all variables in the cube:
 
-```{julia}
+```julia
 plot_time(
     cube_to_plot;
     time_axis = :time,
@@ -98,7 +90,7 @@ plot_time(
 
 You can also plot a specific variable:
 
-```{julia}
+```julia
 plot_time(
     cube_to_plot;
     time_axis = :time,
@@ -120,7 +112,7 @@ plot_time(
 
 The `fun` parameter supports multiple statistics:
 
-```{julia}
+```julia
 metrics = ["median", "mean", "std", "var", "sum", "quant", "min", "max"]
 
 for metric in metrics
@@ -147,14 +139,14 @@ end
 
 The `plot_space` function creates spatial maps by collapsing the time dimension.
 
-```{julia}
+```julia
 #| output: false
 @doc plot_space
 ```
 
 #### Single Variable Map
 
-```{julia}
+```julia
 cube_to_plot = esdc[
     lon = -86 .. -34,
     lat = -56 .. 14,
@@ -176,7 +168,7 @@ plot_space(
 
 Set `var = nothing` to plot all variables:
 
-```{julia}
+```julia
 plot_space(
     cube_to_plot;
     time_axis = :time,
@@ -191,7 +183,7 @@ plot_space(
 
 #### All Statistics for a Variable
 
-```{julia}
+```julia
 metrics = ["median", "mean", "std", "var", "sum", "quant", "min", "max"]
 
 for metric in metrics
@@ -215,7 +207,7 @@ end
 
 The `aggregate_time` function allows you to aggregate data to different temporal resolutions (e.g., daily → monthly).
 
-```{julia}
+```julia
 #| output: false
 @doc aggregate_time
 ```
@@ -224,7 +216,7 @@ The `aggregate_time` function allows you to aggregate data to different temporal
 
 Let's compute the monthly mean of the Leaf Area Index:
 
-```{julia}
+```julia
 lai_month = aggregate_time(
     esdc[Variable = At("leaf_area_index")];
     time_axis = :time,
@@ -242,7 +234,7 @@ lai_month
 
 Check the new time axis:
 
-```{julia}
+```julia
 lookup(lai_month, :Ti)
 ```
 
@@ -258,4 +250,4 @@ The original 8-day temporal resolution has been aggregated to monthly values. Th
 
 ## Next Steps
 
-- Learn about the [Space4Time methodology](space4time_proof_of_concept.qmd)
+- Learn about the [Space4Time methodology](@ref space4time)

@@ -1,19 +1,13 @@
----
-title: "YAXArraysToolbox.jl"
-subtitle: "High-performance spatio-temporal analysis for Earth System data cubes"
-engine: julia
-format:
-  html
----
+# YAXArraysToolbox.jl
+
+*High-performance spatio-temporal analysis for Earth System data cubes*
 
 ## Overview
 
 **YAXArraysToolbox.jl** is a Julia package that extends [YAXArrays.jl](https://github.com/JuliaDataCubes/YAXArrays.jl) with high-level functions for analyzing spatio-temporal data cubes.
 
-::: {.callout-note}
-## Why YAXArraysToolbox?
-Because laziness is not only good when reading big data — it should also apply to common analysis tasks!
-:::
+!!! note "Why YAXArraysToolbox?"
+    Because laziness is not only good when reading big data — it should also apply to common analysis tasks!
 
 ## Features
 
@@ -27,16 +21,14 @@ Because laziness is not only good when reading big data — it should also apply
 
 ## Installation
 
-```{julia}
-#| eval: false
+```julia
 using Pkg
 Pkg.add(url="https://github.com/dpabon/YAXArraysToolbox.jl")
 ```
 
 ## Quick Start
 
-```{julia}
-#| eval: false
+```julia
 using YAXArraysToolbox
 using YAXArrays
 using CairoMakie
@@ -95,20 +87,14 @@ masking_time(cube; start_date=Date(2010), end_date=Date(2015))
 ```julia
 # Space-for-time analysis
 space4time_proc(climate_cube, landcover_cube, class_list)
-
-# Cross-validation folds
-spacetime_folds(df; spacevar="location", timevar="date")
 ```
 
 ## Tutorials
 
 Get started with our tutorials:
 
-1. **[Basic Operations](tutorials/basic_operations.qmd)**: Learn `plot_time`, `plot_space`, and `aggregate_time`
-
-2. **[Space-for-Time Method](tutorials/space4time_proof_of_concept.qmd)**: Understand and apply the space4time methodology
-
-3. **[Spatio-temporal Folds](tutorials/spacetime_folds.qmd)**: Generate proper cross-validation folds for ML
+1. **[Basic Operations](@ref basic_operations)**: Learn `plot_time`, `plot_space`, and `aggregate_time`
+2. **[Space-for-Time Method](@ref space4time)**: Understand and apply the space4time methodology
 
 ## Package Structure
 
@@ -123,8 +109,7 @@ YAXArraysToolbox
 │   ├── masking_space
 │   └── masking_altitude
 └── Spatio-Temporal Analysis
-    ├── space4time_proc
-    └── spacetime_folds
+    └── space4time_proc
 ```
 
 ## Dependencies
@@ -145,11 +130,8 @@ If you use YAXArraysToolbox in your research, please cite:
 
 This project was funded by:
 
-::: {layout-ncol=2}
-[![Open-Earth-Monitor](https://earthmonitor.org/wp-content/uploads/2022/04/OEM_Logo_Horizontal_Dark_Transparent_Background_205x38.png){width=200}](https://earthmonitor.org/)
-
-[![NFDI4Earth](https://www.nfdi4earth.de/templates/nfdi4earth/images/NFDI4Earth_logo.png){width=200}](https://www.nfdi4earth.de/)
-:::
+- [Open-Earth-Monitor](https://earthmonitor.org/)
+- [NFDI4Earth](https://www.nfdi4earth.de/)
 
 ## License
 
