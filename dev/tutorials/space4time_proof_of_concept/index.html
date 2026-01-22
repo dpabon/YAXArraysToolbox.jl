@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Space-for-Time Method · YAXArraysToolbox.jl</title><meta name="title" content="Space-for-Time Method · YAXArraysToolbox.jl"/><meta property="og:title" content="Space-for-Time Method · YAXArraysToolbox.jl"/><meta property="twitter:title" content="Space-for-Time Method · YAXArraysToolbox.jl"/><meta name="description" content="Documentation for YAXArraysToolbox.jl."/><meta property="og:description" content="Documentation for YAXArraysToolbox.jl."/><meta property="twitter:description" content="Documentation for YAXArraysToolbox.jl."/><meta property="og:url" content="https://dpabon.github.io/YAXArraysToolbox.jl/tutorials/space4time_proof_of_concept/"/><meta property="twitter:url" content="https://dpabon.github.io/YAXArraysToolbox.jl/tutorials/space4time_proof_of_concept/"/><link rel="canonical" href="https://dpabon.github.io/YAXArraysToolbox.jl/tutorials/space4time_proof_of_concept/"/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">YAXArraysToolbox.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Tutorials</span><ul><li><a class="tocitem" href="../basic_operations/">Basic Operations</a></li><li class="is-active"><a class="tocitem" href>Space-for-Time Method</a><ul class="internal"><li><a class="tocitem" href="#Introduction"><span>Introduction</span></a></li><li><a class="tocitem" href="#Setup"><span>Setup</span></a></li><li><a class="tocitem" href="#The-Space-for-Time-Method"><span>The Space-for-Time Method</span></a></li><li><a class="tocitem" href="#Generating-Synthetic-Data"><span>Generating Synthetic Data</span></a></li><li><a class="tocitem" href="#Spatial-Resampling"><span>Spatial Resampling</span></a></li><li><a class="tocitem" href="#Organizing-Data-as-YAXArrays"><span>Organizing Data as YAXArrays</span></a></li><li><a class="tocitem" href="#Altitude-Cube"><span>Altitude Cube</span></a></li><li><a class="tocitem" href="#Running-Space4Time-Analysis"><span>Running Space4Time Analysis</span></a></li><li><a class="tocitem" href="#Interpreting-Results"><span>Interpreting Results</span></a></li><li><a class="tocitem" href="#Filtering-the-results-using-R2-and-co-occurrence"><span>Filtering the results using <span>$R^2$</span> and co-occurrence</span></a></li><li><a class="tocitem" href="#Plotting-the-results"><span>Plotting the results</span></a></li><li><a class="tocitem" href="#Summary"><span>Summary</span></a></li><li><a class="tocitem" href="#Next-Steps"><span>Next Steps</span></a></li><li><a class="tocitem" href="#References"><span>References</span></a></li></ul></li></ul></li><li><a class="tocitem" href="../../api/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Tutorials</a></li><li class="is-active"><a href>Space-for-Time Method</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Space-for-Time Method</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/dpabon/YAXArraysToolbox.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/dpabon/YAXArraysToolbox.jl/blob/main/docs/src/tutorials/space4time_proof_of_concept.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="space4time"><a class="docs-heading-anchor" href="#space4time">Space-for-Time Method</a><a id="space4time-1"></a><a class="docs-heading-anchor-permalink" href="#space4time" title="Permalink"></a></h1><p><em>Proof of Concept</em></p><p><strong>Author:</strong> Daniel E. Pabon-Moreno</p><h2 id="Introduction"><a class="docs-heading-anchor" href="#Introduction">Introduction</a><a id="Introduction-1"></a><a class="docs-heading-anchor-permalink" href="#Introduction" title="Permalink"></a></h2><p>Land use changes have significant consequences on the Earth system&#39;s energy budget. For example, deforestation of tropical rainforests to expand agricultural areas profoundly impacts carbon and water cycles at local, regional, and global scales.</p><p>Assessing the impact of land use changes on climate biophysical variables is increasingly important in the context of global warming and climate change. The <strong>space-for-time method</strong> uses local vegetation contrasts to disentangle the effects of land use changes on biophysical variables.</p><p>This notebook explains the theoretical approach and demonstrates the technical implementation.</p><h2 id="Setup"><a class="docs-heading-anchor" href="#Setup">Setup</a><a id="Setup-1"></a><a class="docs-heading-anchor-permalink" href="#Setup" title="Permalink"></a></h2><pre><code class="language-julia hljs">using Pkg
+Pkg.add(url=&quot;https://github.com/JuliaStats/GLM.jl&quot;, rev=&quot;f4047d4930957bc5317fd4d0b73f197383a4ee4a&quot;)
+Pkg.add(url = &quot;https://github.com/dpabon/YAXArraysToolbox.jl&quot;)
+using SkipNan
+using YAXArraysToolbox
+using YAXArrays
+using Zarr
+using CairoMakie
+using GeoMakie
+using Random
+using NeutralLandscapes
+using TiledViews
+using DimensionalData
+using Statistics</code></pre><pre><code class="language-julia hljs"># Set temporary directory for YAXArrays
+YAXArrays.YAXdir(&quot;/tmp/YAXA_tmp&quot;)
+
+# Activate CairoMakie for plotting
+CairoMakie.activate!()</code></pre><h2 id="The-Space-for-Time-Method"><a class="docs-heading-anchor" href="#The-Space-for-Time-Method">The Space-for-Time Method</a><a id="The-Space-for-Time-Method-1"></a><a class="docs-heading-anchor-permalink" href="#The-Space-for-Time-Method" title="Permalink"></a></h2><h3 id="Concept"><a class="docs-heading-anchor" href="#Concept">Concept</a><a id="Concept-1"></a><a class="docs-heading-anchor-permalink" href="#Concept" title="Permalink"></a></h3><p>The space-for-time method relies on the assumption that <strong>spatial variability</strong> in land cover within a local area can serve as a proxy for <strong>temporal changes</strong> in land cover. By analyzing how biophysical variables (like Land Surface Temperature) vary across different land cover types within a moving window, we can estimate the impact of land cover transitions.</p><h3 id="Key-Steps"><a class="docs-heading-anchor" href="#Key-Steps">Key Steps</a><a id="Key-Steps-1"></a><a class="docs-heading-anchor-permalink" href="#Key-Steps" title="Permalink"></a></h3><ol><li>Define a moving window over the study area</li><li>Within each window, analyze the relationship between land cover composition and the target variable</li><li>Use regression to estimate the contribution of each land cover type</li><li>Calculate the expected change when transitioning between land cover types</li></ol><pre><code class="language- hljs">flowchart TD
+    A[Land Cover Map] --&gt; B[Moving Window]
+    C[Biophysical Variable] --&gt; B
+    B --&gt; D[Local Regression]
+    D --&gt; E[Land Cover Coefficients]
+    E --&gt; F[Transition Effects]</code></pre><h2 id="Generating-Synthetic-Data"><a class="docs-heading-anchor" href="#Generating-Synthetic-Data">Generating Synthetic Data</a><a id="Generating-Synthetic-Data-1"></a><a class="docs-heading-anchor-permalink" href="#Generating-Synthetic-Data" title="Permalink"></a></h2><p>To demonstrate the method, we&#39;ll create synthetic land cover and temperature data.</p><h3 id="Create-a-Land-Cover-Map"><a class="docs-heading-anchor" href="#Create-a-Land-Cover-Map">Create a Land Cover Map</a><a id="Create-a-Land-Cover-Map-1"></a><a class="docs-heading-anchor-permalink" href="#Create-a-Land-Cover-Map" title="Permalink"></a></h3><p>We&#39;ll generate a 10 km × 10 km land cover map where 1 pixel = 1 meter:</p><pre><code class="language-julia hljs">edge = 1000
+size_tile = (edge, edge)</code></pre><p>Generate spatially autocorrelated patterns:</p><pre><code class="language-julia hljs">Random.seed!(232323)
+spatial_auto = 0.9
+midpoint_sim = rand(MidpointDisplacement(spatial_auto), size_tile)
+heatmap(midpoint_sim)</code></pre><p>Classify into 3 land cover classes:</p><pre><code class="language-julia hljs">n_classes = 3
+classes_dist = NeutralLandscapes.classify(midpoint_sim, ones(n_classes))</code></pre><pre><code class="language-julia hljs">heatmap(classes_dist)</code></pre><h3 id="Assign-LST-Values-per-Class"><a class="docs-heading-anchor" href="#Assign-LST-Values-per-Class">Assign LST Values per Class</a><a id="Assign-LST-Values-per-Class-1"></a><a class="docs-heading-anchor-permalink" href="#Assign-LST-Values-per-Class" title="Permalink"></a></h3><p>We define a constant Land Surface Temperature (LST) for each class:</p><pre><code class="language-julia hljs"># LST values per class (°C)
+class_1_lst = 20.0  # e.g., Forest
+class_2_lst = 22.0  # e.g., Grassland
+class_3_lst = 23.8  # e.g., Cropland
+
+all_lst = (class_1_lst, class_2_lst, class_3_lst)
+
+# Create LST map
+lst = fill(NaN, size_tile)
+
+for i in eachindex(all_lst)
+    lst[findall(==(i), classes_dist)] .= all_lst[i]
+end</code></pre><h3 id="Using-altitude-as-a-counfounding-factor"><a class="docs-heading-anchor" href="#Using-altitude-as-a-counfounding-factor">Using altitude as a counfounding factor</a><a id="Using-altitude-as-a-counfounding-factor-1"></a><a class="docs-heading-anchor-permalink" href="#Using-altitude-as-a-counfounding-factor" title="Permalink"></a></h3><pre><code class="language-julia hljs">Random.seed!(87)
+spatial_auto = 0.9
+midpoint_sim = rand(MidpointDisplacement(spatial_auto), size_tile)
+heatmap(midpoint_sim)</code></pre><pre><code class="language-julia hljs">altitude = midpoint_sim * 1000
+altitude</code></pre><p>We will prescribe a LST adiabatic lapse rate of 9.8 per 1000 meters</p><pre><code class="language-julia hljs">heatmap(lst)</code></pre><pre><code class="language-julia hljs">lst_altitude_corrected = lst .- (altitude .* 9.8 / 1000)
+heatmap(lst_altitude_corrected)</code></pre><pre><code class="language-julia hljs">scatter(vec(altitude), vec(lst_altitude_corrected))</code></pre><h2 id="Spatial-Resampling"><a class="docs-heading-anchor" href="#Spatial-Resampling">Spatial Resampling</a><a id="Spatial-Resampling-1"></a><a class="docs-heading-anchor-permalink" href="#Spatial-Resampling" title="Permalink"></a></h2><p>Land cover maps typically have coarser resolution than 1 meter. We&#39;ll aggregate to a new spatial resolution and estimate the frequency of each class per pixel.</p><h3 id="Resample-Land-Cover-Classes"><a class="docs-heading-anchor" href="#Resample-Land-Cover-Classes">Resample Land Cover Classes</a><a id="Resample-Land-Cover-Classes-1"></a><a class="docs-heading-anchor-permalink" href="#Resample-Land-Cover-Classes" title="Permalink"></a></h3><pre><code class="language-julia hljs">
+size_pixel_new = 20
+
+# Each new pixel contains 10×10 = 100 original pixels
+# Use TiledView to create views of each new pixel
+a = TiledView(classes_dist, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false, pad_value = NaN32)
+
+# Array for resampled class frequencies
+new_res_array_classes = fill(0.0, (size_pixel_new, size_pixel_new, n_classes))
+
+for i in 1:size_pixel_new
+    for j in 1:size_pixel_new
+        for c in 1:n_classes
+            new_res_array_classes[i, j, c] = count(==(c), a[:, :, i, j]) / (size_pixel_new^2)
+        end
+    end
+end</code></pre><p>Visualize the class frequencies:</p><pre><code class="language-julia hljs">for i in 1:n_classes
+    fig = Figure()
+    ax = Axis(fig[1, 1]; xlabel = &quot;x&quot;, ylabel = &quot;y&quot;, title = &quot;Class $i&quot;)
+    temp = heatmap!(new_res_array_classes[:, :, i], colormap = Reverse(:bamako))
+    Colorbar(fig[1, 2], temp, label = &quot;Occurrence&quot;)
+    display(fig)
+end</code></pre><h3 id="Resample-Altitude"><a class="docs-heading-anchor" href="#Resample-Altitude">Resample Altitude</a><a id="Resample-Altitude-1"></a><a class="docs-heading-anchor-permalink" href="#Resample-Altitude" title="Permalink"></a></h3><p>For the altitude we will create a dataset with two variables. <code>altitude_mean, altitude_sd</code>.</p><pre><code class="language-julia hljs">a = TiledView(altitude, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
+
+new_res_array_altitude = fill(NaN, (size_pixel_new, size_pixel_new, 2))
+
+for i in 1:size_pixel_new
+    for j in 1:size_pixel_new
+        new_res_array_altitude[i, j, 1] = mean(a[:, :, i, j])
+        new_res_array_altitude[i, j, 2] = std(a[:, :, i, j])
+    end
+end</code></pre><pre><code class="language-julia hljs">fig = Figure()
+ax = Axis(fig[1, 1]; xlabel = &quot;x&quot;, ylabel = &quot;y&quot;, title = &quot;Altitude Resampled&quot;)
+temp = heatmap!(new_res_array_altitude[:, :, 1], colormap = :lajolla)
+Colorbar(fig[1, 2], temp, label = &quot;Altitude (m) mean&quot;)
+fig</code></pre><pre><code class="language-julia hljs">fig = Figure()
+ax = Axis(fig[1, 1]; xlabel = &quot;x&quot;, ylabel = &quot;y&quot;, title = &quot;Altitude Resampled&quot;)
+temp = heatmap!(new_res_array_altitude[:, :, 2], colormap = :lajolla)
+Colorbar(fig[1, 2], temp, label = &quot;Altitude (m) std&quot;)
+fig</code></pre><h3 id="Resample-LST"><a class="docs-heading-anchor" href="#Resample-LST">Resample LST</a><a id="Resample-LST-1"></a><a class="docs-heading-anchor-permalink" href="#Resample-LST" title="Permalink"></a></h3><pre><code class="language-julia hljs">a = TiledView(lst_altitude_corrected, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
+
+new_res_array_lst = fill(NaN, (size_pixel_new, size_pixel_new))
+
+for i in 1:size_pixel_new
+    for j in 1:size_pixel_new
+        new_res_array_lst[i, j] = mean(a[:, :, i, j])
+    end
+end</code></pre><pre><code class="language-julia hljs">fig = Figure()
+ax = Axis(fig[1, 1]; xlabel = &quot;x&quot;, ylabel = &quot;y&quot;, title = &quot;LST Resampled&quot;)
+temp = heatmap!(new_res_array_lst[:, :], colormap = :lajolla)
+Colorbar(fig[1, 2], temp, label = &quot;LST (°C)&quot;)
+fig</code></pre><h2 id="Organizing-Data-as-YAXArrays"><a class="docs-heading-anchor" href="#Organizing-Data-as-YAXArrays">Organizing Data as YAXArrays</a><a id="Organizing-Data-as-YAXArrays-1"></a><a class="docs-heading-anchor-permalink" href="#Organizing-Data-as-YAXArrays" title="Permalink"></a></h2><h3 id="Land-Cover-Cube"><a class="docs-heading-anchor" href="#Land-Cover-Cube">Land Cover Cube</a><a id="Land-Cover-Cube-1"></a><a class="docs-heading-anchor-permalink" href="#Land-Cover-Cube" title="Permalink"></a></h3><pre><code class="language-julia hljs">axlist = (
+   lon(1:size(new_res_array_classes, 1)),
+    lat(1:size(new_res_array_classes, 2)),
+    Variables([&quot;class$i&quot; for i in 1:n_classes])
+)
+
+lcc_cube = YAXArray(axlist, new_res_array_classes)
+lcc_cube</code></pre><h2 id="Altitude-Cube"><a class="docs-heading-anchor" href="#Altitude-Cube">Altitude Cube</a><a id="Altitude-Cube-1"></a><a class="docs-heading-anchor-permalink" href="#Altitude-Cube" title="Permalink"></a></h2><pre><code class="language-julia hljs">axlist = (
+   lon(1:size(new_res_array_classes, 1)),
+    lat(1:size(new_res_array_classes, 2)),
+    Variables([&quot;altitude_mean&quot;, &quot;altitude_sd&quot;])
+)
+
+altitude_cube = YAXArray(axlist, new_res_array_altitude)</code></pre><h3 id="LST-Cube"><a class="docs-heading-anchor" href="#LST-Cube">LST Cube</a><a id="LST-Cube-1"></a><a class="docs-heading-anchor-permalink" href="#LST-Cube" title="Permalink"></a></h3><pre><code class="language-julia hljs">axlist_lst = (
+    lon(1:size(new_res_array_lst, 1)),
+    lat(1:size(new_res_array_lst, 2))
+)
+
+lst_cube = YAXArray(axlist_lst, new_res_array_lst)
+lst_cube</code></pre><h2 id="Running-Space4Time-Analysis"><a class="docs-heading-anchor" href="#Running-Space4Time-Analysis">Running Space4Time Analysis</a><a id="Running-Space4Time-Analysis-1"></a><a class="docs-heading-anchor-permalink" href="#Running-Space4Time-Analysis" title="Permalink"></a></h2><p>Now we can use the <code>space4time_proc</code> function from YAXArraysToolbox:</p><pre><code class="language-julia hljs"># Run the analysis
+results = space4time_proc(
+    lst_cube,
+    lcc_cube,
+    altitude_cube;
+    time_axis_name = nothing,
+    altitude_var_name = :Variables,
+    altitude_vec = [&quot;altitude_mean&quot;, &quot;altitude_sd&quot;],
+    classes_var_name = :Variables,
+    classes_vec = [&quot;class1&quot;, &quot;class2&quot;, &quot;class3&quot;],
+    winsize = 5,
+    minpxl = 0,
+    minDiffPxls = 0,
+    max_value = 1,
+    showprog = true
+)</code></pre><h2 id="Interpreting-Results"><a class="docs-heading-anchor" href="#Interpreting-Results">Interpreting Results</a><a id="Interpreting-Results-1"></a><a class="docs-heading-anchor-permalink" href="#Interpreting-Results" title="Permalink"></a></h2><p>The space4time analysis returns:</p><ol><li><strong>Coefficients</strong>: The estimated effect of each land cover class on the target variable</li><li><strong>R²</strong>: Goodness of fit for each moving window</li><li><strong>Transition effects</strong>: Expected change when converting from one class to another</li></ol><h2 id="Filtering-the-results-using-R2-and-co-occurrence"><a class="docs-heading-anchor" href="#Filtering-the-results-using-R2-and-co-occurrence">Filtering the results using <span>$R^2$</span> and co-occurrence</a><a id="Filtering-the-results-using-R2-and-co-occurrence-1"></a><a class="docs-heading-anchor-permalink" href="#Filtering-the-results-using-R2-and-co-occurrence" title="Permalink"></a></h2><pre><code class="language-julia hljs">metrics_transitions_cube = results.metrics_for_transitions</code></pre><pre><code class="language-julia hljs">metrics_transitions_cube[differences = At(&quot;delta&quot;)].data</code></pre><pre><code class="language-julia hljs">masking_without_delta = masking_proc(results.metrics_for_transitions;
+cube_rsquared = results.summary_mov_window[summary_stat = At(&quot;rsquared_adjusted&quot;)], rsquared_thr = 0.2,
+cube_co_occurrence = results.metrics_for_transitions[Differences = At(&quot;coocurence&quot;)], co_occurence_thr = 0.5,
+cube_delta = nothing, time_dim = nothing, showprog = true)</code></pre><h3 id="Expected-Results"><a class="docs-heading-anchor" href="#Expected-Results">Expected Results</a><a id="Expected-Results-1"></a><a class="docs-heading-anchor-permalink" href="#Expected-Results" title="Permalink"></a></h3><p>Given our synthetic data:</p><table><tr><th style="text-align: right">Transition</th><th style="text-align: right">Expected ΔT (°C)</th></tr><tr><td style="text-align: right">Class 1 → Class 2</td><td style="text-align: right">+2.0</td></tr><tr><td style="text-align: right">Class 1 → Class 3</td><td style="text-align: right">+3.8</td></tr><tr><td style="text-align: right">Class 2 → Class 3</td><td style="text-align: right">+1.8</td></tr></table><p>These values represent the warming effect of converting from cooler (forested) to warmer (agricultural) land cover types.</p><h2 id="Plotting-the-results"><a class="docs-heading-anchor" href="#Plotting-the-results">Plotting the results</a><a id="Plotting-the-results-1"></a><a class="docs-heading-anchor-permalink" href="#Plotting-the-results" title="Permalink"></a></h2><p>First we will compared the distribution of the delta values vs the LST defined at the beggining for discrete class.</p><pre><code class="language-julia hljs">delta_1_org = abs(class_1_lst - class_2_lst)
+delta_2_org = abs(class_1_lst - class_3_lst)
+delta_3_org = abs(class_2_lst - class_3_lst)</code></pre><pre><code class="language-julia hljs">vec_delta_orig = Array{Float64}(reshape(results.metrics_for_transitions[differences = At(&quot;delta&quot;)].data, (size_pixel_new^2 * n_classes)))
+
+vec_delta_plot = vec_delta_orig[findall(!isnan, vec_delta_orig)]
+
+vec_index = repeat(1:n_classes, outer = (size_pixel_new^2*n_classes))
+
+vec_index = vec_index[findall(!isnan, vec_delta_orig)]</code></pre><pre><code class="language-julia hljs">transitions = lookup(masking_without_delta, :transitions)
+fig = Figure()
+ax = Axis(fig[1,1], xticks = (1:length(transitions), transitions))
+temp = scatter!(ax, vec_index, vec_delta_plot)
+temp2 = scatter!(ax, [i + 0.1 for i in 1:n_classes], [delta_1_org, delta_2_org, delta_3_org], marker = :diamond, color = :red)
+Legend(fig[1, 2],
+    [temp, temp2],
+    [&quot;Results Space4time&quot;, &quot;Original Delta&quot;])
+fig</code></pre><h2 id="Summary"><a class="docs-heading-anchor" href="#Summary">Summary</a><a id="Summary-1"></a><a class="docs-heading-anchor-permalink" href="#Summary" title="Permalink"></a></h2><p>The space-for-time method provides a powerful approach to:</p><ul><li>Estimate land cover change impacts without long time series</li><li>Leverage spatial variability as a proxy for temporal change</li><li>Quantify biophysical effects of land use transitions</li></ul><h2 id="Next-Steps"><a class="docs-heading-anchor" href="#Next-Steps">Next Steps</a><a id="Next-Steps-1"></a><a class="docs-heading-anchor-permalink" href="#Next-Steps" title="Permalink"></a></h2><h2 id="References"><a class="docs-heading-anchor" href="#References">References</a><a id="References-1"></a><a class="docs-heading-anchor-permalink" href="#References" title="Permalink"></a></h2><ul><li>Duveiller, G., et al. (2018). The mark of vegetation change on Earth&#39;s surface energy balance. <em>Nature Communications</em>.</li><li>Li, Y., et al. (2015). Local cooling and warming effects of forests based on satellite observations. <em>Nature Communications</em>.</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../basic_operations/">« Basic Operations</a><a class="docs-footer-nextpage" href="../../api/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Thursday 22 January 2026 18:02">Thursday 22 January 2026</span>. Using Julia version 1.12.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
