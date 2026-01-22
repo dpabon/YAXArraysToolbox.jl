@@ -1,4 +1,4 @@
-using YAXArrays, GLM, Statistics, LinearAlgebra
+using YAXArrays, GLM, Statistics, LinearAlgebra, DimensionalData
 
 function coocufun(out, q1, q2, p1, p2, denom)
     #replace!(q1, NaN => missing)
