@@ -30,7 +30,7 @@ First, load the required packages:
 using Pkg
 Pkg.instantiate()
 using YAXArrays
-Pkg.add("https://github.com/dpabon/YAXArraysToolbox.jl")
+Pkg.add(url="https://github.com/dpabon/YAXArraysToolbox.jl")
 using CairoMakie
 using GeoMakie
 using Statistics
