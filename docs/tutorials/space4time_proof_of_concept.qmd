@@ -36,6 +36,7 @@ using Random
 using NeutralLandscapes
 using TiledViews
 using DimensionalData
+using Statistics
 ```
 
 ```{julia}
@@ -77,7 +78,7 @@ To demonstrate the method, we'll create synthetic land cover and temperature dat
 We'll generate a 10 km × 10 km land cover map where 1 pixel = 1 meter:
 
 ```{julia}
-edge = 10000
+edge = 1000
 size_tile = (edge, edge)
 ```
 
@@ -85,7 +86,7 @@ Generate spatially autocorrelated patterns:
 
 ```{julia}
 Random.seed!(232323)
-spatial_auto = 0.7
+spatial_auto = 0.9
 midpoint_sim = rand(MidpointDisplacement(spatial_auto), size_tile)
 heatmap(midpoint_sim)
 ```
@@ -108,7 +109,7 @@ We define a constant Land Surface Temperature (LST) for each class:
 ```{julia}
 # LST values per class (°C)
 class_1_lst = 20.0  # e.g., Forest
-class_2_lst = 22.0  # e.g., Grassland  
+class_2_lst = 22.0  # e.g., Grassland
 class_3_lst = 23.8  # e.g., Cropland
 
 all_lst = (class_1_lst, class_2_lst, class_3_lst)
@@ -121,6 +122,35 @@ for i in eachindex(all_lst)
 end
 ```
 
+### Using altitude as a counfounding factor
+
+```{julia}
+Random.seed!(87)
+spatial_auto = 0.9
+midpoint_sim = rand(MidpointDisplacement(spatial_auto), size_tile)
+heatmap(midpoint_sim)
+```
+
+```{julia}
+altitude = midpoint_sim * 1000
+altitude
+```
+
+We will prescribe a LST adiabatic lapse rate of 9.8 per 1000 meters
+
+```{julia}
+heatmap(lst)
+```
+
+```{julia}
+lst_altitude_corrected = lst .- (altitude .* 9.8 / 1000)
+heatmap(lst_altitude_corrected)
+```
+
+```{julia}
+scatter(vec(altitude), vec(lst_altitude_corrected))
+```
+
 ## Spatial Resampling
 
 Land cover maps typically have coarser resolution than 1 meter. We'll aggregate to a new spatial resolution and estimate the frequency of each class per pixel.
@@ -128,12 +158,12 @@ Land cover maps typically have coarser resolution than 1 meter. We'll aggregate 
 ### Resample Land Cover Classes
 
 ```{julia}
-# New spatial resolution (100m pixels)
-size_pixel_new = 100 
 
-# Each new pixel contains 100×100 = 10,000 original pixels
+size_pixel_new = 20
+
+# Each new pixel contains 10×10 = 100 original pixels
 # Use TiledView to create views of each new pixel
-a = TiledView(classes_dist, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
+a = TiledView(classes_dist, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false, pad_value = NaN32)
 
 # Array for resampled class frequencies
 new_res_array_classes = fill(0.0, (size_pixel_new, size_pixel_new, n_classes))
@@ -159,10 +189,44 @@ for i in 1:n_classes
 end
 ```
 
+### Resample Altitude
+
+For the altitude we will create a dataset with two variables. ```altitude_mean, altitude_sd```.
+
+```{julia}
+a = TiledView(altitude, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
+
+new_res_array_altitude = fill(NaN, (size_pixel_new, size_pixel_new, 2))
+
+for i in 1:size_pixel_new
+    for j in 1:size_pixel_new
+        new_res_array_altitude[i, j, 1] = mean(a[:, :, i, j])
+        new_res_array_altitude[i, j, 2] = std(a[:, :, i, j])
+    end
+end
+```
+
+```{julia}
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Altitude Resampled")
+temp = heatmap!(new_res_array_altitude[:, :, 1], colormap = :lajolla)
+Colorbar(fig[1, 2], temp, label = "Altitude (m) mean")
+fig
+```
+
+```{julia}
+fig = Figure()
+ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Altitude Resampled")
+temp = heatmap!(new_res_array_altitude[:, :, 2], colormap = :lajolla)
+Colorbar(fig[1, 2], temp, label = "Altitude (m) std")
+fig
+```
+
+
 ### Resample LST
 
 ```{julia}
-a = TiledView(lst, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
+a = TiledView(lst_altitude_corrected, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
 
 new_res_array_lst = fill(NaN, (size_pixel_new, size_pixel_new))
 
@@ -193,6 +257,7 @@ axlist = (
 )
 
 lcc_cube = YAXArray(axlist, new_res_array_classes)
+lcc_cube
 ```
 
 ### LST Cube
@@ -204,6 +269,7 @@ axlist_lst = (
 )
 
 lst_cube = YAXArray(axlist_lst, new_res_array_lst)
+lst_cube
 ```
 
 ## Running Space4Time Analysis
@@ -247,9 +313,9 @@ metrics_transitions_cube = results.metrics_for_transitions
 ```
 
 ```{julia}
-masking_without_delta = masking_proc(results.metrics_for_transitions; 
-cube_rsquared = results.summary_stats[summary_stat = At("rsquared_adjusted")], rsquared_thr = 0.2, 
-cube_co_occurrence = results.metrics_for_transitions[Differences = At("coocurence")], co_occurence_thr = 0.5, 
+masking_without_delta = masking_proc(results.metrics_for_transitions;
+cube_rsquared = results.summary_stats[summary_stat = At("rsquared_adjusted")], rsquared_thr = 0.2,
+cube_co_occurrence = results.metrics_for_transitions[Differences = At("coocurence")], co_occurence_thr = 0.5,
 cube_delta = nothing, time_dim = nothing, showprog = true)
 ```
 
