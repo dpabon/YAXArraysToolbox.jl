@@ -2,7 +2,7 @@
 
 julia_version = "1.12.4"
 manifest_format = "2.0"
-project_hash = "74d9fe13b084b9113a0f37f4f84e954528131eb9"
+project_hash = "5842af2503a37a8614d248a636425acf466272af"
 
 [[deps.ADTypes]]
 git-tree-sha1 = "f7304359109c768cf32dc5fa2d371565bb63b68a"
@@ -912,10 +912,12 @@ uuid = "9fa8497b-333b-5362-9e8d-4d0656e87820"
 version = "1.11.0"
 
 [[deps.GLM]]
-deps = ["Distributions", "LinearAlgebra", "Printf", "Reexport", "SparseArrays", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns", "StatsModels"]
-git-tree-sha1 = "c5432ee4f7817ec542fa7cda3d96745880903606"
+deps = ["Distributions", "LinearAlgebra", "Printf", "Reexport", "SparseArrays", "SpecialFunctions", "Statistics", "StatsAPI", "StatsBase", "StatsFuns", "StatsModels", "Tables"]
+git-tree-sha1 = "f4047d4930957bc5317fd4d0b73f197383a4ee4a"
+repo-rev = "f4047d4930957bc5317fd4d0b73f197383a4ee4a"
+repo-url = "https://github.com/JuliaStats/GLM.jl"
 uuid = "38e38edf-8417-5370-95a0-9cbb8c7f171a"
-version = "1.9.2"
+version = "2.0.0-DEV"
 
 [[deps.GPUArraysCore]]
 deps = ["Adapt"]
@@ -2358,6 +2360,11 @@ git-tree-sha1 = "0494aed9501e7fb65daba895fb7fd57cc38bc743"
 uuid = "45858cf5-a6b0-47a3-bbea-62219f50df47"
 version = "0.1.5"
 
+[[deps.SkipNan]]
+git-tree-sha1 = "b07be17ad1c4dd3e2d11aff5aa06157838ee6a6a"
+uuid = "aed68c70-c8b0-4309-8cd1-d392a74f991a"
+version = "0.2.0"
+
 [[deps.Sockets]]
 uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 version = "1.11.0"
@@ -2846,9 +2853,11 @@ version = "0.7.1"
 
 [[deps.YAXArraysToolbox]]
 deps = ["CairoMakie", "Combinatorics", "Dates", "DimensionalData", "Distributions", "GLM", "GeoMakie", "LinearAlgebra", "Makie", "NamedArrays", "Statistics", "StatsBase", "TimeSeries", "YAXArrays"]
-path = "/home/dpabon/.julia/dev/YAXArraysToolbox"
+git-tree-sha1 = "08380032b3b4d7b2cab4872bf606af826fb77006"
+repo-rev = "main"
+repo-url = "https://github.com/dpabon/YAXArraysToolbox.jl"
 uuid = "fe326ce2-c736-437b-b94b-0bdf007dd2e5"
-version = "0.3.4"
+version = "0.3.5"
 
 [[deps.Zarr]]
 deps = ["AWSS3", "Blosc", "ChunkCodecCore", "ChunkCodecLibZlib", "ChunkCodecLibZstd", "DataStructures", "DateTimes64", "Dates", "DiskArrays", "HTTP", "JSON", "OffsetArrays", "OpenSSL", "Pkg", "URIs", "ZipArchives"]
