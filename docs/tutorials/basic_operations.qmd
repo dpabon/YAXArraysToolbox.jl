@@ -56,16 +56,6 @@ esdc
 
 The `plot_time` function creates time series plots by collapsing spatial dimensions using a specified statistic (mean, median, std, etc.).
 
-```{julia}
-#| eval: false
-#@doc plot_time
-```
-
-:::{.scrolling}
-```{python}
-# | echo: false
-#@doc plot_time
-```
 
 :::
 #### Subsetting the Data

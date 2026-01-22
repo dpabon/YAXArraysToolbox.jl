@@ -9,9 +9,6 @@ format:
     code-fold: false
     toc: true
     toc-depth: 3
-execute:
-  eval: false
-  echo: true
 ---
 
 ## Introduction
