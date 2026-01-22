@@ -159,7 +159,7 @@ The `plot_space` function creates spatial maps by collapsing the time dimension.
 
 ```{julia}
 #| output: false
-?plot_space
+@doc plot_space
 ```
 
 #### Single Variable Map
@@ -227,7 +227,7 @@ The `aggregate_time` function allows you to aggregate data to different temporal
 
 ```{julia}
 #| output: false
-?aggregate_time
+@doc aggregate_time
 ```
 
 #### Monthly Aggregation
