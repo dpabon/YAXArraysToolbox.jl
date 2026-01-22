@@ -15,10 +15,10 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Tutorials" => [
-            "Basic Operations" => "src/tutorials/basic_operations.md",
-            "Space-for-Time Method" => "src/tutorials/space4time_proof_of_concept.md",
+            "Basic Operations" => "tutorials/basic_operations.md",
+            "Space-for-Time Method" => "tutorials/space4time_proof_of_concept.md",
         ],
-        "API Reference" => "src/api.md",
+        "API Reference" => "api.md",
     ],
     warnonly = [:missing_docs, :cross_references],
 )
