@@ -58,13 +58,13 @@ The `plot_time` function creates time series plots by collapsing spatial dimensi
 
 ```{julia}
 #| eval: false
-@doc plot_time
+#@doc plot_time
 ```
 
 :::{.scrolling}
 ```{python}
 # | echo: false
-@doc plot_time
+#@doc plot_time
 ```
 
 :::
