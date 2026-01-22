@@ -27,13 +27,16 @@ This tutorial demonstrates the core functionality of YAXArraysToolbox.jl for wor
 First, load the required packages:
 
 ```{julia}
+using Pkg
+Pkg.instantiate()
 using YAXArrays
-using YAXArraysToolbox
+Pkg.add("https://github.com/dpabon/YAXArraysToolbox.jl")
 using CairoMakie
 using GeoMakie
 using Statistics
 using Zarr
 using Dates
+using PythonCall
 ```
 
 ## Loading Data
