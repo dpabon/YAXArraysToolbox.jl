@@ -260,6 +260,19 @@ lcc_cube = YAXArray(axlist, new_res_array_classes)
 lcc_cube
 ```
 
+## Altitude Cube
+
+```{julia}
+axlist = (
+   lon(1:size(new_res_array_classes, 1)),
+    lat(1:size(new_res_array_classes, 2)),
+    Variables(["altitude_mean", "altitude_sd"])
+)
+
+altitude_cube = YAXArray(axlist, new_res_array_altitude)
+```
+
+
 ### LST Cube
 
 ```{julia}
@@ -276,23 +289,21 @@ lst_cube
 
 Now we can use the `space4time_proc` function from YAXArraysToolbox:
 
-```{julia}
-# Define parameters
-pft_list = ["class1", "class2", "class3"]
-winsize = 5      # Moving window size
-minpxl = 10      # Minimum pixels required
-minDiffPxls = 0.  # Minimum difference in pixel percentages
 
+```{julia}
 # Run the analysis
-results = space4time_proc_old(
+results = space4time_proc(
     lst_cube,
-    lcc_cube;
+    lcc_cube,
+    altitude_cube;
     time_axis_name = nothing,
-    classes_vec = pft_list,
+    altitude_var_name = :Variables,
+    altitude_vec = ["altitude_mean", "altitude_sd"],
     classes_var_name = :Variables,
-    winsize = winsize,
-    minpxl = minpxl,
-    minDiffPxlspercentage = minDiffPxls,
+    classes_vec = ["class1", "class2", "class3"],
+    winsize = 5,
+    minpxl = 0,
+    minDiffPxls = 0,
     max_value = 1,
     showprog = true
 )
