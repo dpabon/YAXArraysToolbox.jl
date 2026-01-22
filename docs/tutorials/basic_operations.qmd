@@ -31,6 +31,7 @@ using Pkg
 Pkg.instantiate()
 using YAXArrays
 Pkg.add(url="https://github.com/dpabon/YAXArraysToolbox.jl")
+using YAXArraysToolbox
 using CairoMakie
 using GeoMakie
 using Statistics

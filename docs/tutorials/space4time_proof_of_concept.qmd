@@ -222,7 +222,8 @@ results = space4time_proc_old(
     lst_cube,
     lcc_cube;
     time_axis_name = nothing,
-    classes_var_name = pft_list,
+    classes_vec = pft_list,
+    classes_var_name = :Variables,
     winsize = winsize,
     minpxl = minpxl,
     minDiffPxlspercentage = minDiffPxls
