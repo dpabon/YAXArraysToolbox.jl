@@ -25,20 +25,17 @@ This notebook explains the theoretical approach and demonstrates the technical i
 ## Setup
 
 ```{julia}
+using Pkg
+Pkg.add(url = "https://github.com/dpabon/YAXArraysToolbox.jl")
+using YAXArraysToolbox
 using YAXArrays
-using DataFrames
 using Zarr
 using CairoMakie
 using GeoMakie
-using Statistics
-using LinearAlgebra
-using NamedArrays
-using Combinatorics
-using GLM
 using Random
 using NeutralLandscapes
 using TiledViews
-using YAXArraysToolbox
+using DimensionalData
 ```
 
 ```{julia}
@@ -189,11 +186,15 @@ fig
 ### Land Cover Cube
 
 ```{julia}
-axlist = [
-    Dim{:x}(1:size(new_res_array_classes, 1)),
-    Dim{:y}(1:size(new_res_array_classes, 2)),
-    Dim{:Classes}(["class$i" for i in 1:n_classes])
-]
+
+```
+
+```{julia}
+axlist = (
+   lon(1:size(new_res_array_classes, 1)),
+    lat(1:size(new_res_array_classes, 2)),
+    Variables(["class$i" for i in 1:n_classes])
+)
 
 lcc_cube = YAXArray(axlist, new_res_array_classes)
 ```
@@ -201,10 +202,10 @@ lcc_cube = YAXArray(axlist, new_res_array_classes)
 ### LST Cube
 
 ```{julia}
-axlist_lst = [
-    Dim{:x}(1:size(new_res_array_lst, 1)),
-    Dim{:y}(1:size(new_res_array_lst, 2))
-]
+axlist_lst = (
+    lon(1:size(new_res_array_lst, 1)),
+    lat(1:size(new_res_array_lst, 2))
+)
 
 lst_cube = YAXArray(axlist_lst, new_res_array_lst)
 ```
@@ -221,10 +222,10 @@ minpxl = 10      # Minimum pixels required
 minDiffPxls = 0.4  # Minimum difference in pixel percentages
 
 # Run the analysis
-results = space4time_proc(
+results = space4time_proc_old(
     lst_cube,
-    lcc_cube,
-    pft_list;
+    lcc_cube;
+    classes_var_name = pft_list,
     winsize = winsize,
     minpxl = minpxl,
     minDiffPxlspercentage = minDiffPxls
