@@ -215,7 +215,7 @@ Now we can use the `space4time_proc` function from YAXArraysToolbox:
 pft_list = ["class1", "class2", "class3"]
 winsize = 5      # Moving window size
 minpxl = 10      # Minimum pixels required
-minDiffPxls = 0.4  # Minimum difference in pixel percentages
+minDiffPxls = 0.  # Minimum difference in pixel percentages
 
 # Run the analysis
 results = space4time_proc_old(
@@ -226,7 +226,9 @@ results = space4time_proc_old(
     classes_var_name = :Variables,
     winsize = winsize,
     minpxl = minpxl,
-    minDiffPxlspercentage = minDiffPxls
+    minDiffPxlspercentage = minDiffPxls,
+    max_value = 1,
+    showprog = true
 )
 ```
 
@@ -237,6 +239,19 @@ The space4time analysis returns:
 1. **Coefficients**: The estimated effect of each land cover class on the target variable
 2. **R²**: Goodness of fit for each moving window
 3. **Transition effects**: Expected change when converting from one class to another
+
+## Filtering the results using $R^2$ and co-occurrence
+
+```{julia}
+metrics_transitions_cube = results.metrics_for_transitions
+```
+
+```{julia}
+masking_without_delta = masking_proc(results.metrics_for_transitions; 
+cube_rsquared = results.summary_stats[summary_stat = At("rsquared_adjusted")], rsquared_thr = 0.2, 
+cube_co_occurrence = results.metrics_for_transitions[Differences = At("coocurence")], co_occurence_thr = 0.5, 
+cube_delta = nothing, time_dim = nothing, showprog = true)
+```
 
 ### Expected Results
 
@@ -249,6 +264,38 @@ Given our synthetic data:
 | Class 2 → Class 3 | +1.8 |
 
 These values represent the warming effect of converting from cooler (forested) to warmer (agricultural) land cover types.
+
+## Plotting the results
+
+First we will compared the distribution of the delta values vs the LST defined at the beggining for discrete class.
+
+```{julia}
+delta_1_org = abs(class_1_lst - class_2_lst)
+delta_2_org = abs(class_1_lst - class_3_lst)
+delta_3_org = abs(class_2_lst - class_3_lst)
+```
+
+```{julia}
+vec_delta_orig = Array{Float64}(reshape(results.metrics_for_transitions[differences = At("delta")].data, (Int(edge/size_pixel_new)^2 * n_classes)))
+
+vec_delta_plot = vec_delta_orig[findall(!isnan, vec_delta_orig)]
+
+vec_index = repeat(1:n_classes, outer = (Int(edge/size_pixel_new)^2*n_classes))
+
+vec_index = vec_index[findall(!isnan, vec_delta_orig)]
+```
+
+```{julia}
+transitions = getAxis("transitions", masking_without_delta)
+fig = Figure()
+ax = Axis(fig[1,1], xticks = (1:length(transitions), transitions))
+temp = boxplot!(ax, vec_index, vec_delta_plot)
+temp2 = scatter!(ax, [i + 0.1 for i in 1:n_classes], [delta_1_org, delta_2_org, delta_3_org], marker = :diamond, color = :red)
+Legend(fig[1, 2],
+    [temp, temp2],
+    ["Results Space4time", "Original Delta"])
+fig
+```
 
 ## Summary
 
