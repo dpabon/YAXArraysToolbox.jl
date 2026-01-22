@@ -259,4 +259,3 @@ The original 8-day temporal resolution has been aggregated to monthly values. Th
 ## Next Steps
 
 - Learn about the [Space4Time methodology](space4time_proof_of_concept.qmd)
-- See a real-world example: [LST Changes in Africa](lst_changes_africa.qmd)

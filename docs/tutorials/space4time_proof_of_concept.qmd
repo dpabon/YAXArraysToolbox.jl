@@ -387,8 +387,7 @@ The space-for-time method provides a powerful approach to:
 
 ## Next Steps
 
-- Apply to real data: [LST Changes in Africa](lst_changes_africa.qmd)
-- Learn about cross-validation: [Spatio-temporal Folds](spacetime_folds.qmd)
+
 
 ## References
 

@@ -2,6 +2,8 @@
 title: "YAXArraysToolbox.jl"
 subtitle: "High-performance spatio-temporal analysis for Earth System data cubes"
 engine: julia
+format:
+  html
 ---
 
 ## Overview
