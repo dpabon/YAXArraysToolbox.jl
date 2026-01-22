@@ -186,10 +186,6 @@ fig
 ### Land Cover Cube
 
 ```{julia}
-
-```
-
-```{julia}
 axlist = (
    lon(1:size(new_res_array_classes, 1)),
     lat(1:size(new_res_array_classes, 2)),
@@ -225,6 +221,7 @@ minDiffPxls = 0.4  # Minimum difference in pixel percentages
 results = space4time_proc_old(
     lst_cube,
     lcc_cube;
+    time_axis_name = nothing,
     classes_var_name = pft_list,
     winsize = winsize,
     minpxl = minpxl,
