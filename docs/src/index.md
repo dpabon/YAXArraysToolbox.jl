@@ -1,21 +1,13 @@
-<h1 align="center">YAXArraysToolbox.jl</h1>
+# YAXArraysToolbox.jl
 
-<p align="center">
-  <strong>High-level spatio-temporal analysis tools for Earth System data cubes</strong>
-</p>
+*High-performance spatio-temporal analysis for Earth System data cubes*
 
-<p align="center">
-  <em>Because laziness is not only good when reading big data — it should apply to analysis too!</em>
-</p>
+---
 
-<p align="center">
-  <a href="https://dpabon.github.io/YAXArraysToolbox.jl/stable/"><img src="https://img.shields.io/badge/docs-stable-blue.svg" alt="Stable Documentation"></a>
-  <a href="https://dpabon.github.io/YAXArraysToolbox.jl/dev/"><img src="https://img.shields.io/badge/docs-dev-blue.svg" alt="Dev Documentation"></a>
-  <a href="https://github.com/dpabon/YAXArraysToolbox.jl/actions/workflows/CI.yml?query=branch%3Amain"><img src="https://github.com/dpabon/YAXArraysToolbox.jl/actions/workflows/CI.yml/badge.svg?branch=main" alt="Build Status"></a>
-  <a href="https://codecov.io/gh/dpabon/YAXArraysToolbox.jl"><img src="https://codecov.io/gh/dpabon/YAXArraysToolbox.jl/branch/main/graph/badge.svg" alt="Coverage"></a>
-  <a href="https://zenodo.org/badge/latestdoi/617361484"><img src="https://zenodo.org/badge/617361484.svg" alt="DOI"></a>
-</p>
+**YAXArraysToolbox.jl** extends [YAXArrays.jl](https://github.com/JuliaDataCubes/YAXArrays.jl) with high-level functions for analyzing spatio-temporal data cubes from climate science and Earth observation.
 
+!!! tip "Why YAXArraysToolbox?"
+    Because laziness is not only good when reading big data — it should also apply to common analysis tasks! This package provides ready-to-use functions for plotting, aggregation, and analysis so you can focus on science, not boilerplate code.
 ---
 
 ## ✨ Features at a Glance
@@ -182,14 +174,8 @@ If you use YAXArraysToolbox in your research, please cite:
 
 This project was funded by:
 
-<p align="center">
-  <a href="https://earthmonitor.org/">
-    <img src="https://earthmonitor.org/wp-content/uploads/2022/04/OEM_Logo_Horizontal_Dark_Transparent_Background_205x38.png" alt="Open Earth Monitor" width="200">
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://www.nfdi4earth.de/">
-    <img src="https://www.nfdi4earth.de/templates/nfdi4earth/images/NFDI4Earth_logo.png" alt="NFDI4Earth" width="200">
-  </a>
-</p>
+- [Open-Earth-Monitor](https://earthmonitor.org/) — Open infrastructure for monitoring the European environment
+- [NFDI4Earth](https://www.nfdi4earth.de/) — National Research Data Infrastructure for Earth System Science
+
 
 This project has received funding from the [Open-Earth-Monitor Cyberinfrastructure](https://earthmonitor.org/) project that is part of European Union's Horizon Europe research and innovation programme under grant [101059548](https://cordis.europa.eu/project/id/101059548).

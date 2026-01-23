@@ -57,7 +57,7 @@ esdc
 ```
 
 !!! info "About the ESDC"
-    The Earth System Data Cube provides harmonized Earth observation and climate data at 0.25° spatial resolution and 8-day temporal resolution, spanning from 1979 to present.
+    The Earth System Data Cube provides harmonized Earth observation and climate data at 0.25° spatial resolution and 8-day temporal resolution, spanning from 1979 to 2021.
 
 ---
 
