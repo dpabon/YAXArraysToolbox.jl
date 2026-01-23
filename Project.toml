@@ -1,6 +1,6 @@
 name = "YAXArraysToolbox"
 uuid = "fe326ce2-c736-437b-b94b-0bdf007dd2e5"
-version = "0.3.5"
+version = "0.3.6"
 authors = ["Daniel E. Pabon-Moreno <dpabon@bgc-jena.mpg.de>", "Alexander J. Winkler", "Gregory Duveiller"]
 
 [deps]
