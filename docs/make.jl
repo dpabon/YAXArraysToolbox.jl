@@ -13,7 +13,6 @@ makedocs(
         ],
         sidebar_sitename = true,
         collapselevel = 2,
-        highlights = ["julia"],
         ansicolor = true,
     ),
     modules = [YAXArraysToolbox],
