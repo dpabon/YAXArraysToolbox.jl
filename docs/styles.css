@@ -1,21 +1,231 @@
-/* Custom styles for YAXArraysToolbox documentation */
+/* YAXArraysToolbox.jl Documentation Styles */
 
-/* Code blocks */
-pre.sourceCode {
-  border-radius: 8px;
+/* ===== Colors ===== */
+:root {
+    --primary-color: #4A90A4;
+    --primary-dark: #2D5A6B;
+    --accent-color: #E8A838;
+    --success-color: #28a745;
+    --info-color: #17a2b8;
+    --warning-color: #ffc107;
+    --code-bg: #f6f8fa;
 }
 
-/* Tables */
+/* ===== Typography ===== */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+}
+
+code, pre {
+    font-family: 'JuliaMono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+}
+
+/* ===== Code Blocks ===== */
+pre {
+    background-color: var(--code-bg);
+    border-radius: 8px;
+    padding: 1em;
+    overflow-x: auto;
+}
+
+code {
+    background-color: var(--code-bg);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+pre code {
+    padding: 0;
+    background: none;
+}
+
+/* ===== Tables ===== */
 table {
-  margin: 1em 0;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
 }
 
-/* Callouts */
-.callout {
-  margin: 1.5em 0;
+th, td {
+    padding: 0.75em 1em;
+    text-align: left;
+    border-bottom: 1px solid #e1e4e8;
 }
 
-/* Footer logos */
-.page-footer img {
-  max-height: 40px;
+th {
+    background-color: var(--code-bg);
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* ===== Admonitions ===== */
+.admonition {
+    border-radius: 8px;
+    margin: 1.5em 0;
+    padding: 1em 1.5em;
+}
+
+.admonition.tip {
+    background-color: #e7f5e7;
+    border-left: 4px solid var(--success-color);
+}
+
+.admonition.info {
+    background-color: #e7f3f8;
+    border-left: 4px solid var(--info-color);
+}
+
+.admonition.warning {
+    background-color: #fff8e1;
+    border-left: 4px solid var(--warning-color);
+}
+
+.admonition.note {
+    background-color: #f0f7ff;
+    border-left: 4px solid var(--primary-color);
+}
+
+.admonition-title {
+    font-weight: 600;
+    margin-bottom: 0.5em;
+}
+
+/* ===== Links ===== */
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* ===== Headings ===== */
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+}
+
+h1 {
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 0.3em;
+}
+
+h2 {
+    border-bottom: 1px solid #e1e4e8;
+    padding-bottom: 0.2em;
+}
+
+/* ===== Sidebar ===== */
+.docs-sidebar {
+    border-right: 1px solid #e1e4e8;
+}
+
+.docs-sidebar .docs-logo img {
+    max-width: 180px;
+    margin: 1em auto;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    pre {
+        font-size: 0.85em;
+    }
+}
+
+/* ===== Feature Cards ===== */
+.feature-card {
+    border: 1px solid #e1e4e8;
+    border-radius: 8px;
+    padding: 1.5em;
+    margin: 1em 0;
+    transition: box-shadow 0.2s;
+}
+
+.feature-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Badges ===== */
+.badge {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 0.75em;
+    font-weight: 600;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.badge-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.badge-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+/* ===== Tutorial Headers ===== */
+.tutorial-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 2em;
+    border-radius: 8px;
+    margin-bottom: 2em;
+}
+
+.tutorial-header h2 {
+    margin: 0;
+    border: none;
+    color: white;
+}
+
+/* ===== Horizontal Rules ===== */
+hr {
+    border: none;
+    border-top: 1px solid #e1e4e8;
+    margin: 2em 0;
+}
+
+/* ===== Blockquotes ===== */
+blockquote {
+    border-left: 4px solid var(--primary-color);
+    margin: 1.5em 0;
+    padding: 0.5em 1em;
+    background-color: #f8f9fa;
+    border-radius: 0 8px 8px 0;
+}
+
+blockquote p {
+    margin: 0;
+}
+
+/* ===== Print Styles ===== */
+@media print {
+    .docs-sidebar,
+    .docs-navbar {
+        display: none !important;
+    }
+    
+    .docs-main {
+        margin-left: 0 !important;
+    }
+    
+    pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
 }

@@ -1,21 +1,33 @@
 # [Basic Operations](@id basic_operations)
 
-*Getting started with YAXArraysToolbox.jl*
+```@raw html
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2em; border-radius: 8px; margin-bottom: 2em;">
+  <h2 style="margin: 0; color: white;">📊 Getting Started with YAXArraysToolbox.jl</h2>
+  <p style="margin: 0.5em 0 0 0; opacity: 0.9;">Learn the core functions for visualizing and processing Earth System data cubes</p>
+</div>
+```
 
 **Author:** Daniel E. Pabon-Moreno
 
-## Introduction
+---
 
-This tutorial demonstrates the core functionality of YAXArraysToolbox.jl for working with spatio-temporal data cubes. We'll cover:
+## What You'll Learn
 
-- Loading data from the Earth System Data Cube
-- Plotting time series with `plot_time`
-- Creating spatial maps with `plot_space`
-- Aggregating data over time with `aggregate_time`
+In this tutorial, you will learn how to:
+
+- ✅ Load data from the Earth System Data Cube (ESDC)
+- ✅ Create time series plots with [`plot_time`](@ref)
+- ✅ Generate spatial maps with [`plot_space`](@ref)
+- ✅ Aggregate data to different temporal resolutions with [`aggregate_time`](@ref)
+
+!!! tip "Prerequisites"
+    Basic familiarity with Julia and the concept of multi-dimensional arrays is helpful but not required.
+
+---
 
 ## Setup
 
-First, load the required packages:
+First, let's load all the required packages:
 
 ```@example basic_ops
 using Pkg
@@ -32,9 +44,11 @@ using PythonCall
 using DimensionalData
 ```
 
+---
+
 ## Loading Data
 
-We'll use the [Earth System Data Cube (ESDC)](https://www.earthsystemdatalab.net/), a analysis-ready data cube containing many climate and Earth observation variables.
+We'll use the [Earth System Data Cube (ESDC)](https://www.earthsystemdatalab.net/), an analysis-ready data cube containing dozens of climate and Earth observation variables at global scale.
 
 ```@example basic_ops
 esdc = open_dataset("https://s3.bgc-jena.mpg.de:9000/esdl-esdc-v2.1.1/esdc-8d-0.25deg-184x90x90-2.1.1.zarr")
@@ -42,29 +56,30 @@ esdc = Cube(esdc)
 esdc
 ```
 
-## Basic Functions
+!!! info "About the ESDC"
+    The Earth System Data Cube provides harmonized Earth observation and climate data at 0.25° spatial resolution and 8-day temporal resolution, spanning from 1979 to present.
 
-### Plot Time
+---
 
-The `plot_time` function creates time series plots by collapsing spatial dimensions using a specified statistic (mean, median, std, etc.).
+## 1. Time Series Plotting with `plot_time`
 
+The [`plot_time`](@ref) function creates time series plots by collapsing spatial dimensions using a specified statistic (mean, median, std, etc.).
 
-:::
-#### Subsetting the Data
+### Selecting a Region
 
-Let's select a region (South America) and time period:
+Let's focus on South America and select a time period:
 
 ```@example basic_ops
 cube_to_plot = esdc[
     lon = -86 .. -35,
     lat = -56 .. 14,
-    time = Date(2010) ..  Date(2014),
+    time = Date(2010) .. Date(2014),
     Variable = At("leaf_area_index", "sensible_heat"),
 ]
 cube_to_plot
 ```
 
-#### Plotting All Variables
+### Plotting All Variables
 
 By default, `plot_time` plots all variables in the cube:
 
@@ -86,9 +101,9 @@ plot_time(
 )
 ```
 
-#### Plotting a Single Variable
+### Plotting a Single Variable
 
-You can also plot a specific variable:
+You can also target a specific variable:
 
 ```@example basic_ops
 plot_time(
@@ -108,9 +123,20 @@ plot_time(
 )
 ```
 
-#### Available Statistics
+### Available Statistics
 
-The `fun` parameter supports multiple statistics:
+The `fun` parameter supports multiple aggregation statistics:
+
+| Statistic | Description |
+|:----------|:------------|
+| `"mean"` | Arithmetic mean |
+| `"median"` | Median (50th percentile) |
+| `"std"` | Standard deviation |
+| `"var"` | Variance |
+| `"sum"` | Sum of values |
+| `"min"` | Minimum value |
+| `"max"` | Maximum value |
+| `"quant"` | Quantile (requires `p` parameter) |
 
 ```@example basic_ops
 metrics = ["median", "mean", "std", "var", "sum", "quant", "min", "max"]
@@ -135,16 +161,13 @@ for metric in metrics
 end
 ```
 
-### Plot Space
+---
 
-The `plot_space` function creates spatial maps by collapsing the time dimension.
+## 2. Spatial Mapping with `plot_space`
 
-```@example basic_ops
-#| output: false
-@doc plot_space
-```
+The [`plot_space`](@ref) function creates spatial maps by collapsing the time dimension.
 
-#### Single Variable Map
+### Single Variable Map
 
 ```@example basic_ops
 cube_to_plot = esdc[
@@ -164,7 +187,7 @@ plot_space(
 )
 ```
 
-#### Multiple Variables
+### Multiple Variables Side by Side
 
 Set `var = nothing` to plot all variables:
 
@@ -181,7 +204,7 @@ plot_space(
 )
 ```
 
-#### All Statistics for a Variable
+### Comparing Different Statistics
 
 ```@example basic_ops
 metrics = ["median", "mean", "std", "var", "sum", "quant", "min", "max"]
@@ -203,18 +226,15 @@ for metric in metrics
 end
 ```
 
-### Aggregate by Time
+---
 
-The `aggregate_time` function allows you to aggregate data to different temporal resolutions (e.g., daily → monthly).
+## 3. Temporal Aggregation with `aggregate_time`
 
-```@example basic_ops
-#| output: false
-@doc aggregate_time
-```
+The [`aggregate_time`](@ref) function allows you to resample data to different temporal resolutions.
 
-#### Monthly Aggregation
+### Monthly Aggregation Example
 
-Let's compute the monthly mean of the Leaf Area Index:
+The ESDC has 8-day temporal resolution. Let's aggregate to monthly means:
 
 ```@example basic_ops
 lai_month = aggregate_time(
@@ -232,22 +252,50 @@ lai_month = aggregate_time(
 lai_month
 ```
 
-Check the new time axis:
+### Checking the Result
+
+Let's verify the new time axis:
 
 ```@example basic_ops
 lookup(lai_month, :Ti)
 ```
 
-The original 8-day temporal resolution has been aggregated to monthly values. The time axis now contains 480 values (one per month) instead of the original ~1800+ values.
+!!! success "Result"
+    The original 8-day temporal resolution has been aggregated to monthly values. The time axis now contains approximately 480 values (one per month over the full time range) instead of the original ~1800+ 8-day values.
 
-## Summary
+---
+
+## Quick Reference
 
 | Function | Purpose | Key Parameters |
-|----------|---------|----------------|
-| `plot_time` | Time series plot | `fun`, `var`, `time_axis` |
-| `plot_space` | Spatial map | `fun`, `var`, `time_axis` |
-| `aggregate_time` | Temporal aggregation | `new_resolution`, `fun` |
+|:---------|:--------|:---------------|
+| [`plot_time`](@ref) | Time series plot | `fun`, `var`, `time_axis` |
+| [`plot_space`](@ref) | Spatial map | `fun`, `var`, `time_axis` |
+| [`aggregate_time`](@ref) | Temporal aggregation | `new_resolution`, `fun` |
+
+### Common Parameters
+
+```julia
+fun = "mean"           # Aggregation statistic
+var = "temperature"    # Variable name (or nothing for all)
+time_axis = :time      # Name of time dimension
+showprog = true        # Show progress bar
+max_cache = "1GB"      # Memory limit for caching
+```
+
+---
 
 ## Next Steps
 
-- Learn about the [Space4Time methodology](@ref space4time)
+Now that you've mastered the basics, explore more advanced analysis:
+
+- 📖 **[Space-for-Time Method](@ref space4time)** — Learn how to estimate land cover change impacts
+- 📚 **[API Reference](@ref api)** — Complete documentation of all functions
+
+---
+
+```@raw html
+<div style="background: #f0f7ff; border-left: 4px solid #3b82f6; padding: 1em; margin-top: 2em;">
+  <strong>💡 Tip:</strong> All examples in this tutorial use lazy evaluation. Data is only loaded when needed, making it efficient to work with large datasets.
+</div>
+```

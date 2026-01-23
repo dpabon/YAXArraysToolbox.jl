@@ -1,6 +1,13 @@
 using Documenter
 using YAXArraysToolbox
 
+# Copy logo to assets directory
+mkpath(joinpath(@__DIR__, "src", "assets"))
+cp(
+    joinpath(@__DIR__, "src", "assets");
+    force = true
+)
+
 # Build documentation
 makedocs(
     sitename = "YAXArraysToolbox.jl",
@@ -8,8 +15,13 @@ makedocs(
     format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
         canonical = "https://dpabon.github.io/YAXArraysToolbox.jl",
-        assets = String[],
+        assets = [
+            "assets/custom.css",
+        ],
         sidebar_sitename = true,
+        collapselevel = 2,
+        highlights = ["julia"],
+        ansicolor = true,
     ),
     modules = [YAXArraysToolbox],
     pages = [
@@ -21,6 +33,7 @@ makedocs(
         "API Reference" => "api.md",
     ],
     warnonly = [:missing_docs, :cross_references],
+    checkdocs = :exports,
 )
 
 # Deploy documentation
