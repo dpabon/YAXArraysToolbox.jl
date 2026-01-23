@@ -4,3 +4,6 @@
 /docs/build/
 .vscode/
 .nextcloudsync.log
+**/tmp/
+*.tiles
+dev/tutorials/tmp/
