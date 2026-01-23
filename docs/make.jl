@@ -1,13 +1,6 @@
 using Documenter
 using YAXArraysToolbox
 
-# Copy logo to assets directory
-mkpath(joinpath(@__DIR__, "src", "assets"))
-cp(
-    joinpath(@__DIR__, "src", "assets");
-    force = true
-)
-
 # Build documentation
 makedocs(
     sitename = "YAXArraysToolbox.jl",
