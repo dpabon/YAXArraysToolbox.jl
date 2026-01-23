@@ -206,7 +206,7 @@ Class 1:
 ```@example space4time
 
 fig = Figure()
-ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Class $i Frequency")
+ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Class 1 Frequency")
 temp = heatmap!(new_res_array_classes[:, :, 1], colormap = Reverse(:bamako))
 Colorbar(fig[1, 2], temp, label = "Occurrence")
 fig
@@ -217,7 +217,7 @@ Class 2:
 ```@example space4time
 
 fig = Figure()
-ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Class $i Frequency")
+ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Class 2 Frequency")
 temp = heatmap!(new_res_array_classes[:, :, 2], colormap = Reverse(:bamako))
 Colorbar(fig[1, 2], temp, label = "Occurrence")
 fig
@@ -227,7 +227,7 @@ Class 3:
 
 ```@example space4time
 fig = Figure()
-ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Class $i Frequency")
+ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Class 3 Frequency")
 temp = heatmap!(new_res_array_classes[:, :, 3], colormap = Reverse(:bamako))
 Colorbar(fig[1, 2], temp, label = "Occurrence")
 fig
