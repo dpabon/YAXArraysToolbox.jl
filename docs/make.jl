@@ -33,4 +33,5 @@ deploydocs(
     repo = "github.com/dpabon/YAXArraysToolbox.jl.git",
     devbranch = "main",
     push_preview = true,
+    versions = ["stable" => "dev", "dev" => "dev"],
 )
