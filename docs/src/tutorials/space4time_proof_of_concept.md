@@ -14,7 +14,7 @@ This notebook explains the theoretical approach and demonstrates the technical i
 
 ## Setup
 
-```julia
+```@example space4time
 using Pkg
 Pkg.add(url="https://github.com/JuliaStats/GLM.jl", rev="f4047d4930957bc5317fd4d0b73f197383a4ee4a")
 Pkg.add(url = "https://github.com/dpabon/YAXArraysToolbox.jl")
@@ -31,7 +31,7 @@ using DimensionalData
 using Statistics
 ```
 
-```julia
+```@example space4time
 # Set temporary directory for YAXArrays
 YAXArrays.YAXdir("/tmp/YAXA_tmp")
 
@@ -69,14 +69,14 @@ To demonstrate the method, we'll create synthetic land cover and temperature dat
 
 We'll generate a 10 km × 10 km land cover map where 1 pixel = 1 meter:
 
-```julia
+```@example space4time
 edge = 1000
 size_tile = (edge, edge)
 ```
 
 Generate spatially autocorrelated patterns:
 
-```julia
+```@example space4time
 Random.seed!(232323)
 spatial_auto = 0.9
 midpoint_sim = rand(MidpointDisplacement(spatial_auto), size_tile)
@@ -85,12 +85,12 @@ heatmap(midpoint_sim)
 
 Classify into 3 land cover classes:
 
-```julia
+```@example space4time
 n_classes = 3
 classes_dist = NeutralLandscapes.classify(midpoint_sim, ones(n_classes))
 ```
 
-```julia
+```@example space4time
 heatmap(classes_dist)
 ```
 
@@ -98,7 +98,7 @@ heatmap(classes_dist)
 
 We define a constant Land Surface Temperature (LST) for each class:
 
-```julia
+```@example space4time
 # LST values per class (°C)
 class_1_lst = 20.0  # e.g., Forest
 class_2_lst = 22.0  # e.g., Grassland
@@ -116,30 +116,30 @@ end
 
 ### Using altitude as a counfounding factor
 
-```julia
+```@example space4time
 Random.seed!(87)
 spatial_auto = 0.9
 midpoint_sim = rand(MidpointDisplacement(spatial_auto), size_tile)
 heatmap(midpoint_sim)
 ```
 
-```julia
+```@example space4time
 altitude = midpoint_sim * 1000
 altitude
 ```
 
 We will prescribe a LST adiabatic lapse rate of 9.8 per 1000 meters
 
-```julia
+```@example space4time
 heatmap(lst)
 ```
 
-```julia
+```@example space4time
 lst_altitude_corrected = lst .- (altitude .* 9.8 / 1000)
 heatmap(lst_altitude_corrected)
 ```
 
-```julia
+```@example space4time
 scatter(vec(altitude), vec(lst_altitude_corrected))
 ```
 
@@ -149,7 +149,7 @@ Land cover maps typically have coarser resolution than 1 meter. We'll aggregate 
 
 ### Resample Land Cover Classes
 
-```julia
+```@example space4time
 
 size_pixel_new = 20
 
@@ -171,7 +171,7 @@ end
 
 Visualize the class frequencies:
 
-```julia
+```@example space4time
 for i in 1:n_classes
     fig = Figure()
     ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Class $i")
@@ -185,7 +185,7 @@ end
 
 For the altitude we will create a dataset with two variables. ```altitude_mean, altitude_sd```.
 
-```julia
+```@example space4time
 a = TiledView(altitude, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
 
 new_res_array_altitude = fill(NaN, (size_pixel_new, size_pixel_new, 2))
@@ -198,7 +198,7 @@ for i in 1:size_pixel_new
 end
 ```
 
-```julia
+```@example space4time
 fig = Figure()
 ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Altitude Resampled")
 temp = heatmap!(new_res_array_altitude[:, :, 1], colormap = :lajolla)
@@ -206,7 +206,7 @@ Colorbar(fig[1, 2], temp, label = "Altitude (m) mean")
 fig
 ```
 
-```julia
+```@example space4time
 fig = Figure()
 ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Altitude Resampled")
 temp = heatmap!(new_res_array_altitude[:, :, 2], colormap = :lajolla)
@@ -217,7 +217,7 @@ fig
 
 ### Resample LST
 
-```julia
+```@example space4time
 a = TiledView(lst_altitude_corrected, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
 
 new_res_array_lst = fill(NaN, (size_pixel_new, size_pixel_new))
@@ -229,7 +229,7 @@ for i in 1:size_pixel_new
 end
 ```
 
-```julia
+```@example space4time
 fig = Figure()
 ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "LST Resampled")
 temp = heatmap!(new_res_array_lst[:, :], colormap = :lajolla)
@@ -241,7 +241,7 @@ fig
 
 ### Land Cover Cube
 
-```julia
+```@example space4time
 axlist = (
    lon(1:size(new_res_array_classes, 1)),
     lat(1:size(new_res_array_classes, 2)),
@@ -254,7 +254,7 @@ lcc_cube
 
 ## Altitude Cube
 
-```julia
+```@example space4time
 axlist = (
    lon(1:size(new_res_array_classes, 1)),
     lat(1:size(new_res_array_classes, 2)),
@@ -267,7 +267,7 @@ altitude_cube = YAXArray(axlist, new_res_array_altitude)
 
 ### LST Cube
 
-```julia
+```@example space4time
 axlist_lst = (
     lon(1:size(new_res_array_lst, 1)),
     lat(1:size(new_res_array_lst, 2))
@@ -282,7 +282,7 @@ lst_cube
 Now we can use the `space4time_proc` function from YAXArraysToolbox:
 
 
-```julia
+```@example space4time
 # Run the analysis
 results = space4time_proc(
     lst_cube,
@@ -311,15 +311,15 @@ The space4time analysis returns:
 
 ## Filtering the results using $R^2$ and co-occurrence
 
-```julia
+```@example space4time
 metrics_transitions_cube = results.metrics_for_transitions
 ```
 
-```julia
+```@example space4time
 metrics_transitions_cube[differences = At("delta")].data
 ```
 
-```julia
+```@example space4time
 masking_without_delta = masking_proc(results.metrics_for_transitions;
 cube_rsquared = results.summary_mov_window[summary_stat = At("rsquared_adjusted")], rsquared_thr = 0.2,
 cube_co_occurrence = results.metrics_for_transitions[Differences = At("coocurence")], co_occurence_thr = 0.5,
@@ -342,13 +342,13 @@ These values represent the warming effect of converting from cooler (forested) t
 
 First we will compared the distribution of the delta values vs the LST defined at the beggining for discrete class.
 
-```julia
+```@example space4time
 delta_1_org = abs(class_1_lst - class_2_lst)
 delta_2_org = abs(class_1_lst - class_3_lst)
 delta_3_org = abs(class_2_lst - class_3_lst)
 ```
 
-```julia
+```@example space4time
 vec_delta_orig = Array{Float64}(reshape(results.metrics_for_transitions[differences = At("delta")].data, (size_pixel_new^2 * n_classes)))
 
 vec_delta_plot = vec_delta_orig[findall(!isnan, vec_delta_orig)]
@@ -358,7 +358,7 @@ vec_index = repeat(1:n_classes, outer = (size_pixel_new^2*n_classes))
 vec_index = vec_index[findall(!isnan, vec_delta_orig)]
 ```
 
-```julia
+```@example space4time
 transitions = lookup(masking_without_delta, :transitions)
 fig = Figure()
 ax = Axis(fig[1,1], xticks = (1:length(transitions), transitions))
@@ -384,5 +384,6 @@ The space-for-time method provides a powerful approach to:
 
 ## References
 
-- Duveiller, G., et al. (2018). The mark of vegetation change on Earth's surface energy balance. *Nature Communications*.
-- Li, Y., et al. (2015). Local cooling and warming effects of forests based on satellite observations. *Nature Communications*.
+Duveiller, Gregory, Josh Hooker, and Alessandro Cescatti. “A Dataset Mapping the Potential Biophysical Effects of Vegetation Cover Change.” Scientific Data 5, no. 1 (2018): 1. https://doi.org/10.1038/sdata.2018.14.
+
+- Li, Yan, Maosheng Zhao, Safa Motesharrei, Qiaozhen Mu, Eugenia Kalnay, and Shuangcheng Li. “Local Cooling and Warming Effects of Forests Based on Satellite Observations.” Nature Communications 6, no. 1 (2015): 6603. https://doi.org/10.1038/ncomms7603.
