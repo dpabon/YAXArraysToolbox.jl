@@ -140,38 +140,6 @@ for i in eachindex(all_lst)
 end
 ```
 
-### Step 3: Add Altitude as a Confounding Factor
-
-In reality, altitude affects LST. Let's add this confounding factor:
-
-```@example space4time
-Random.seed!(87)
-spatial_auto = 0.9
-midpoint_sim = rand(MidpointDisplacement(spatial_auto), size_tile)
-heatmap(midpoint_sim)
-```
-
-```@example space4time
-altitude = midpoint_sim * 1000  # Scale to 0-1000 meters
-altitude
-```
-
-Apply the adiabatic lapse rate (9.8°C per 1000 meters):
-
-```@example space4time
-heatmap(lst)
-```
-
-```@example space4time
-lst_altitude_corrected = lst .- (altitude .* 9.8 / 1000)
-heatmap(lst_altitude_corrected)
-```
-
-Verify the altitude-LST relationship:
-
-```@example space4time
-scatter(vec(altitude), vec(lst_altitude_corrected))
-```
 
 ---
 
@@ -230,32 +198,6 @@ fig = Figure()
 ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Class 3 Frequency")
 temp = heatmap!(new_res_array_classes[:, :, 3], colormap = Reverse(:bamako))
 Colorbar(fig[1, 2], temp, label = "Occurrence")
-fig
-```
-
-
-### Resample Altitude
-
-For altitude, we'll create both mean and standard deviation:
-
-```@example space4time
-a = TiledView(altitude, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
-
-new_res_array_altitude = fill(NaN, (size_pixel_new, size_pixel_new, 2))
-
-for i in 1:size_pixel_new
-    for j in 1:size_pixel_new
-        new_res_array_altitude[i, j, 1] = mean(a[:, :, i, j])
-        new_res_array_altitude[i, j, 2] = std(a[:, :, i, j])
-    end
-end
-```
-
-```@example space4time
-fig = Figure()
-ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Mean Altitude")
-temp = heatmap!(new_res_array_altitude[:, :, 1], colormap = :lajolla)
-Colorbar(fig[1, 2], temp, label = "Altitude (m)")
 fig
 ```
 
@@ -342,8 +284,6 @@ results = space4time_proc(
     lcc_cube,
     altitude_cube;
     time_axis_name = nothing,
-    altitude_var_name = :Variables,
-    altitude_vec = ["altitude_mean", "altitude_sd"],
     classes_var_name = :Variables,
     classes_vec = ["class1", "class2", "class3"],
     winsize = 5,
@@ -354,6 +294,10 @@ results = space4time_proc(
 )
 ```
 
+
+```@example space4time
+results
+```
 ---
 
 ## Interpreting Results
