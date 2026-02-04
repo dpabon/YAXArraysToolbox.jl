@@ -248,18 +248,6 @@ lcc_cube = YAXArray(axlist, new_res_array_classes)
 lcc_cube
 ```
 
-### Altitude Cube
-
-```@example space4time
-axlist = (
-    lon(1:size(new_res_array_classes, 1)),
-    lat(1:size(new_res_array_classes, 2)),
-    Variables(["altitude_mean", "altitude_sd"])
-)
-
-altitude_cube = YAXArray(axlist, new_res_array_altitude)
-```
-
 ### LST Cube
 
 ```@example space4time
@@ -281,8 +269,7 @@ Now we can use the [`space4time_proc`](@ref) function:
 ```@example space4time
 results = space4time_proc(
     lst_cube,
-    lcc_cube,
-    altitude_cube;
+    lcc_cube;
     time_axis_name = nothing,
     classes_var_name = :Variables,
     classes_vec = ["class1", "class2", "class3"],
