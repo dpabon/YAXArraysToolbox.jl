@@ -1091,7 +1091,6 @@ function space4time_proc(
     #out_pmindist_global = out_pmindist_global,
     denom = denom,
     minpxl = minpxl,
-    minDiffPxls_alt = minDiffPxls_alt,
     )
     
     return Dataset(;
