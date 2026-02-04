@@ -1005,19 +1005,11 @@ function space4time_proc(
         window_oob_value = NaN,
         )
         
-        indims_altitude = InDims(
-        time_axis_name,
-        MovingWindow(lon_axis_name, pre_step, after_step),
-        MovingWindow(lat_axis_name, pre_step, after_step),
-        altitude_var_name,
-        window_oob_value = NaN,
-        
-        )
         
         
         out_1_dims = OutDims(
         Dim{time_axis_name}(time_seq),
-        Dim{:summary_stat}(["rsquared_adjusted", "cumulative_variance", "predicted", "p-val_alt_"*altitude_vec[1], "p-val_alt_"*altitude_vec[2]]),
+        Dim{:summary_stat}(["rsquared_adjusted", "cumulative_variance", "predicted"]),
         )
         
         # Values of clim_var (z) for pure PFTs
@@ -1048,16 +1040,9 @@ function space4time_proc(
         window_oob_value = NaN,
         )
         
-        indims_altitude = InDims(
-        MovingWindow(lon_axis_name, pre_step, after_step),
-        MovingWindow(lat_axis_name, pre_step, after_step),
-        altitude_var_name,
-        window_oob_value = NaN,
-        
-        )
         
         out_1_dims = OutDims(
-        Dim{:summary_stat}(["rsquared_adjusted", "cumulative_variance", "predicted", "p-val_"*altitude_vec[1], "p-val_"*altitude_vec[2]]),
+        Dim{:summary_stat}(["rsquared_adjusted", "cumulative_variance", "predicted"]),
         )
         
         # Values of clim_var (z) for pure PFTs
@@ -1080,8 +1065,8 @@ function space4time_proc(
     
     out_1, out_2, out_3 = mapCube(
     s4time,
-    (cube_con, cube_classes, cube_altitude),
-    indims = (indims, indims_classes, indims_altitude),
+    (cube_con, cube_classes),
+    indims = (indims, indims_classes),
     outdims = outdims,
     max_cache = max_cache,
     showprog = showprog,
