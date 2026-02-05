@@ -201,18 +201,10 @@ Colorbar(fig[1, 2], temp, label = "Occurrence")
 fig
 ```
 
-```@example space4time
-fig = Figure()
-ax = Axis(fig[1, 1]; xlabel = "x", ylabel = "y", title = "Altitude Std Dev")
-temp = heatmap!(new_res_array_altitude[:, :, 2], colormap = :lajolla)
-Colorbar(fig[1, 2], temp, label = "Altitude (m)")
-fig
-```
-
 ### Resample LST
 
 ```@example space4time
-a = TiledView(lst_altitude_corrected, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
+a = TiledView(lst, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
 
 new_res_array_lst = fill(NaN, (size_pixel_new, size_pixel_new))
 

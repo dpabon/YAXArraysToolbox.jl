@@ -157,24 +157,6 @@ results = space4time_proc(
 )
 ```
 
----
-
-### Spatial Processing Variant
-
-```@docs
-space4time_proc_space
-```
-
----
-
-### Legacy Function
-
-```@docs
-space4time_proc_old
-```
-
-!!! warning "Deprecated"
-    This function is provided for backward compatibility. Use [`space4time_proc`](@ref) for new projects.
 
 ---
 
