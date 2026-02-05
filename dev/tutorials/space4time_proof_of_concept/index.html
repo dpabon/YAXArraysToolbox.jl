@@ -70,32 +70,7 @@ lst = fill(NaN, size_tile)
 
 for i in eachindex(all_lst)
     lst[findall(==(i), classes_dist)] .= all_lst[i]
-end</code></pre><h3 id="Step-3:-Add-Altitude-as-a-Confounding-Factor"><a class="docs-heading-anchor" href="#Step-3:-Add-Altitude-as-a-Confounding-Factor">Step 3: Add Altitude as a Confounding Factor</a><a id="Step-3:-Add-Altitude-as-a-Confounding-Factor-1"></a><a class="docs-heading-anchor-permalink" href="#Step-3:-Add-Altitude-as-a-Confounding-Factor" title="Permalink"></a></h3><p>In reality, altitude affects LST. Let&#39;s add this confounding factor:</p><pre><code class="language-julia hljs">Random.seed!(87)
-spatial_auto = 0.9
-midpoint_sim = rand(MidpointDisplacement(spatial_auto), size_tile)
-heatmap(midpoint_sim)</code></pre><img src="04216e47.png" alt="Example block output"/><pre><code class="language-julia hljs">altitude = midpoint_sim * 1000  # Scale to 0-1000 meters
-altitude</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1000×1000 Matrix{Float64}:
- 391.473  394.99   398.609  402.326  …  862.843  862.13   862.558  862.637
- 388.637  394.486  399.09   401.465     859.413  861.891  862.738  862.543
- 387.251  393.122  398.556  402.761     859.689  858.872  860.596  866.93
- 387.079  394.341  397.734  403.861     855.721  858.7    861.135  867.12
- 387.131  393.755  399.334  404.619     854.634  857.402  861.372  862.417
- 387.457  391.155  397.512  400.003  …  858.719  859.577  859.582  862.223
- 390.198  391.245  394.381  396.257     863.429  861.372  858.842  859.239
- 389.092  391.414  394.064  396.131     861.198  860.321  861.968  858.892
- 387.915  390.805  392.663  391.062     861.496  860.854  859.774  857.02
- 388.649  389.015  391.2    391.905     858.049  857.082  854.996  855.107
-   ⋮                                 ⋱                             
- 571.834  571.337  570.032  571.504     629.663  630.092  628.632  629.489
- 569.122  570.013  570.224  569.21      630.528  631.237  629.973  629.922
- 569.577  570.018  569.957  571.69      632.699  630.872  631.262  629.15
- 570.353  570.857  568.489  572.506     634.99   632.487  631.464  632.897
- 571.095  571.392  573.831  574.472  …  633.584  631.474  631.767  633.258
- 570.347  572.721  574.135  574.94      633.49   632.7    632.025  632.855
- 575.576  576.045  578.359  579.514     635.887  632.914  632.827  636.19
- 580.403  581.788  583.586  583.765     635.231  633.922  633.046  632.389
- 584.212  584.072  584.817  587.779     634.437  631.276  631.33   632.846</code></pre><p>Apply the adiabatic lapse rate (9.8°C per 1000 meters):</p><pre><code class="language-julia hljs">heatmap(lst)</code></pre><img src="d500b53f.png" alt="Example block output"/><pre><code class="language-julia hljs">lst_altitude_corrected = lst .- (altitude .* 9.8 / 1000)
-heatmap(lst_altitude_corrected)</code></pre><img src="76e8abfb.png" alt="Example block output"/><p>Verify the altitude-LST relationship:</p><pre><code class="language-julia hljs">scatter(vec(altitude), vec(lst_altitude_corrected))</code></pre><img src="070e1b69.png" alt="Example block output"/><hr/><h2 id="Spatial-Resampling"><a class="docs-heading-anchor" href="#Spatial-Resampling">Spatial Resampling</a><a id="Spatial-Resampling-1"></a><a class="docs-heading-anchor-permalink" href="#Spatial-Resampling" title="Permalink"></a></h2><p>Land cover maps typically have coarser resolution than 1 meter. We&#39;ll aggregate to a new spatial resolution and estimate the frequency of each class per pixel.</p><h3 id="Resample-Land-Cover-Classes"><a class="docs-heading-anchor" href="#Resample-Land-Cover-Classes">Resample Land Cover Classes</a><a id="Resample-Land-Cover-Classes-1"></a><a class="docs-heading-anchor-permalink" href="#Resample-Land-Cover-Classes" title="Permalink"></a></h3><pre><code class="language-julia hljs">size_pixel_new = 20  # New pixel size: 20×20 = 400 original pixels
+end</code></pre><hr/><h2 id="Spatial-Resampling"><a class="docs-heading-anchor" href="#Spatial-Resampling">Spatial Resampling</a><a id="Spatial-Resampling-1"></a><a class="docs-heading-anchor-permalink" href="#Spatial-Resampling" title="Permalink"></a></h2><p>Land cover maps typically have coarser resolution than 1 meter. We&#39;ll aggregate to a new spatial resolution and estimate the frequency of each class per pixel.</p><h3 id="Resample-Land-Cover-Classes"><a class="docs-heading-anchor" href="#Resample-Land-Cover-Classes">Resample Land Cover Classes</a><a id="Resample-Land-Cover-Classes-1"></a><a class="docs-heading-anchor-permalink" href="#Resample-Land-Cover-Classes" title="Permalink"></a></h3><pre><code class="language-julia hljs">size_pixel_new = 20  # New pixel size: 20×20 = 400 original pixels
 
 # Use TiledView to create views of each new pixel
 a = TiledView(classes_dist, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false, pad_value = NaN32)
@@ -121,24 +96,7 @@ fig</code></pre><img src="c35a166f.png" alt="Example block output"/><p>Class 3:<
 ax = Axis(fig[1, 1]; xlabel = &quot;x&quot;, ylabel = &quot;y&quot;, title = &quot;Class 3 Frequency&quot;)
 temp = heatmap!(new_res_array_classes[:, :, 3], colormap = Reverse(:bamako))
 Colorbar(fig[1, 2], temp, label = &quot;Occurrence&quot;)
-fig</code></pre><img src="9fec575f.png" alt="Example block output"/><h3 id="Resample-Altitude"><a class="docs-heading-anchor" href="#Resample-Altitude">Resample Altitude</a><a id="Resample-Altitude-1"></a><a class="docs-heading-anchor-permalink" href="#Resample-Altitude" title="Permalink"></a></h3><p>For altitude, we&#39;ll create both mean and standard deviation:</p><pre><code class="language-julia hljs">a = TiledView(altitude, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
-
-new_res_array_altitude = fill(NaN, (size_pixel_new, size_pixel_new, 2))
-
-for i in 1:size_pixel_new
-    for j in 1:size_pixel_new
-        new_res_array_altitude[i, j, 1] = mean(a[:, :, i, j])
-        new_res_array_altitude[i, j, 2] = std(a[:, :, i, j])
-    end
-end</code></pre><pre><code class="language-julia hljs">fig = Figure()
-ax = Axis(fig[1, 1]; xlabel = &quot;x&quot;, ylabel = &quot;y&quot;, title = &quot;Mean Altitude&quot;)
-temp = heatmap!(new_res_array_altitude[:, :, 1], colormap = :lajolla)
-Colorbar(fig[1, 2], temp, label = &quot;Altitude (m)&quot;)
-fig</code></pre><img src="fc63575b.png" alt="Example block output"/><pre><code class="language-julia hljs">fig = Figure()
-ax = Axis(fig[1, 1]; xlabel = &quot;x&quot;, ylabel = &quot;y&quot;, title = &quot;Altitude Std Dev&quot;)
-temp = heatmap!(new_res_array_altitude[:, :, 2], colormap = :lajolla)
-Colorbar(fig[1, 2], temp, label = &quot;Altitude (m)&quot;)
-fig</code></pre><img src="394163b3.png" alt="Example block output"/><h3 id="Resample-LST"><a class="docs-heading-anchor" href="#Resample-LST">Resample LST</a><a id="Resample-LST-1"></a><a class="docs-heading-anchor-permalink" href="#Resample-LST" title="Permalink"></a></h3><pre><code class="language-julia hljs">a = TiledView(lst_altitude_corrected, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
+fig</code></pre><img src="9fec575f.png" alt="Example block output"/><h3 id="Resample-LST"><a class="docs-heading-anchor" href="#Resample-LST">Resample LST</a><a id="Resample-LST-1"></a><a class="docs-heading-anchor-permalink" href="#Resample-LST" title="Permalink"></a></h3><pre><code class="language-julia hljs">a = TiledView(lst, (size_pixel_new, size_pixel_new), (0, 0); keep_center = false)
 
 new_res_array_lst = fill(NaN, (size_pixel_new, size_pixel_new))
 
@@ -150,7 +108,7 @@ end</code></pre><pre><code class="language-julia hljs">fig = Figure()
 ax = Axis(fig[1, 1]; xlabel = &quot;x&quot;, ylabel = &quot;y&quot;, title = &quot;Mean LST&quot;)
 temp = heatmap!(new_res_array_lst[:, :], colormap = :lajolla)
 Colorbar(fig[1, 2], temp, label = &quot;LST (°C)&quot;)
-fig</code></pre><img src="c5c92a22.png" alt="Example block output"/><hr/><h2 id="Organizing-Data-as-YAXArrays"><a class="docs-heading-anchor" href="#Organizing-Data-as-YAXArrays">Organizing Data as YAXArrays</a><a id="Organizing-Data-as-YAXArrays-1"></a><a class="docs-heading-anchor-permalink" href="#Organizing-Data-as-YAXArrays" title="Permalink"></a></h2><h3 id="Land-Cover-Cube"><a class="docs-heading-anchor" href="#Land-Cover-Cube">Land Cover Cube</a><a id="Land-Cover-Cube-1"></a><a class="docs-heading-anchor-permalink" href="#Land-Cover-Cube" title="Permalink"></a></h3><pre><code class="language-julia hljs">axlist = (
+fig</code></pre><img src="ac3abf62.png" alt="Example block output"/><hr/><h2 id="Organizing-Data-as-YAXArrays"><a class="docs-heading-anchor" href="#Organizing-Data-as-YAXArrays">Organizing Data as YAXArrays</a><a id="Organizing-Data-as-YAXArrays-1"></a><a class="docs-heading-anchor-permalink" href="#Organizing-Data-as-YAXArrays" title="Permalink"></a></h2><h3 id="Land-Cover-Cube"><a class="docs-heading-anchor" href="#Land-Cover-Cube">Land Cover Cube</a><a id="Land-Cover-Cube-1"></a><a class="docs-heading-anchor-permalink" href="#Land-Cover-Cube" title="Permalink"></a></h3><pre><code class="language-julia hljs">axlist = (
     lon(1:size(new_res_array_classes, 1)),
     lat(1:size(new_res_array_classes, 2)),
     Variables([&quot;class$i&quot; for i in 1:n_classes])
@@ -164,20 +122,7 @@ lcc_cube</code></pre><pre class="documenter-example-output"><code class="nohighl
   <span class="sgr38_5" style="color:#5fd7ff">↗ Variables</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;class1&quot;, …, &quot;class3&quot;]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span>
 <span class="sgr90">├─────────────────────────────────────────────────────── loaded in memory ┤</span>
   data size: 9.38 KB
-<span class="sgr90">└─────────────────────────────────────────────────────────────────────────┘</span></code></pre><h3 id="Altitude-Cube"><a class="docs-heading-anchor" href="#Altitude-Cube">Altitude Cube</a><a id="Altitude-Cube-1"></a><a class="docs-heading-anchor-permalink" href="#Altitude-Cube" title="Permalink"></a></h3><pre><code class="language-julia hljs">axlist = (
-    lon(1:size(new_res_array_classes, 1)),
-    lat(1:size(new_res_array_classes, 2)),
-    Variables([&quot;altitude_mean&quot;, &quot;altitude_sd&quot;])
-)
-
-altitude_cube = YAXArray(axlist, new_res_array_altitude)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">20</span>×<span class="sgr38_5" style="color:#0087d7">20</span>×<span class="sgr38_5" style="color:#5fd7ff">2</span> YAXArray{Float64, 3}<span class="sgr90"> ┐</span>
-<span class="sgr90">├──────────────────────────────┴───────────────────────────────────────── dims ┐</span>
-  <span class="sgr38_5" style="color:#ff875f">↓ lon</span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">1:20</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Regular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
-  <span class="sgr38_5" style="color:#0087d7">→ lat</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">1:20</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Regular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
-  <span class="sgr38_5" style="color:#5fd7ff">↗ Variables</span> Categorical{String} <span class="sgr38_5" style="color:#5fd7ff">[&quot;altitude_mean&quot;, &quot;altitude_sd&quot;]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span>
-<span class="sgr90">├──────────────────────────────────────────────────────────── loaded in memory ┤</span>
-  data size: 6.25 KB
-<span class="sgr90">└──────────────────────────────────────────────────────────────────────────────┘</span></code></pre><h3 id="LST-Cube"><a class="docs-heading-anchor" href="#LST-Cube">LST Cube</a><a id="LST-Cube-1"></a><a class="docs-heading-anchor-permalink" href="#LST-Cube" title="Permalink"></a></h3><pre><code class="language-julia hljs">axlist_lst = (
+<span class="sgr90">└─────────────────────────────────────────────────────────────────────────┘</span></code></pre><h3 id="LST-Cube"><a class="docs-heading-anchor" href="#LST-Cube">LST Cube</a><a id="LST-Cube-1"></a><a class="docs-heading-anchor-permalink" href="#LST-Cube" title="Permalink"></a></h3><pre><code class="language-julia hljs">axlist_lst = (
     lon(1:size(new_res_array_lst, 1)),
     lat(1:size(new_res_array_lst, 2))
 )
@@ -191,11 +136,8 @@ lst_cube</code></pre><pre class="documenter-example-output"><code class="nohighl
   data size: 3.12 KB
 <span class="sgr90">└───────────────────────────────────────────────────────────┘</span></code></pre><hr/><h2 id="Running-Space4Time-Analysis"><a class="docs-heading-anchor" href="#Running-Space4Time-Analysis">Running Space4Time Analysis</a><a id="Running-Space4Time-Analysis-1"></a><a class="docs-heading-anchor-permalink" href="#Running-Space4Time-Analysis" title="Permalink"></a></h2><p>Now we can use the <a href="../../api/#YAXArraysToolbox.space4time_proc"><code>space4time_proc</code></a> function:</p><pre><code class="language-julia hljs">results = space4time_proc(
     lst_cube,
-    lcc_cube,
-    altitude_cube;
+    lcc_cube;
     time_axis_name = nothing,
-    altitude_var_name = :Variables,
-    altitude_vec = [&quot;altitude_mean&quot;, &quot;altitude_sd&quot;],
     classes_var_name = :Variables,
     classes_vec = [&quot;class1&quot;, &quot;class2&quot;, &quot;class3&quot;],
     winsize = 5,
@@ -210,11 +152,28 @@ Shared Axes:
 
 <span class="sgr93">Variables with additional axes:</span>
 <span class="sgr90">  Additional Axes: </span>
+  (<span class="sgr38_5" style="color:#ff875f">↓ classes</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;class1&quot;, …, &quot;class3&quot;]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ values_of_Z_for_pure_classes</span> Categorical{String} <span class="sgr38_5" style="color:#0087d7">[&quot;estimated&quot;, &quot;estimated_error&quot;]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span>)
+<span class="sgr94">  Variables: </span>
+  metrics_for_classes
+
+<span class="sgr90">  Additional Axes: </span>
   (<span class="sgr38_5" style="color:#ff875f">↓ transitions</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;class1 to class2&quot;, …, &quot;class2 to class3&quot;]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span>,
-  <span class="sgr38_5" style="color:#0087d7">→ differences</span> Categorical{String} <span class="sgr38_5" style="color:#0087d7">[&quot;delta&quot;, …, &quot;coocurence&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>)
+  <span class="sgr38_5" style="color:#0087d7">→ differences</span> Categorical{String} <span class="sgr38_5" style="color:#0087d7">[&quot;delta&quot;, …, &quot;co_occurrence&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>)
 <span class="sgr94">  Variables: </span>
   metrics_for_transitions
 
+<span class="sgr90">  Additional Axes: </span>
+  (<span class="sgr38_5" style="color:#ff875f">↓ summary_stat</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;rsquared_adjusted&quot;, …, &quot;predicted&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>)
+<span class="sgr94">  Variables: </span>
+  summary_mov_window
+
+</code></pre><pre><code class="language-julia hljs">results</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">YAXArray Dataset
+Shared Axes: 
+  (<span class="sgr38_5" style="color:#ff875f">↓ lon</span> Sampled{Int64} <span class="sgr38_5" style="color:#ff875f">1:20</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Regular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ lat</span> Sampled{Int64} <span class="sgr38_5" style="color:#0087d7">1:20</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Regular</span> <span class="sgr38_5" style="color:#808080">Points</span>)
+
+<span class="sgr93">Variables with additional axes:</span>
 <span class="sgr90">  Additional Axes: </span>
   (<span class="sgr38_5" style="color:#ff875f">↓ classes</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;class1&quot;, …, &quot;class3&quot;]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span>,
   <span class="sgr38_5" style="color:#0087d7">→ values_of_Z_for_pure_classes</span> Categorical{String} <span class="sgr38_5" style="color:#0087d7">[&quot;estimated&quot;, &quot;estimated_error&quot;]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span>)
@@ -222,28 +181,34 @@ Shared Axes:
   metrics_for_classes
 
 <span class="sgr90">  Additional Axes: </span>
-  (<span class="sgr38_5" style="color:#ff875f">↓ summary_stat</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;rsquared_adjusted&quot;, …, &quot;model_used&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>)
+  (<span class="sgr38_5" style="color:#ff875f">↓ transitions</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;class1 to class2&quot;, …, &quot;class2 to class3&quot;]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ differences</span> Categorical{String} <span class="sgr38_5" style="color:#0087d7">[&quot;delta&quot;, …, &quot;co_occurrence&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>)
+<span class="sgr94">  Variables: </span>
+  metrics_for_transitions
+
+<span class="sgr90">  Additional Axes: </span>
+  (<span class="sgr38_5" style="color:#ff875f">↓ summary_stat</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;rsquared_adjusted&quot;, …, &quot;predicted&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>)
 <span class="sgr94">  Variables: </span>
   summary_mov_window
 
 </code></pre><hr/><h2 id="Interpreting-Results"><a class="docs-heading-anchor" href="#Interpreting-Results">Interpreting Results</a><a id="Interpreting-Results-1"></a><a class="docs-heading-anchor-permalink" href="#Interpreting-Results" title="Permalink"></a></h2><p>The space4time analysis returns several outputs:</p><table><tr><th style="text-align: left">Output</th><th style="text-align: left">Description</th></tr><tr><td style="text-align: left"><code>coefficients</code></td><td style="text-align: left">Estimated effect of each land cover class</td></tr><tr><td style="text-align: left"><code>R²</code></td><td style="text-align: left">Goodness of fit for each moving window</td></tr><tr><td style="text-align: left"><code>transition effects</code></td><td style="text-align: left">Expected change when converting between classes</td></tr></table><h3 id="Expected-Results"><a class="docs-heading-anchor" href="#Expected-Results">Expected Results</a><a id="Expected-Results-1"></a><a class="docs-heading-anchor-permalink" href="#Expected-Results" title="Permalink"></a></h3><p>Given our synthetic data with known LST values:</p><table><tr><th style="text-align: left">Transition</th><th style="text-align: left">Expected ΔT (°C)</th><th style="text-align: left">Interpretation</th></tr><tr><td style="text-align: left">Class 1 → Class 2</td><td style="text-align: left">+2.0</td><td style="text-align: left">Forest → Grassland warming</td></tr><tr><td style="text-align: left">Class 1 → Class 3</td><td style="text-align: left">+3.8</td><td style="text-align: left">Forest → Cropland warming</td></tr><tr><td style="text-align: left">Class 2 → Class 3</td><td style="text-align: left">+1.8</td><td style="text-align: left">Grassland → Cropland warming</td></tr></table><hr/><h2 id="Filtering-Results"><a class="docs-heading-anchor" href="#Filtering-Results">Filtering Results</a><a id="Filtering-Results-1"></a><a class="docs-heading-anchor-permalink" href="#Filtering-Results" title="Permalink"></a></h2><h3 id="Using-R-and-Co-occurrence-Thresholds"><a class="docs-heading-anchor" href="#Using-R-and-Co-occurrence-Thresholds">Using R² and Co-occurrence Thresholds</a><a id="Using-R-and-Co-occurrence-Thresholds-1"></a><a class="docs-heading-anchor-permalink" href="#Using-R-and-Co-occurrence-Thresholds" title="Permalink"></a></h3><pre><code class="language-julia hljs">metrics_transitions_cube = results.metrics_for_transitions</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">3</span>×<span class="sgr38_5" style="color:#0087d7">3</span>×<span class="sgr38_5" style="color:#5fd7ff">20</span>×<span class="sgr38_5" style="color:#ff5f87">20</span> YAXArray{Union{Missing, Float64}, 4}<span class="sgr90"> ┐</span>
 <span class="sgr90">├────────────────────────────────────────────────┴─────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ transitions</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;class1 to class2&quot;, …, &quot;class2 to class3&quot;]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span>,
-  <span class="sgr38_5" style="color:#0087d7">→ differences</span> Categorical{String} <span class="sgr38_5" style="color:#0087d7">[&quot;delta&quot;, …, &quot;coocurence&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ differences</span> Categorical{String} <span class="sgr38_5" style="color:#0087d7">[&quot;delta&quot;, …, &quot;co_occurrence&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
   <span class="sgr38_5" style="color:#5fd7ff">↗ lon</span> Sampled{Int64} <span class="sgr38_5" style="color:#5fd7ff">1:20</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Regular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
   <span class="sgr38_5" style="color:#ff5f87">⬔ lat</span> Sampled{Int64} <span class="sgr38_5" style="color:#ff5f87">1:20</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Regular</span> <span class="sgr38_5" style="color:#808080">Points</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────── loaded in memory ┤</span>
   data size: 28.12 KB
 <span class="sgr90">└──────────────────────────────────────────────────────────────────────────────┘</span></code></pre><pre><code class="language-julia hljs">metrics_transitions_cube[differences = At(&quot;delta&quot;)].data</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">3×20×20 view(::Array{Union{Missing, Float64}, 4}, :, 1, :, :) with eltype Union{Missing, Float64}:
 [:, :, 1] =
- NaN  NaN        NaN    NaN    NaN    …  NaN    NaN    NaN        NaN
- NaN  NaN        NaN    NaN    NaN       NaN    NaN    NaN        NaN
- NaN   -2.86881    1.8    1.8    1.8       1.8    1.8    1.80203    1.86355
+ NaN  NaN    NaN    NaN    NaN    NaN    …  NaN    NaN    NaN    NaN    NaN
+ NaN  NaN    NaN    NaN    NaN    NaN       NaN    NaN    NaN    NaN    NaN
+ NaN    1.8    1.8    1.8    1.8    1.8       1.8    1.8    1.8    1.8    1.8
 
 [:, :, 2] =
- NaN  NaN    NaN    NaN    NaN    NaN    …  NaN    NaN    NaN    NaN
- NaN  NaN    NaN    NaN    NaN    NaN       NaN    NaN    NaN    NaN
- NaN    1.8    1.8    1.8    1.8    1.8       1.8    1.8    1.8    1.87052
+ NaN  NaN    NaN    NaN    NaN    NaN    …  NaN    NaN    NaN    NaN    NaN
+ NaN  NaN    NaN    NaN    NaN    NaN       NaN    NaN    NaN    NaN    NaN
+ NaN    1.8    1.8    1.8    1.8    1.8       1.8    1.8    1.8    1.8    1.8
 
 [:, :, 3] =
  NaN  NaN    NaN    NaN    NaN    NaN    …  NaN    NaN    NaN    NaN    NaN
@@ -258,18 +223,18 @@ Shared Axes:
  NaN    NaN    NaN    NaN    NaN       1.8  1.8  1.8  1.8    1.8    1.8
 
 [:, :, 19] =
-   1.54954    2.0    2.0    2.0    2.0  …  2.0  2.0  2.0  NaN    NaN
- NaN        NaN    NaN    NaN    NaN       3.8  3.8  3.8  NaN    NaN
- NaN        NaN    NaN    NaN    NaN       1.8  1.8  1.8    1.8    1.45303
+   2.0    2.0    2.0    2.0    2.0  …  2.0  2.0  2.0  2.0  NaN    NaN
+ NaN    NaN    NaN    NaN    NaN       3.8  3.8  3.8  3.8  NaN    NaN
+ NaN    NaN    NaN    NaN    NaN       1.8  1.8  1.8  1.8    1.8    1.8
 
 [:, :, 20] =
-   1.5155    0.835698    2.0    2.0  …  2.0  2.0  2.0  NaN        NaN
- NaN       NaN         NaN    NaN       3.8  3.8  3.8  NaN        NaN
- NaN       NaN         NaN    NaN       1.8  1.8  1.8    1.86138    1.83713</code></pre><p>Apply quality filters:</p><pre><code class="language-julia hljs">masking_without_delta = masking_proc(
+   2.0    2.0    2.0    2.0    2.0  …    2.0  2.0  2.0  2.0  NaN    NaN
+ NaN    NaN    NaN    NaN    NaN       NaN    3.8  3.8  3.8  NaN    NaN
+ NaN    NaN    NaN    NaN    NaN       NaN    1.8  1.8  1.8    1.8    1.8</code></pre><p>Apply quality filters:</p><pre><code class="language-julia hljs">masking_without_delta = masking_proc(
     results.metrics_for_transitions;
     cube_rsquared = results.summary_mov_window[summary_stat = At(&quot;rsquared_adjusted&quot;)],
     rsquared_thr = 0.2,
-    cube_co_occurrence = results.metrics_for_transitions[Differences = At(&quot;coocurence&quot;)],
+    cube_co_occurrence = results.metrics_for_transitions[Differences = At(&quot;co_occurrence&quot;)],
     co_occurence_thr = 0.5,
     cube_delta = nothing,
     time_dim = nothing,
@@ -277,7 +242,7 @@ Shared Axes:
 )</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr90">┌ </span><span class="sgr38_5" style="color:#ff875f">3</span>×<span class="sgr38_5" style="color:#0087d7">3</span>×<span class="sgr38_5" style="color:#5fd7ff">20</span>×<span class="sgr38_5" style="color:#ff5f87">20</span> YAXArray{Union{Missing, Float64}, 4}<span class="sgr90"> ┐</span>
 <span class="sgr90">├────────────────────────────────────────────────┴─────────────────────── dims ┐</span>
   <span class="sgr38_5" style="color:#ff875f">↓ transitions</span> Categorical{String} <span class="sgr38_5" style="color:#ff875f">[&quot;class1 to class2&quot;, …, &quot;class2 to class3&quot;]</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span>,
-  <span class="sgr38_5" style="color:#0087d7">→ differences</span> Categorical{String} <span class="sgr38_5" style="color:#0087d7">[&quot;delta&quot;, …, &quot;coocurence&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
+  <span class="sgr38_5" style="color:#0087d7">→ differences</span> Categorical{String} <span class="sgr38_5" style="color:#0087d7">[&quot;delta&quot;, …, &quot;co_occurrence&quot;]</span> <span class="sgr38_5" style="color:#808080">Unordered</span>,
   <span class="sgr38_5" style="color:#5fd7ff">↗ lon</span> Sampled{Int64} <span class="sgr38_5" style="color:#5fd7ff">1:20</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Regular</span> <span class="sgr38_5" style="color:#808080">Points</span>,
   <span class="sgr38_5" style="color:#ff5f87">⬔ lat</span> Sampled{Int64} <span class="sgr38_5" style="color:#ff5f87">1:20</span> <span class="sgr38_5" style="color:#808080">ForwardOrdered</span> <span class="sgr38_5" style="color:#808080">Regular</span> <span class="sgr38_5" style="color:#808080">Points</span>
 <span class="sgr90">├──────────────────────────────────────────────────────────── loaded in memory ┤</span>
@@ -322,7 +287,7 @@ temp2 = scatter!(ax, [i + 0.1 for i in 1:n_classes],
 Legend(fig[1, 2],
     [temp, temp2],
     [&quot;Space4time Results&quot;, &quot;Original Delta&quot;])
-fig</code></pre><img src="86d8983c.png" alt="Example block output"/><div class="admonition is-category-success" id="Validation-7856d68237811191"><header class="admonition-header">Validation<a class="admonition-anchor" href="#Validation-7856d68237811191" title="Permalink"></a></header><div class="admonition-body"><p>The space4time method successfully recovers the known temperature differences between land cover classes, demonstrating the validity of the approach.</p></div></div><hr/><h2 id="Summary"><a class="docs-heading-anchor" href="#Summary">Summary</a><a id="Summary-1"></a><a class="docs-heading-anchor-permalink" href="#Summary" title="Permalink"></a></h2><div style="background: #e7f5e7; border: 1px solid #28a745; border-radius: 8px; padding: 1.5em; margin: 1.5em 0;">
+fig</code></pre><img src="02348506.png" alt="Example block output"/><div class="admonition is-category-success" id="Validation-7856d68237811191"><header class="admonition-header">Validation<a class="admonition-anchor" href="#Validation-7856d68237811191" title="Permalink"></a></header><div class="admonition-body"><p>The space4time method successfully recovers the known temperature differences between land cover classes, demonstrating the validity of the approach.</p></div></div><hr/><h2 id="Summary"><a class="docs-heading-anchor" href="#Summary">Summary</a><a id="Summary-1"></a><a class="docs-heading-anchor-permalink" href="#Summary" title="Permalink"></a></h2><div style="background: #e7f5e7; border: 1px solid #28a745; border-radius: 8px; padding: 1.5em; margin: 1.5em 0;">
   <h4 style="margin-top: 0; color: #155724;">✅ Key Takeaways</h4>
   <ul style="margin-bottom: 0;">
     <li>The space-for-time method estimates land cover change impacts without long time series</li>
@@ -330,4 +295,4 @@ fig</code></pre><img src="86d8983c.png" alt="Example block output"/><div class="
     <li>Quality filtering using R² and co-occurrence improves result reliability</li>
     <li>The method can quantify biophysical effects of land use transitions</li>
   </ul>
-</div><hr/><h2 id="References"><a class="docs-heading-anchor" href="#References">References</a><a id="References-1"></a><a class="docs-heading-anchor-permalink" href="#References" title="Permalink"></a></h2><ol><li><p>Duveiller, Gregory, Josh Hooker, and Alessandro Cescatti. &quot;A Dataset Mapping the Potential Biophysical Effects of Vegetation Cover Change.&quot; <em>Scientific Data</em> 5, no. 1 (2018): 1. <a href="https://doi.org/10.1038/sdata.2018.14">https://doi.org/10.1038/sdata.2018.14</a></p></li><li><p>Li, Yan, Maosheng Zhao, Safa Motesharrei, Qiaozhen Mu, Eugenia Kalnay, and Shuangcheng Li. &quot;Local Cooling and Warming Effects of Forests Based on Satellite Observations.&quot; <em>Nature Communications</em> 6, no. 1 (2015): 6603. <a href="https://doi.org/10.1038/ncomms7603">https://doi.org/10.1038/ncomms7603</a></p></li></ol><hr/><h2 id="Next-Steps"><a class="docs-heading-anchor" href="#Next-Steps">Next Steps</a><a id="Next-Steps-1"></a><a class="docs-heading-anchor-permalink" href="#Next-Steps" title="Permalink"></a></h2><ul><li>📖 Return to <strong><a href="../basic_operations/#basic_operations">Basic Operations</a></strong> for core function usage</li><li>📚 See the <strong><a href="../../api/#api">API Reference</a></strong> for complete function documentation</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../basic_operations/">« Basic Operations</a><a class="docs-footer-nextpage" href="../../api/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Friday 23 January 2026 14:36">Friday 23 January 2026</span>. Using Julia version 1.12.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</div><hr/><h2 id="References"><a class="docs-heading-anchor" href="#References">References</a><a id="References-1"></a><a class="docs-heading-anchor-permalink" href="#References" title="Permalink"></a></h2><ol><li><p>Duveiller, Gregory, Josh Hooker, and Alessandro Cescatti. &quot;A Dataset Mapping the Potential Biophysical Effects of Vegetation Cover Change.&quot; <em>Scientific Data</em> 5, no. 1 (2018): 1. <a href="https://doi.org/10.1038/sdata.2018.14">https://doi.org/10.1038/sdata.2018.14</a></p></li><li><p>Li, Yan, Maosheng Zhao, Safa Motesharrei, Qiaozhen Mu, Eugenia Kalnay, and Shuangcheng Li. &quot;Local Cooling and Warming Effects of Forests Based on Satellite Observations.&quot; <em>Nature Communications</em> 6, no. 1 (2015): 6603. <a href="https://doi.org/10.1038/ncomms7603">https://doi.org/10.1038/ncomms7603</a></p></li></ol><hr/><h2 id="Next-Steps"><a class="docs-heading-anchor" href="#Next-Steps">Next Steps</a><a id="Next-Steps-1"></a><a class="docs-heading-anchor-permalink" href="#Next-Steps" title="Permalink"></a></h2><ul><li>📖 Return to <strong><a href="../basic_operations/#basic_operations">Basic Operations</a></strong> for core function usage</li><li>📚 See the <strong><a href="../../api/#api">API Reference</a></strong> for complete function documentation</li></ul></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../basic_operations/">« Basic Operations</a><a class="docs-footer-nextpage" href="../../api/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.16.1 on <span class="colophon-date" title="Thursday 5 February 2026 10:16">Thursday 5 February 2026</span>. Using Julia version 1.12.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
