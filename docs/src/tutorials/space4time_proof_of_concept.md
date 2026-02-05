@@ -320,7 +320,7 @@ masking_without_delta = masking_proc(
     results.metrics_for_transitions;
     cube_rsquared = results.summary_mov_window[summary_stat = At("rsquared_adjusted")],
     rsquared_thr = 0.2,
-    cube_co_occurrence = results.metrics_for_transitions[Differences = At("coocurence")],
+    cube_co_occurrence = results.metrics_for_transitions[Differences = At("co_occurrence")],
     co_occurence_thr = 0.5,
     cube_delta = nothing,
     time_dim = nothing,
