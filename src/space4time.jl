@@ -337,9 +337,7 @@ function s4time(
                         
                         # compreg = GLM.lm(Term(:lt) ~ sum(Term.(Symbol.(names(data[:, Not(:lt)])))), data)
                         ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat[:]); method=:qr, dropcollinear = false)
-                        
-                        out_1[4] = NaN
-                        out_1[5] = NaN
+                       
                         
                         
                         coef_reg = GLM.coef(ols)
@@ -698,8 +696,6 @@ function s4time(
                             
                             ols = lm([ones(size(lr, 1)) lr], identity.(climvarmat_it[:]); method=:qr, dropcollinear = false)
                             
-                            out_1[4] = NaN
-                            out_1[5] = NaN
                             
                             coef_reg = GLM.coef(ols)
                             #println("original coef $coef_reg")
