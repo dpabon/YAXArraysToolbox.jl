@@ -844,7 +844,6 @@ function s4time(
             end
         end
     end
-    GC.gc()
 end
 
 """
