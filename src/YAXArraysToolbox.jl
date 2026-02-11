@@ -37,14 +37,14 @@ export masking_space
 
 
 # Masking 4 space4time
-include("masking_altitude.jl") # TO IMPROVE function names!!
-include("masking_general.jl") # Maybe TO MERGE with masking_altitude.
+include("masking_altitude.jl") 
+include("masking_general.jl") 
 
-export altitude_mask_results_proc, altitude_masking_proc
+
 export masking_proc
 
-export altitude_mask_results_proc2
-export altitude_mask_results2
+export altitude_masking_proc
+
 
 # Space4time
 

@@ -9,18 +9,18 @@ function altitude_mask_results(cube_out, cube_in; center_coord)
     if (any(!isnan, cube_in))
 
         # v1
-        cube_out[1] = mean(filter(!isnan, vec(cube_in[2, :, :])))
+        cube_out[1] = mean(filter(!isnan, vec(cube_in[1, :, :])))
 
         # v2
         cube_out[2] = abs(
-            cube_in[1, center_coord, center_coord] -
-            mean(filter(!isnan, vec(cube_in[1, :, :]))),
+            cube_in[2, center_coord, center_coord] -
+            mean(filter(!isnan, vec(cube_in[2, :, :]))),
         )
 
         # v3
         cube_out[3] = abs(
-            cube_in[2, center_coord, center_coord] -
-            mean(filter(!isnan, vec(cube_in[2, :, :]))),
+            cube_in[1, center_coord, center_coord] -
+            mean(filter(!isnan, vec(cube_in[1, :, :]))),
         )
     end
 end
@@ -63,9 +63,9 @@ High values of ``v_{1}`` indicate hilly terrain over the considered scale, which
 """
 function altitude_mask_results_proc(
     cube_in_altitude;
-    lon_axis_name = "lon",
-    lat_axis_name = "lat",
-    variable_name = "Variable",
+    lon_axis_name = :lon,
+    lat_axis_name = :lat,
+    variable_name = :Variable,
     winsize = 5,
     showprog = true,
 )
@@ -89,7 +89,9 @@ function altitude_mask_results_proc(
         window_oob_value = NaN,
     )
 
-    outdims_altitude = OutDims(CategoricalAxis("Indicators", ["v1", "v2", "v3"]))
+    outdims_altitude = OutDims(
+        Dim{:Indicators},(["v1", "v2", "v3"])
+        )
 
     result_cube = mapCube(
         altitude_mask_results,
@@ -177,9 +179,9 @@ High values of ``v_{1}`` indicate hilly terrain over the considered scale, which
 function altitude_masking_proc(
     cube_in_to_mask,
     cube_in_altitude;
-    lon_axis_name = "lon",
-    lat_axis_name = "lat",
-    variable_name = "Variable",
+    lon_axis_name = :lon,
+    lat_axis_name = :lat,
+    variable_name = :Variable,
     time_axis_name = nothing,
     winsize = 5,
     v1_thr = 50,
@@ -207,7 +209,7 @@ function altitude_masking_proc(
         window_oob_value = NaN,
     )
 
-    outdims_altitude = OutDims(CategoricalAxis("Indicators", ["v1", "v2", "v3"]))
+    outdims_altitude = OutDims(Dim{:Indicators}(["v1", "v2", "v3"]))
 
     result_cube = mapCube(
         altitude_mask_results,
@@ -218,7 +220,7 @@ function altitude_masking_proc(
         center_coord = center_coord,
     )
 
-    indims_altitude_results = InDims("Indicators")
+    indims_altitude_results = InDims(:Indicators)
 
 
     if isnothing(time_axis_name)
@@ -254,9 +256,9 @@ function altitude_masking_proc(
 
     end
 
-    indims_altitude_results = InDims("Indicators")
+    indims_altitude_results = InDims(:Indicators)
 
-    masked_pixels_outdims = OutDims(CategoricalAxis("Masked_pixel", ["value"]))
+    masked_pixels_outdims = OutDims(Dim{:Masked_pixel}( ["value"]))
 
     function local_fun(cube_out, cube_in; v1_thr, v2_thr, v3_thr)
         cube_out .= false
@@ -302,8 +304,8 @@ end
 
 function altitude_mask_results_proc2(
     cube_in_altitude;
-    lon_axis_name = "lon",
-    lat_axis_name = "lat",
+    lon_axis_name = :lon,
+    lat_axis_name = :lat,
     winsize = 5,
     showprog = true,
 )
